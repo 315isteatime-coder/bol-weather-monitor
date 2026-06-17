@@ -51,9 +51,12 @@
   .filters button{font:inherit; font-weight:700; font-size:12.5px; padding:7px 13px; border-radius:999px; border:2.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer}
   .filters button.on{color:#fff; background:var(--ink); border-color:var(--ink)}
   .count{font-size:12px; color:var(--mut); font-weight:600; margin:8px 2px 4px}
+  .sechint{font-size:12px; color:var(--mut); font-weight:600; margin:4px 2px 0}
 
   .vlist{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px}
-  .v{border:2.5px solid var(--line); border-radius:14px; padding:11px 12px; background:#fff}
+  .v{display:block; text-decoration:none; color:inherit; border:2.5px solid var(--line); border-radius:14px; padding:11px 12px; background:#fff; transition:transform .08s, box-shadow .12s}
+  .v:active{transform:scale(.985)}
+  .v::after{content:"›"; float:right; color:var(--mut); font-weight:800; font-size:16px; margin-top:-2px}
   .v.bol{border-color:var(--red); background:#fff5f4}
   .v .code{font-family:"Baloo 2"; font-weight:800; font-size:12px; color:var(--cyan)}
   .v.bol .code{color:var(--red)}
@@ -90,6 +93,7 @@
   </div>
 
   <h2 class="sec">市集商戶 Market Vendor</h2>
+  <div class="sechint">㩒攤主名牌睇品牌介紹 →</div>
   <div class="tools">
     <input id="q" type="search" placeholder="搵攤主… (名 / A01)" autocomplete="off">
     <div class="filters" id="filters">
@@ -110,48 +114,9 @@
   </footer>
 </div>
 
+<script src="brands.js"></script>
 <script>
-const V=[
-  {c:"A01",n:"Vamos",t:["retail"]},
-  {c:"A02",n:"Ace concept",t:["retail"]},
-  {c:"A03",n:"U3G1 X EC VINTAGE",t:["retail"]},
-  {c:"A04",n:"Avenue",t:["retail","hk"]},
-  {c:"A05",n:"CHUMS",t:["retail"]},
-  {c:"A06",n:"BOL OFFICIAL",t:["retail","bol"]},
-  {c:"A07",n:"HMAD.official",t:["retail","hk"]},
-  {c:"A08",n:"SWAG",t:["retail"]},
-  {c:"A09",n:"NEFC SOCCER SHOP x offfield",t:["retail","hk"]},
-  {c:"A10",n:"拾衣 VINTAGE",t:["retail","hk"]},
-  {c:"A11",n:"TE・MACAU & GOOFOPDESK",t:["retail"]},
-  {c:"A12",n:"斗里 Doori",t:["fb"]},
-  {c:"A13",n:"HORIZON CAFE",t:["fb"]},
-  {c:"A14",n:"百威啤酒 & VIDA",t:["fb"]},
-  {c:"A15",n:"趣眼釀酒廠",t:["fb"]},
-  {c:"A16",n:"千林 CHINLAM WHISKY",t:["fb"]},
-  {c:"A17",n:"Kitda 驚喜蛋 / 賞食",t:["fb"]},
-  {c:"A18",n:"璧茶",t:["fb"]},
-  {c:"A19",n:"Blooom coffee & NATA",t:["fb"]},
-  {c:"A20",n:"茶水 Teawater",t:["fb"]},
-  {c:"A21",n:"YouCHICO",t:["retail"]},
-  {c:"A22",n:"Macau Impressions",t:["retail"]},
-  {c:"A23",n:"M PASS",t:["retail"]},
-  {c:"A24",n:"Die.\\/.young",t:["retail","hk"]},
-  {c:"A25",n:"FUGGLER",t:["retail"]},
-  {c:"A26",n:"WHAT ELEPHANT",t:["retail"]},
-  {c:"A27",n:"Toby Black",t:["retail","hk"]},
-  {c:"A28",n:"Microwave Studio",t:["retail","hk"]},
-  {c:"A29",n:"面部彩繪",t:["exp"]},
-  {c:"A30",n:"世界杯應援 DIY",t:["exp"]},
-  {c:"A31",n:"Snapio 自拍亭",t:["exp"]},
-  {c:"A32",n:"KIVA MACAU",t:["fb"]},
-  {c:"A33",n:"DIGREEN",t:["fb"]},
-  {c:"A34",n:"泰谷",t:["fb"]},
-  {c:"A35",n:"萬草堂",t:["fb"]},
-  {c:"A36",n:"Baobao bakery",t:["fb"]},
-  {c:"A37",n:"聖杯",t:["fb"]},
-  {c:"A38",n:"BOL POPUP",t:["retail","bol"]},
-  {c:"A39",n:"SUPER GROUP",t:["retail"]}
-];
+const V=window.BRANDS||[];
 
 const vlistEl=document.getElementById("vlist"), countEl=document.getElementById("count");
 let filter="all", q="";
@@ -171,7 +136,7 @@ function render(){
     if(v.t.includes("fb")) ch.push('<span class="t-fb">餐飲</span>');
     if(v.t.includes("hk")) ch.push('<span class="t-hk">香港</span>');
     if(v.t.includes("exp")) ch.push('<span class="t-exp">體驗</span>');
-    return '<div class="v'+(bol?' bol':'')+'"><div class="code">'+v.c+'</div><div class="nm">'+esc(v.n)+'</div>'+(ch.length?'<div class="tg">'+ch.join('')+'</div>':'')+'</div>';
+    return '<a class="v'+(bol?' bol':'')+'" href="brand.html?c='+v.c+'"><div class="code">'+v.c+'</div><div class="nm">'+esc(v.n)+'</div>'+(ch.length?'<div class="tg">'+ch.join('')+'</div>':'')+'</a>';
   }).join('') : '<div class="empty">搵唔到，試下第二個關鍵字</div>';
 }
 document.getElementById("filters").addEventListener("click",e=>{
