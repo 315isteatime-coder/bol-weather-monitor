@@ -179,7 +179,7 @@
   <section class="tips">
     <div class="lab">☀️ 溫馨提示</div>
     <ul>
-      <li>高溫預警 —— 記得多補水、適時休息防中暑</li>
+      <li id="tipheat" hidden></li>
       <li>蚊蟲滋生 —— 記得做好防蚊</li>
     </ul>
   </section>
@@ -326,7 +326,7 @@ async function fetchRain(){
   const code=d.current.weather_code;
   return {
     rate1h:+rate1h.toFixed(2), accum24h:+accum24h.toFixed(1),
-    nowPrecip:d.current.precipitation, code,
+    nowPrecip:d.current.precipitation, code, temp:d.current.temperature_2m,
     raining:(d.current.precipitation>0)||RAIN_CODES.has(code),
     thunder:(code>=95), now
   };
@@ -408,6 +408,10 @@ function render(){
   else notice.hidden=true;
   const msgin=document.getElementById("msgin");
   if(msgin && document.activeElement!==msgin) msgin.value=state.msg;
+  // 高溫提示（30°C 或以上先出）
+  const heat=document.getElementById("tipheat");
+  if(r && typeof r.temp==="number" && r.temp>=30){ heat.hidden=false; heat.textContent="高溫預警（現時 "+Math.round(r.temp)+"°C）—— 記得多補水、適時休息防中暑"; }
+  else heat.hidden=true;
   // rain chip
   document.getElementById("raintier").textContent=TIER_TXT[tier];
   document.getElementById("raindet").textContent = r
