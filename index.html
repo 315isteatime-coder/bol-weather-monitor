@@ -97,6 +97,12 @@
   .share button.ghost{flex:0 0 auto; padding:12px 16px; background:#fff; border:2.5px solid var(--ink); color:var(--ink); box-shadow:none}
   .copied{font-size:12px; font-weight:700; color:var(--green); margin-top:9px; min-height:15px}
   .setby{font-size:11.5px; color:var(--mut); margin-top:10px; font-weight:600}
+  .lockrow{display:flex; gap:9px; margin:13px 0 2px}
+  #pw{flex:1; min-width:0; font:inherit; font-size:16px; padding:11px 15px; border:2.5px solid var(--ink); border-radius:999px; background:#fff; color:var(--ink)}
+  #unlock{font:inherit; font-family:"Baloo 2"; font-weight:800; font-size:14px; padding:11px 22px; border:none; border-radius:999px; background:var(--cyan); color:#fff; cursor:pointer}
+  #unlock:active{transform:scale(.96)}
+  .pwerr{font-size:12px; font-weight:700; color:var(--red); min-height:15px; margin-top:8px}
+  .lockback{margin-top:15px; font:inherit; font-weight:700; font-size:12px; background:none; border:none; color:var(--mut); cursor:pointer; padding:4px 0}
 
   /* rules */
   details.rules{margin-top:14px}
@@ -158,21 +164,32 @@
   <details class="org" id="orgpanel">
     <summary><span>我係大會工作人員 — 設定 / 廣播官方信號</span><span class="plus">＋</span></summary>
     <div class="org-body">
-      <p class="hint">喺 <a href="https://www.smg.gov.mo/zh" target="_blank" rel="noopener">SMG 官網</a> / SMG App 睇實際信號，喺下面㩒返同一個，再「複製分享連結」貼入攤主群組。攤主一開連結就會見到最新狀態。</p>
-      <div class="sigset" id="sigset">
-        <button data-sig="none">無 / 已除下</button>
-        <button data-sig="t1">一號戒備信號</button>
-        <button data-sig="rain_warn">暴雨警告</button>
-        <button data-sig="thunder">雷暴警告</button>
-        <button data-sig="t3">三號或更高風球</button>
+      <div id="orglock">
+        <p class="hint">呢個區係畀大會工作人員設定 / 廣播官方信號，要密碼先改得。</p>
+        <div class="lockrow">
+          <input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="輸入密碼">
+          <button id="unlock">解鎖</button>
+        </div>
+        <div class="pwerr" id="pwerr"></div>
       </div>
-      <label class="fcrow"><input type="checkbox" id="fc"><span>氣象局預告今日（不限時段）懸掛三號或更高風球之機率為「中等至較高」→ 全活動取消、改期</span></label>
-      <div class="share">
-        <button id="copy">複製分享連結</button>
-        <button id="reset" class="ghost">清除</button>
+      <div id="orgctrl" hidden>
+        <p class="hint">喺 <a href="https://www.smg.gov.mo/zh" target="_blank" rel="noopener">SMG 官網</a> / SMG App 睇實際信號，喺下面㩒返同一個，再「複製分享連結」貼入攤主群組。攤主一開連結就會見到最新狀態。</p>
+        <div class="sigset" id="sigset">
+          <button data-sig="none">無 / 已除下</button>
+          <button data-sig="t1">一號戒備信號</button>
+          <button data-sig="rain_warn">暴雨警告</button>
+          <button data-sig="thunder">雷暴警告</button>
+          <button data-sig="t3">三號或更高風球</button>
+        </div>
+        <label class="fcrow"><input type="checkbox" id="fc"><span>氣象局預告今日（不限時段）懸掛三號或更高風球之機率為「中等至較高」→ 全活動取消、改期</span></label>
+        <div class="share">
+          <button id="copy">複製分享連結</button>
+          <button id="reset" class="ghost">清除</button>
+        </div>
+        <div class="copied" id="copied"></div>
+        <div class="setby" id="setby"></div>
+        <button id="lockbtn" class="lockback">🔒 鎖返（畀返攤主睇）</button>
       </div>
-      <div class="copied" id="copied"></div>
-      <div class="setby" id="setby"></div>
     </div>
   </details>
 
@@ -415,6 +432,30 @@ document.getElementById("reset").addEventListener("click",()=>{
   setTimeout(()=>document.getElementById("copied").textContent="",4000);
 });
 document.getElementById("refresh").addEventListener("click",load);
+
+/* ---------- 大會密碼鎖（軟性保護：防攤主／路人誤改） ---------- */
+const ORG_HASH="b79005af04823bf466e9fc22a3d4fc8b9c0b6f2918436b8b6bcf3707e9c3fd73";
+async function sha256hex(s){
+  const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function showOrgCtrl(){ document.getElementById("orglock").hidden=true; document.getElementById("orgctrl").hidden=false; }
+function lockOrg(){
+  sessionStorage.removeItem("bolwx_org");
+  document.getElementById("orgctrl").hidden=true;
+  document.getElementById("orglock").hidden=false;
+  document.getElementById("pw").value="";
+}
+if(sessionStorage.getItem("bolwx_org")==="1") showOrgCtrl();
+async function tryUnlock(){
+  const pw=document.getElementById("pw").value.trim();
+  const err=document.getElementById("pwerr");
+  if(pw && await sha256hex(pw)===ORG_HASH){ sessionStorage.setItem("bolwx_org","1"); err.textContent=""; showOrgCtrl(); }
+  else { err.textContent="密碼唔啱，再試。"; }
+}
+document.getElementById("unlock").addEventListener("click", tryUnlock);
+document.getElementById("pw").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); tryUnlock(); } });
+document.getElementById("lockbtn").addEventListener("click", lockOrg);
 
 /* ---------- init ---------- */
 readHash(); render(); load();
