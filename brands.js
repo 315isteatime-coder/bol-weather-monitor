@@ -1,8 +1,9 @@
 /* 片區戶外生活節 2026 · 世界盃系列（益隆）— 市集攤主資料
    market.html（名單）同 brand.html（品牌頁）共用呢一份。
    欄位：c 攤位編號 | n 名 | t 分類標籤(filter 用) | cat 類別(顯示) | origin 來源
-        | intro 介紹(留空=「整理緊」note) | ig handle | igUrl | site 官方網/頁 | photos[] 已 host 嘅相
-   留空 intro 嘅 = 網上未搵到實證資料，待大會／商戶補；唔亂寫。 */
+        | intro 介紹(留空=「整理緊」note) | ig handle | igUrl | site 官方網/頁 | photos[] 相
+   留空 intro 嘅 = 網上未搵到實證資料，待大會／商戶補；唔亂寫。
+   photos 暫用商戶官方網嘅官方圖（hotlink）；之後可換成大會授權嘅 host 相。 */
 window.BRANDS=[
   {c:"A01", n:"Vamos", t:["retail"], cat:"服飾 · 生活選物", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A02", n:"Ace concept", t:["retail"], cat:"澳門原創運動服 · 球衣訂製", origin:"macau",
@@ -19,10 +20,12 @@ window.BRANDS=[
     ig:"@chums_hk", igUrl:"https://www.instagram.com/chums_hk/", site:"", photos:[]},
   {c:"A06", n:"BOL OFFICIAL", t:["retail","bol"], cat:"城市戶外 × 機能街頭", origin:"macau",
     intro:"BOL 係澳門城市戶外品牌，著眼機能街頭（techwear）同戶外場景。由日常通勤到郊野使用，講求剪裁、面料同實際功能。A06 係 BOL 官方攤位，集合品牌主要系列。",
-    ig:"@bol.official", igUrl:"https://www.instagram.com/bol.official/", site:"https://www.bolmacau.com/", photos:[]},
+    ig:"@bol.official", igUrl:"https://www.instagram.com/bol.official/", site:"https://www.bolmacau.com/",
+    photos:["https://www.bolmacau.com/cdn/shop/files/IMG_2602.jpg?v=1771745846&width=800","https://www.bolmacau.com/cdn/shop/files/push-push-pp-stripes-pants-black-s-40170988699949.png?v=1775562829&width=800"]},
   {c:"A07", n:"HMAD.official", t:["retail","hk"], cat:"香港 denim remake · 改造服飾", origin:"hong-kong",
     intro:"HMAD 係香港改造服飾品牌，專做牛仔褲 remake 同 boro（日式補綴）拼接，招牌系列有 Lock In Jeans，亦做飾物同單品，走街頭風格。",
-    ig:"@hmad.official_", igUrl:"https://www.instagram.com/hmad.official_/", site:"https://hmadofficial.com/", photos:[]},
+    ig:"@hmad.official_", igUrl:"https://www.instagram.com/hmad.official_/", site:"https://hmadofficial.com/",
+    photos:["https://hmadofficial.com/cdn/shop/files/IMG_6475_1.jpg?v=1778132008&width=800","https://hmadofficial.com/cdn/shop/files/EFF71D2E-46AA-48B9-9A4F-900234B0D715.jpg?v=1762084785&width=800"]},
   {c:"A08", n:"SWAG", t:["retail"], cat:"服飾 · 生活選物", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A09", n:"NEFC SOCCER SHOP x offfield", t:["retail","hk"], cat:"足球用品 · 球衣（聯乘）", origin:"hong-kong",
     intro:"", ig:"", igUrl:"", site:"", photos:[]},
@@ -30,13 +33,15 @@ window.BRANDS=[
     intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A11", n:"TE・MACAU & GOOFOPDESK", t:["retail"], cat:"澳門機能街頭 · 選物", origin:"macau",
     intro:"A11 由兩個澳門本地街頭品牌組成。TE.MACAU 係選物店，主理自家 label「turnover」並引入國際品牌；GOOFOPDESK（GOOF）係街頭服飾品牌，以波衫風格 graphic tee 同 jersey 為主，曾與 turnover 推出聯名。",
-    ig:"@te.macau", igUrl:"https://www.instagram.com/te.macau/", site:"https://teclothing.co/", photos:[]},
+    ig:"@te.macau", igUrl:"https://www.instagram.com/te.macau/", site:"https://teclothing.co/",
+    photos:["https://teclothing.co/cdn/shop/files/639534227_18159889486419682_5195095046823342804_n.jpg?v=1772543552&width=800","https://teclothing.co/cdn/shop/files/225_3dffa828-15cd-4f75-a914-64107802c2b2.png?v=1777974373&width=800"]},
   {c:"A12", n:"斗里 Doori", t:["fb"], cat:"餐飲 · 飲食", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A13", n:"HORIZON CAFE", t:["fb"], cat:"咖啡 · cafe", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A14", n:"百威啤酒 & VIDA", t:["fb"], cat:"啤酒 · 飲品", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A15", n:"趣眼釀酒廠", t:["fb"], cat:"澳門精釀啤酒", origin:"macau",
     intro:"趣眼釀酒廠（Funny Eye Brewery）係澳門首間本地精釀啤酒廠，2018 年由三位九十後創立，2020 年起做到 100% 澳門本地生產。以西式釀造結合東方茶同在地材料見稱，代表作係荔枝紅茶 Ale。",
-    ig:"@funnyeyebrewery", igUrl:"https://www.instagram.com/funnyeyebrewery/", site:"https://funny-eye.com/", photos:[]},
+    ig:"@funnyeyebrewery", igUrl:"https://www.instagram.com/funnyeyebrewery/", site:"https://funny-eye.com/",
+    photos:["https://funny-eye.com/hu/images/274369175_3030515133944560_6086687123516845003_n.jpg"]},
   {c:"A16", n:"千林 CHINLAM WHISKY", t:["fb"], cat:"威士忌專店 · 獨立桶", origin:"macau",
     intro:"千林 CHIN LAM 係澳門威士忌專店，為客人搜羅稀有及高年份威士忌，亦會推出自家選桶（single cask）出品。店址南灣。",
     ig:"", igUrl:"", site:"https://www.facebook.com/chinlamwhiskey/", photos:[]},
@@ -44,7 +49,8 @@ window.BRANDS=[
   {c:"A18", n:"璧茶", t:["fb"], cat:"茶飲", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A19", n:"Blooom coffee & NATA", t:["fb"], cat:"手沖咖啡 · 烘焙（+ 葡撻）", origin:"macau",
     intro:"Blooom Coffee 係澳門咖啡品牌，2012 年創立，被視為澳門首間獨立咖啡烘焙店，主打本地新鮮烘焙咖啡豆，設多間分店。今次以咖啡配葡式蛋撻（NATA）形式呈現。",
-    ig:"@blooomcoffee", igUrl:"https://www.instagram.com/blooomcoffee/", site:"https://blooomcoffeehouse.com/", photos:[]},
+    ig:"@blooomcoffee", igUrl:"https://www.instagram.com/blooomcoffee/", site:"https://blooomcoffeehouse.com/",
+    photos:["https://blooomcoffeehouse.com/cdn/shop/products/Sub_SOE_27dc250f-7233-4136-91c3-7bbbf41a3004_450x450.jpg?v=1660293216","https://blooomcoffeehouse.com/cdn/shop/products/espressoblendcopy_450x450.jpg?v=1640529182"]},
   {c:"A20", n:"茶水 Teawater", t:["fb"], cat:"台式手搖茶飲", origin:"macau",
     intro:"茶水 Tea Water 係源自台灣嘅手搖茶飲品牌，已落地澳門開分店。主打天然茶湯同時令鮮果即製，招牌有現榨鮮果茶、奶蓋茶。",
     ig:"@teawater_macau", igUrl:"https://www.instagram.com/teawater_macau/", site:"", photos:[]},
@@ -54,7 +60,8 @@ window.BRANDS=[
   {c:"A24", n:"Die.\\/.young", t:["retail","hk"], cat:"香港街頭服飾", origin:"hong-kong", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A25", n:"FUGGLER", t:["retail"], cat:"毛公仔 · 收藏玩具", origin:"uk",
     intro:"FUGGLER 係源自英國嘅「醜得可愛」毛公仔品牌，香港設有官方旗艦店（銅鑼灣 Hysan Place）。產品包括毛公仔、盲盒同生活雜貨。",
-    ig:"@fugglerofficial.hk", igUrl:"https://www.instagram.com/fugglerofficial.hk/", site:"https://www.fuggler.com/", photos:[]},
+    ig:"@fugglerofficial.hk", igUrl:"https://www.instagram.com/fugglerofficial.hk/", site:"https://www.fuggler.com/",
+    photos:["https://fugglers.b-cdn.net/Home/Slider/chaoticallycute.avif"]},
   {c:"A26", n:"WHAT ELEPHANT", t:["retail"], cat:"服飾 · 生活選物", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A27", n:"Toby Black", t:["retail","hk"], cat:"香港 服飾 · 生活", origin:"hong-kong", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A28", n:"Microwave Studio", t:["retail","hk"], cat:"香港 插畫 · 創作工作室", origin:"hong-kong",
@@ -73,7 +80,8 @@ window.BRANDS=[
     ig:"@kivamacau", igUrl:"https://www.instagram.com/kivamacau/", site:"", photos:[]},
   {c:"A33", n:"DIGREEN", t:["fb"], cat:"澳門雪糕 · 茶飲", origin:"macau",
     intro:"DIGREEN 係源自澳門嘅雪糕同茶飲品牌，主打自家研發嘅原創軟雪糕，標榜唔加香精，喺官也街、新八佰伴、永利等地設點。",
-    ig:"@digreen.macau", igUrl:"https://www.instagram.com/digreen.macau/", site:"https://digreengroup.com/", photos:[]},
+    ig:"@digreen.macau", igUrl:"https://www.instagram.com/digreen.macau/", site:"https://digreengroup.com/",
+    photos:["https://digreengroup.com/wp-content/uploads/2025/01/hero-ele1_2.webp"]},
   {c:"A34", n:"泰谷", t:["fb"], cat:"澳門泰國菜", origin:"macau",
     intro:"泰谷（Let's Thai）係位於澳門黑沙環嘅泰國菜餐廳，供應咖喱、冬蔭功等泰式菜式。",
     ig:"@lets.thai", igUrl:"https://www.instagram.com/lets.thai/", site:"", photos:[]},
@@ -82,7 +90,8 @@ window.BRANDS=[
   {c:"A37", n:"聖杯", t:["fb"], cat:"餐飲 · 飲品", origin:"", intro:"", ig:"", igUrl:"", site:"", photos:[]},
   {c:"A38", n:"BOL POPUP", t:["retail","bol"], cat:"BOL 期間限定", origin:"macau",
     intro:"BOL POPUP 係 BOL 喺市集嘅期間限定攤位，帶嚟揀選嘅機能街頭同戶外單品，部分為市集限定。BOL 定位城市戶外 × 機能街頭，講求功能同場景。",
-    ig:"@bol.official", igUrl:"https://www.instagram.com/bol.official/", site:"https://www.bolmacau.com/", photos:[]},
+    ig:"@bol.official", igUrl:"https://www.instagram.com/bol.official/", site:"https://www.bolmacau.com/",
+    photos:["https://www.bolmacau.com/cdn/shop/files/3.png?v=1775988417&width=800"]},
   {c:"A39", n:"SUPER GROUP", t:["retail"], cat:"服飾 · 生活選物", origin:"macau", intro:"",
     ig:"@supergroup.macau", igUrl:"https://www.instagram.com/supergroup.macau/", site:"", photos:[]}
 ];
