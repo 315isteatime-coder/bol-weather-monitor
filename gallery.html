@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ec1c24">
+<title>活動相片牆 · 片區戶外生活節 2026（益隆）</title>
+<meta property="og:title" content="活動相片牆 · 世界盃系列（益隆）">
+<meta property="og:description" content="片區戶外生活節 2026 — 美食 · 遊戲 · 打卡 · 工作坊 相片牆">
+<meta property="og:image" content="https://ieclong.com/assets/kv-portrait.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fffdf6; --ink:#1d1b1a; --mut:#76706a; --line:#ece1cd; --card:#fff;
+    --red:#ec1c24; --cyan:#00a6e0; --teal:#14a08f; --green:#1fa971;
+    --yellow:#ffc20e; --orange:#f5821f; --purple:#7a57a5; --pink:#f49bc3; --magenta:#e6007e;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Baloo 2",-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    max-width:560px; margin:0 auto; padding:0 0 calc(40px + env(safe-area-inset-bottom)); overflow-x:hidden;
+  }
+  .wrap{padding:0 15px}
+  .nav{display:flex; gap:6px; margin:14px 0 2px}
+  .nav a{flex:1; text-align:center; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:12.5px; text-decoration:none; padding:10px 5px; border-radius:999px; border:2.5px solid var(--ink); color:var(--ink); background:#fff; white-space:nowrap}
+  .nav a.active{background:var(--ink); color:#fff}
+  .nav a:active{transform:scale(.98)}
+  .kvbanner{width:100%; height:auto; display:block}
+  header h1{font-size:27px; font-weight:800; margin:14px 0 4px}
+  header .sub{font-size:12.5px; color:var(--mut); font-weight:600}
+  .dots{height:14px; margin:13px 0 2px; background-image:radial-gradient(var(--red) 2px, transparent 2.4px); background-size:11px 11px; opacity:.5}
+
+  .uploadbtn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; font:inherit; font-weight:800; font-size:16px; padding:15px; margin-top:16px; border-radius:14px; border:3px solid var(--ink); background:var(--yellow); color:var(--ink); cursor:pointer}
+  .uploadbtn:active{transform:scale(.99)}
+
+  .tabs{display:flex; flex-wrap:wrap; gap:7px; position:sticky; top:0; background:var(--bg); padding:12px 0 8px; z-index:5}
+  .tabs button{font:inherit; font-weight:700; font-size:13px; padding:8px 14px; border-radius:999px; border:2.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer}
+  .tabs button.on{color:#fff; background:var(--ink)}
+  .t-food.on{background:var(--orange); border-color:var(--orange)}
+  .t-game.on{background:var(--cyan); border-color:var(--cyan)}
+  .t-checkin.on{background:var(--magenta); border-color:var(--magenta)}
+  .t-workshop.on{background:var(--purple); border-color:var(--purple)}
+
+  .grid{column-count:2; column-gap:10px; margin-top:6px}
+  @media(max-width:360px){ .grid{column-count:1} }
+  .ph{break-inside:avoid; margin-bottom:10px; border:2.5px solid var(--ink); border-radius:14px; overflow:hidden; background:#f3ede1; position:relative; display:block}
+  .ph img{width:100%; height:auto; display:block}
+  .ph .cap{padding:7px 10px; font-size:12px; font-weight:600; color:var(--ink); background:#fff; line-height:1.4}
+  .ph .who{color:var(--mut); font-size:11px}
+  .ph .badge{position:absolute; top:7px; left:7px; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; color:#fff}
+  .b-food{background:var(--orange)} .b-game{background:var(--cyan)} .b-checkin{background:var(--magenta)} .b-workshop{background:var(--purple)}
+  .empty{text-align:center; color:var(--mut); font-weight:600; padding:40px 6px; line-height:1.8}
+  .notready{text-align:center; padding:46px 18px; line-height:1.9; font-weight:700; background:#fff7e6; border:2px dashed var(--yellow); border-radius:16px; margin-top:18px; color:#8a6d1a}
+
+  /* upload sheet */
+  .sheet{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-end; justify-content:center; z-index:50}
+  .sheet.open{display:flex}
+  .sheet .panel{background:var(--bg); width:100%; max-width:560px; border-radius:20px 20px 0 0; padding:18px 16px calc(20px + env(safe-area-inset-bottom)); border-top:3px solid var(--ink)}
+  .sheet h2{font-size:19px; font-weight:800; margin:2px 0 12px}
+  .field{margin-bottom:13px}
+  .field label{display:block; font-size:13px; font-weight:700; margin-bottom:5px}
+  .field input[type=text], .field select{width:100%; font:inherit; font-size:16px; padding:11px 13px; border:2.5px solid var(--ink); border-radius:12px; background:#fff; color:var(--ink)}
+  .catpick{display:flex; flex-wrap:wrap; gap:7px}
+  .catpick button{font:inherit; font-weight:700; font-size:13px; padding:8px 14px; border-radius:999px; border:2.5px solid var(--line); background:#fff; color:var(--ink); cursor:pointer}
+  .catpick button.on{border-color:var(--ink); background:var(--ink); color:#fff}
+  .filebox{border:2.5px dashed var(--ink); border-radius:12px; padding:18px; text-align:center; font-weight:700; cursor:pointer; background:#fff}
+  .filebox.has{border-style:solid; color:var(--green)}
+  .preview{width:100%; max-height:230px; object-fit:contain; border-radius:12px; margin-top:10px; display:none; background:#f3ede1}
+  .row{display:flex; gap:10px; margin-top:6px}
+  .btn{flex:1; font:inherit; font-weight:800; font-size:15px; padding:13px; border-radius:12px; border:3px solid var(--ink); cursor:pointer}
+  .btn.go{background:var(--red); color:#fff}
+  .btn.cancel{background:#fff; color:var(--ink)}
+  .btn:disabled{opacity:.5}
+  .note{font-size:12px; color:var(--mut); font-weight:600; margin-top:10px; line-height:1.6}
+  .status{font-size:13px; font-weight:700; margin-top:10px; min-height:18px}
+  .status.ok{color:var(--green)} .status.err{color:var(--red)}
+
+  /* admin */
+  .admin{margin-top:30px; border-top:3px dotted var(--line); padding-top:16px}
+  .admin .ah{font-size:13px; font-weight:800; color:var(--mut); cursor:pointer; display:flex; align-items:center; gap:6px}
+  .admin .body{display:none; margin-top:12px}
+  .admin .body.open{display:block}
+  .admin input{width:100%; font:inherit; font-size:16px; padding:10px 12px; border:2.5px solid var(--ink); border-radius:10px; margin-bottom:8px; background:#fff}
+  .admin .pend{border:2px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:10px}
+  .admin .pend img{width:100%; display:block}
+  .admin .pact{display:flex; gap:8px; padding:8px}
+  .admin .pact button{flex:1; font:inherit; font-weight:800; font-size:14px; padding:9px; border-radius:9px; border:2.5px solid var(--ink); cursor:pointer}
+  .admin .ok{background:var(--green); color:#fff} .admin .no{background:#fff; color:var(--red); border-color:var(--red)}
+
+  footer{margin-top:30px; padding-top:16px; border-top:3px dotted var(--line); font-size:11.5px; color:var(--mut); font-weight:600; line-height:1.6}
+  footer a{color:var(--cyan); font-weight:800}
+  .credit{margin-top:9px; color:#8a847d}
+</style>
+</head>
+<body>
+
+<img class="kvbanner" src="assets/kv-landscape.jpg" alt="片區戶外生活節 2026 · 世界盃系列活動 @ 益隆炮竹廠">
+
+<div class="wrap">
+  <nav class="nav"><a href="./">🌦 天氣</a><a href="market.html">🗺 攤主地圖</a><a href="gallery.html" class="active">📸 相片牆</a></nav>
+  <header>
+    <h1>活動相片牆</h1>
+    <div class="sub">影低你喺市集嘅美食、遊戲、打卡同工作坊瞬間，上載同大家分享。</div>
+    <div class="dots"></div>
+  </header>
+
+  <button class="uploadbtn" id="openUpload">＋ 上載相片</button>
+
+  <div class="tabs" id="tabs">
+    <button data-c="all" class="on">全部</button>
+    <button data-c="food" class="t-food">🍢 美食</button>
+    <button data-c="game" class="t-game">🎮 遊戲</button>
+    <button data-c="checkin" class="t-checkin">📸 打卡</button>
+    <button data-c="workshop" class="t-workshop">🛠 工作坊</button>
+  </div>
+
+  <div id="gallery"></div>
+
+  <div class="admin">
+    <div class="ah" id="adminToggle">🔒 工作人員審核相片</div>
+    <div class="body" id="adminBody"></div>
+  </div>
+
+  <footer>
+    <p>相片由參加者上載，經大會審核後展示。請尊重他人，唔好上載不雅或無關內容。</p>
+    <p><a href="market.html">市集攤主</a> ｜ <a href="./">天氣狀態</a></p>
+    <p class="credit">主辦：澳門街坊會聯合總會 × 片區發展中心　|　益隆炮竹廠舊址 · 氹仔</p>
+  </footer>
+</div>
+
+<!-- upload sheet -->
+<div class="sheet" id="sheet">
+  <div class="panel">
+    <h2>上載相片</h2>
+    <div class="field">
+      <label>邊個分類？</label>
+      <div class="catpick" id="catpick">
+        <button data-c="food">🍢 美食</button>
+        <button data-c="game">🎮 遊戲</button>
+        <button data-c="checkin">📸 打卡</button>
+        <button data-c="workshop">🛠 工作坊</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>揀相</label>
+      <div class="filebox" id="filebox">📷 㩒呢度揀相（或影相）</div>
+      <input type="file" id="file" accept="image/*" style="display:none">
+      <img class="preview" id="preview" alt="預覽">
+    </div>
+    <div class="field">
+      <label>稱呼（可選）</label>
+      <input type="text" id="nickname" maxlength="20" placeholder="例：阿明 / 留空都得">
+    </div>
+    <div class="field">
+      <label>講句嘢（可選）</label>
+      <input type="text" id="caption" maxlength="60" placeholder="例：益隆嘅夕陽真係靚">
+    </div>
+    <div class="status" id="status"></div>
+    <div class="row">
+      <button class="btn cancel" id="cancelUpload">取消</button>
+      <button class="btn go" id="submitUpload" disabled>上載</button>
+    </div>
+    <div class="note">上載即表示你同意大會喺活動宣傳使用呢張相。相片會經大會審核先公開顯示。</div>
+  </div>
+</div>
+
+<script type="module">
+/* ===== 設定：填入你 Supabase 專案嘅 URL 同 anon key 就會啟用 ===== */
+const SB_URL  = "";   // 例：https://abcdxyz.supabase.co
+const SB_ANON = "";   // 例：eyJhbGci...（anon public key，可公開）
+const BUCKET  = "wall";
+const TABLE   = "wall_photos";
+/* ================================================================ */
+
+const CATS = {food:["🍢 美食","b-food"], game:["🎮 遊戲","b-game"], checkin:["📸 打卡","b-checkin"], workshop:["🛠 工作坊","b-workshop"]};
+const $ = s => document.querySelector(s);
+const gallery = $("#gallery");
+
+if(!SB_URL || !SB_ANON){
+  $("#openUpload").style.display="none";
+  $("#tabs").style.display="none";
+  $(".admin").style.display="none";
+  gallery.innerHTML='<div class="notready">📸 相片牆即將開放<br><span style="font-weight:600;font-size:13px">設定完成後，大家就可以喺度上載同睇返活動相片。</span></div>';
+} else {
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  const sb = createClient(SB_URL, SB_ANON);
+  const pubUrl = path => sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  const esc = s => (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* ---------- public gallery ---------- */
+  let curCat="all";
+  async function load(){
+    gallery.innerHTML='<div class="empty">載入緊…</div>';
+    let q = sb.from(TABLE).select("*").eq("approved",true).order("created_at",{ascending:false}).limit(300);
+    if(curCat!=="all") q = q.eq("category",curCat);
+    const { data, error } = await q;
+    if(error){ gallery.innerHTML='<div class="empty">載入失敗，遲啲再試。</div>'; return; }
+    if(!data.length){ gallery.innerHTML='<div class="empty">呢個分類仲未有相片<br>做第一個上載嘅人啦 📷</div>'; return; }
+    gallery.innerHTML='<div class="grid">'+data.map(p=>{
+      const c=CATS[p.category]||["",""];
+      const cap=(p.caption||p.nickname)?'<div class="cap">'+(p.caption?esc(p.caption):'')+(p.nickname?' <span class="who">— '+esc(p.nickname)+'</span>':'')+'</div>':'';
+      return '<a class="ph" href="'+pubUrl(p.path)+'" target="_blank" rel="noopener"><span class="badge '+c[1]+'">'+c[0]+'</span><img loading="lazy" src="'+pubUrl(p.path)+'" alt="">'+cap+'</a>';
+    }).join('')+'</div>';
+  }
+  $("#tabs").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    curCat=b.dataset.c;
+    [...$("#tabs").children].forEach(x=>x.classList.toggle("on",x===b));
+    load();
+  });
+  load();
+
+  /* ---------- upload ---------- */
+  const sheet=$("#sheet"); let upCat="", upFile=null;
+  $("#openUpload").onclick=()=>sheet.classList.add("open");
+  $("#cancelUpload").onclick=()=>closeSheet();
+  sheet.addEventListener("click",e=>{ if(e.target===sheet) closeSheet(); });
+  function closeSheet(){ sheet.classList.remove("open"); }
+  function checkReady(){ $("#submitUpload").disabled = !(upCat && upFile); }
+  $("#catpick").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    upCat=b.dataset.c;
+    [...$("#catpick").children].forEach(x=>x.classList.toggle("on",x===b));
+    checkReady();
+  });
+  $("#filebox").onclick=()=>$("#file").click();
+  $("#file").onchange=e=>{
+    const f=e.target.files[0]; if(!f) return;
+    if(!f.type.startsWith("image/")){ setStatus("淨係收相片檔","err"); return; }
+    if(f.size>10*1024*1024){ setStatus("相片太大（上限 10MB）","err"); return; }
+    upFile=f; $("#filebox").classList.add("has"); $("#filebox").textContent="✓ "+f.name;
+    const pv=$("#preview"); pv.src=URL.createObjectURL(f); pv.style.display="block";
+    setStatus(""); checkReady();
+  };
+  function setStatus(t,cls){ const s=$("#status"); s.textContent=t; s.className="status"+(cls?" "+cls:""); }
+  $("#submitUpload").onclick=async()=>{
+    if(!upCat||!upFile) return;
+    $("#submitUpload").disabled=true; setStatus("上載緊…");
+    try{
+      const ext=(upFile.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+      const path=upCat+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+      const up=await sb.storage.from(BUCKET).upload(path,upFile,{contentType:upFile.type,upsert:false});
+      if(up.error) throw up.error;
+      const ins=await sb.from(TABLE).insert({category:upCat, caption:$("#caption").value.trim(), nickname:$("#nickname").value.trim(), path, approved:false});
+      if(ins.error) throw ins.error;
+      setStatus("✓ 多謝！相片已交俾大會審核，通過後就會喺相片牆出現。","ok");
+      upFile=null; upCat=""; $("#file").value=""; $("#caption").value=""; $("#nickname").value="";
+      $("#filebox").classList.remove("has"); $("#filebox").textContent="📷 㩒呢度揀相（或影相）"; $("#preview").style.display="none";
+      [...$("#catpick").children].forEach(x=>x.classList.remove("on"));
+      setTimeout(closeSheet,2200);
+    }catch(err){ setStatus("上載失敗："+(err.message||err),"err"); $("#submitUpload").disabled=false; }
+  };
+
+  /* ---------- admin (Supabase Auth) ---------- */
+  const adminBody=$("#adminBody");
+  $("#adminToggle").onclick=()=>{ adminBody.classList.toggle("open"); if(adminBody.classList.contains("open")) renderAdmin(); };
+  async function renderAdmin(){
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){
+      adminBody.innerHTML='<input id="aemail" type="email" placeholder="工作人員 email" autocomplete="username"><input id="apass" type="password" placeholder="密碼" autocomplete="current-password"><button class="btn go" id="alogin" style="width:100%">登入</button><div class="status" id="astatus"></div>';
+      $("#alogin").onclick=async()=>{
+        $("#astatus").textContent="登入緊…";
+        const { error } = await sb.auth.signInWithPassword({email:$("#aemail").value.trim(), password:$("#apass").value});
+        if(error){ $("#astatus").textContent="登入失敗："+error.message; $("#astatus").className="status err"; }
+        else renderAdmin();
+      };
+      return;
+    }
+    adminBody.innerHTML='<div class="status">載入待審相片…</div>';
+    const { data, error } = await sb.from(TABLE).select("*").eq("approved",false).order("created_at",{ascending:true}).limit(200);
+    if(error){ adminBody.innerHTML='<div class="status err">'+error.message+'</div>'; return; }
+    let html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:13px">待審：'+data.length+' 張</b><button class="btn cancel" id="alogout" style="flex:0;padding:7px 12px;font-size:13px">登出</button></div>';
+    if(!data.length) html+='<div class="empty">冇待審相片 ✓</div>';
+    html+=data.map(p=>{
+      const c=CATS[p.category]||["",""];
+      return '<div class="pend"><img loading="lazy" src="'+pubUrl(p.path)+'"><div style="padding:6px 9px;font-size:12px;font-weight:700">'+c[0]+(p.caption?' · '+esc(p.caption):'')+(p.nickname?' · '+esc(p.nickname):'')+'</div><div class="pact"><button class="ok" data-ok="'+p.id+'">✓ 批准</button><button class="no" data-no="'+p.id+'" data-path="'+esc(p.path)+'">🗑 刪除</button></div></div>';
+    }).join('');
+    adminBody.innerHTML=html;
+    $("#alogout").onclick=async()=>{ await sb.auth.signOut(); renderAdmin(); };
+    adminBody.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{
+      b.disabled=true; b.textContent="…";
+      const { error } = await sb.from(TABLE).update({approved:true}).eq("id",b.dataset.ok);
+      if(error){ b.textContent="✗ "+error.message; b.disabled=false; } else { renderAdmin(); load(); }
+    });
+    adminBody.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{
+      if(!confirm("確定刪除呢張相？")) return;
+      b.disabled=true;
+      await sb.storage.from(BUCKET).remove([b.dataset.path]);
+      await sb.from(TABLE).delete().eq("id",b.dataset.no);
+      renderAdmin();
+    });
+  }
+}
+</script>
+</body>
+</html>
