@@ -30,6 +30,10 @@
   .disp{font-family:"Baloo 2",sans-serif;font-weight:800}
   .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mut); font-weight:700; font-family:"Baloo 2",sans-serif}
   .wrap{padding:0 15px; display:flex; flex-direction:column}
+  .nav{display:flex; gap:8px; margin:14px 0 2px}
+  .nav a{flex:1; text-align:center; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:13.5px; text-decoration:none; padding:10px 8px; border-radius:999px; border:2.5px solid var(--ink); color:var(--ink); background:#fff}
+  .nav a.active{background:var(--ink); color:#fff}
+  .nav a:active{transform:scale(.98)}
   #orgpanel{order:9}  /* 推到最底，footer（含 SMG App）之下 */
   #notice{order:-1}   /* 大會公告推到最頂，「片區戶外生活節 2026」之上 */
 
@@ -175,6 +179,8 @@
     <div class="sub" id="venue">世界盃系列 · 益隆炮竹廠舊址（氹仔）｜ 市集時段 14:00–19:00</div>
     <div class="dots"></div>
   </header>
+
+  <nav class="nav"><a href="./" class="active">🌦 天氣狀態</a><a href="market.html">🗺 攤主 · 地圖</a></nav>
 
   <section class="verdict" id="verdict">
     <div class="wx wx-cloud" id="wx" aria-hidden="true"><span class="s-sun"></span><span class="s-cloud"></span><span class="s-rain"><i></i><i></i><i></i></span><span class="s-bolt"></span></div>
