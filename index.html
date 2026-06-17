@@ -31,6 +31,7 @@
   .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mut); font-weight:700; font-family:"Baloo 2",sans-serif}
   .wrap{padding:0 15px; display:flex; flex-direction:column}
   #orgpanel{order:9}  /* 推到最底，footer（含 SMG App）之下 */
+  #notice{order:-1}   /* 大會公告推到最頂，「片區戶外生活節 2026」之上 */
 
   /* KV banner */
   .kvbanner{width:100%; height:auto; display:block}
@@ -66,6 +67,26 @@
   .v-action{margin-top:15px; background:rgba(255,255,255,.18); border-radius:15px; padding:13px 15px; position:relative; z-index:1}
   .v-action .lab{color:#fff; display:block; margin-bottom:6px; opacity:.95}
   .v-action ul{margin:0; padding-left:18px} .v-action li{margin:4px 0; font-size:13.5px; font-weight:600}
+  /* 實時天氣小動畫 */
+  .wx{position:absolute; top:14px; right:16px; width:62px; height:50px; z-index:2; pointer-events:none}
+  .s-sun,.s-cloud,.s-rain,.s-bolt{display:none; position:absolute}
+  .wx-sun .s-sun{display:block} .wx-cloud .s-cloud{display:block}
+  .wx-rain .s-cloud,.wx-rain .s-rain{display:block}
+  .wx-storm .s-cloud,.wx-storm .s-bolt{display:block}
+  .s-sun{top:8px; right:16px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 0 12px rgba(255,255,255,.7); animation:wxpulse 2.6s ease-in-out infinite}
+  .s-sun::before{content:""; position:absolute; inset:-8px; border-radius:50%; background:repeating-conic-gradient(rgba(255,255,255,.95) 0 4deg, transparent 4deg 30deg); -webkit-mask:radial-gradient(transparent 13px,#000 14px); mask:radial-gradient(transparent 13px,#000 14px); animation:wxspin 9s linear infinite}
+  @keyframes wxpulse{0%,100%{box-shadow:0 0 9px rgba(255,255,255,.5)} 50%{box-shadow:0 0 18px rgba(255,255,255,.95)}}
+  @keyframes wxspin{to{transform:rotate(360deg)}}
+  .s-cloud{top:15px; right:8px; width:40px; height:15px; background:#fff; border-radius:10px; animation:wxbob 3.4s ease-in-out infinite}
+  .s-cloud::before{content:""; position:absolute; top:-8px; left:6px; width:15px; height:15px; border-radius:50%; background:#fff}
+  .s-cloud::after{content:""; position:absolute; top:-12px; left:16px; width:21px; height:21px; border-radius:50%; background:#fff}
+  @keyframes wxbob{0%,100%{transform:translateX(0)} 50%{transform:translateX(4px)}}
+  .s-rain{top:33px; right:11px; width:36px; height:14px}
+  .s-rain i{position:absolute; top:0; width:2.5px; height:8px; background:rgba(255,255,255,.92); border-radius:2px; animation:wxdrop 1s linear infinite}
+  .s-rain i:nth-child(2){left:15px; animation-delay:.35s} .s-rain i:nth-child(1){left:3px} .s-rain i:nth-child(3){left:27px; animation-delay:.7s}
+  @keyframes wxdrop{0%{transform:translateY(-3px); opacity:0} 30%{opacity:1} 100%{transform:translateY(13px); opacity:0}}
+  .s-bolt{top:30px; right:24px; width:13px; height:18px; background:#ffd23f; clip-path:polygon(55% 0,12% 56%,44% 56%,28% 100%,88% 38%,52% 38%); animation:wxflash 1.8s steps(1,end) infinite}
+  @keyframes wxflash{0%,46%,54%,100%{opacity:.2} 48%,52%{opacity:1}}
 
   /* factor chips */
   .factors{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:13px}
@@ -154,6 +175,7 @@
   </header>
 
   <section class="verdict" id="verdict">
+    <div class="wx wx-cloud" id="wx" aria-hidden="true"><span class="s-sun"></span><span class="s-cloud"></span><span class="s-rain"><i></i><i></i><i></i></span><span class="s-bolt"></span></div>
     <div class="v-top"><span class="dot"></span><span class="v-title" id="vtitle">讀取緊…</span></div>
     <div class="v-reason" id="vreason">正在讀取天氣資料</div>
     <div class="v-action" id="vaction" style="display:none"></div>
@@ -399,6 +421,10 @@ function render(){
   card.className="verdict "+(dec.level||"");
   document.getElementById("vtitle").textContent=dec.title;
   document.getElementById("vreason").textContent=dec.reason;
+  // 實時天氣小動畫（按 weather code）
+  let wxs="cloud";
+  if(r){ const c=r.code; if(c>=95) wxs="storm"; else if((c>=51&&c<=67)||(c>=80&&c<=82)||r.raining) wxs="rain"; else if(c<=1) wxs="sun"; else wxs="cloud"; }
+  document.getElementById("wx").className="wx wx-"+wxs;
   const va=document.getElementById("vaction");
   if(dec.action){ va.style.display="block";
     va.innerHTML='<span class="lab">攤主須知</span><ul>'+dec.action.map(x=>"<li>"+x+"</li>").join("")+"</ul>"; }
