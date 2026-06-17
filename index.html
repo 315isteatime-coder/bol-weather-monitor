@@ -73,6 +73,13 @@
   .chip.warnpulse .lab{color:var(--red)}
 
   .err{display:none; margin-top:12px; font-size:12.5px; font-weight:700; color:#fff; background:var(--orange); padding:11px 14px; border-radius:14px}
+  /* 大會公告 */
+  .notice{margin-top:14px; border-radius:18px; padding:15px 18px; background:var(--teal); color:#fff; box-shadow:0 6px 0 rgba(0,0,0,.06); position:relative; overflow:hidden}
+  .notice::after{content:""; position:absolute; right:-22px; top:-22px; width:120px; height:120px; background-image:radial-gradient(#fff 2px,transparent 2.4px); background-size:12px 12px; opacity:.16; pointer-events:none}
+  .notice .lab{color:#fff; opacity:.95}
+  .notice-body{margin-top:6px; font-size:15px; font-weight:600; line-height:1.55; white-space:pre-wrap; position:relative; z-index:1}
+  .msglab{display:block; font-size:12.5px; font-weight:700; color:var(--ink); margin:4px 0 6px}
+  #msgin{width:100%; font:inherit; font-size:14px; padding:11px 13px; border:2.5px solid var(--ink); border-radius:12px; background:#fff; color:var(--ink); resize:vertical; margin-bottom:13px}
 
   /* organizer */
   details.org{margin-top:14px; border:3px solid var(--ink); border-radius:18px; background:#fff; overflow:hidden}
@@ -146,6 +153,11 @@
     <div class="v-action" id="vaction" style="display:none"></div>
   </section>
 
+  <section class="notice" id="notice" hidden>
+    <div class="lab">📣 大會公告</div>
+    <div class="notice-body" id="noticebody"></div>
+  </section>
+
   <div class="factors">
     <div class="chip" id="rainchip">
       <div class="lab">雨情 · LIVE</div>
@@ -161,38 +173,6 @@
 
   <p class="err" id="err"></p>
 
-  <details class="org" id="orgpanel">
-    <summary><span>我係大會工作人員 — 設定 / 廣播官方信號</span><span class="plus">＋</span></summary>
-    <div class="org-body">
-      <div id="orglock">
-        <p class="hint">呢個區係畀大會工作人員設定 / 廣播官方信號，要密碼先改得。</p>
-        <div class="lockrow">
-          <input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="輸入密碼">
-          <button id="unlock">解鎖</button>
-        </div>
-        <div class="pwerr" id="pwerr"></div>
-      </div>
-      <div id="orgctrl" hidden>
-        <p class="hint">喺 <a href="https://www.smg.gov.mo/zh" target="_blank" rel="noopener">SMG 官網</a> / SMG App 睇實際信號，喺下面㩒返同一個，再「複製分享連結」貼入攤主群組。攤主一開連結就會見到最新狀態。</p>
-        <div class="sigset" id="sigset">
-          <button data-sig="none">無 / 已除下</button>
-          <button data-sig="t1">一號戒備信號</button>
-          <button data-sig="rain_warn">暴雨警告</button>
-          <button data-sig="thunder">雷暴警告</button>
-          <button data-sig="t3">三號或更高風球</button>
-        </div>
-        <label class="fcrow"><input type="checkbox" id="fc"><span>氣象局預告今日（不限時段）懸掛三號或更高風球之機率為「中等至較高」→ 全活動取消、改期</span></label>
-        <div class="share">
-          <button id="copy">複製分享連結</button>
-          <button id="reset" class="ghost">清除</button>
-        </div>
-        <div class="copied" id="copied"></div>
-        <div class="setby" id="setby"></div>
-        <button id="lockbtn" class="lockback">🔒 鎖返（畀返攤主睇）</button>
-      </div>
-    </div>
-  </details>
-
   <details class="rules">
     <summary>▸ 天氣應變機制全表（依大會《參展商戶活動指引》）</summary>
     <table>
@@ -205,6 +185,40 @@
       <tr><td>🔴 氣象局預告三號+ 機率中等至較高</td><td class="rt">全活動取消，改期由大會另作安排。</td></tr>
       <tr><td>🔴 雷暴警告信號</td><td class="rt">基於雷擊風險即時取消、收妥電器及金屬物資、按指示撤離戶外範圍。</td></tr>
     </table>
+  </details>
+
+  <details class="org" id="orgpanel">
+    <summary><span>我係大會工作人員 — 設定 / 廣播官方信號 + 公告</span><span class="plus">＋</span></summary>
+    <div class="org-body">
+      <div id="orglock">
+        <p class="hint">呢個區係畀大會工作人員設定 / 廣播官方信號同公告，要密碼先改得。</p>
+        <div class="lockrow">
+          <input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="輸入密碼">
+          <button id="unlock">解鎖</button>
+        </div>
+        <div class="pwerr" id="pwerr"></div>
+      </div>
+      <div id="orgctrl" hidden>
+        <p class="hint">喺 <a href="https://www.smg.gov.mo/zh" target="_blank" rel="noopener">SMG 官網</a> / SMG App 睇實際信號，喺下面㩒返同一個；如有公告打喺下面。然後「複製分享連結」貼入攤主群組 —— 攤主一開連結就會見到最新狀態同公告。</p>
+        <div class="sigset" id="sigset">
+          <button data-sig="none">無 / 已除下</button>
+          <button data-sig="t1">一號戒備信號</button>
+          <button data-sig="rain_warn">暴雨警告</button>
+          <button data-sig="thunder">雷暴警告</button>
+          <button data-sig="t3">三號或更高風球</button>
+        </div>
+        <label class="fcrow"><input type="checkbox" id="fc"><span>氣象局預告今日（不限時段）懸掛三號或更高風球之機率為「中等至較高」→ 全活動取消、改期</span></label>
+        <label class="msglab">大會公告（會顯示喺攤主頁面頂；留空 = 唔顯示）</label>
+        <textarea id="msgin" rows="2" placeholder="例：今日 16:00 足球體驗工作坊改喺室內舉行。"></textarea>
+        <div class="share">
+          <button id="copy">複製分享連結</button>
+          <button id="reset" class="ghost">清除</button>
+        </div>
+        <div class="copied" id="copied"></div>
+        <div class="setby" id="setby"></div>
+        <button id="lockbtn" class="lockback">🔒 鎖返（畀返攤主睇）</button>
+      </div>
+    </div>
   </details>
 
   <footer>
@@ -244,7 +258,7 @@ const SIG = {
 };
 
 /* ---------- 狀態 ---------- */
-let state = { sig:"none", fc:false, setAt:null, rain:null };
+let state = { sig:"none", fc:false, msg:"", setAt:null, rain:null };
 
 /* ---------- 讀 hash（大會廣播） ---------- */
 function readHash(){
@@ -252,6 +266,7 @@ function readHash(){
   const s = h.get("sig");
   state.sig = SIG[s] ? s : "none";
   state.fc = h.get("fc")==="1";
+  state.msg = h.get("msg") || "";
   const t = h.get("t");
   state.setAt = t ? new Date(decodeURIComponent(t)) : null;
 }
@@ -259,7 +274,8 @@ function writeHash(){
   const p = new URLSearchParams();
   if(state.sig!=="none") p.set("sig",state.sig);
   if(state.fc) p.set("fc","1");
-  if(state.sig!=="none"||state.fc){ state.setAt=new Date(); p.set("t",state.setAt.toISOString()); }
+  if(state.msg && state.msg.trim()) p.set("msg", state.msg);
+  if(state.sig!=="none"||state.fc||(state.msg && state.msg.trim())){ state.setAt=new Date(); p.set("t",state.setAt.toISOString()); }
   else state.setAt=null;
   history.replaceState(null,"", location.pathname + (p.toString()?("#"+p.toString()):""));
 }
@@ -373,6 +389,12 @@ function render(){
   if(dec.action){ va.style.display="block";
     va.innerHTML='<span class="lab">攤主須知</span><ul>'+dec.action.map(x=>"<li>"+x+"</li>").join("")+"</ul>"; }
   else va.style.display="none";
+  // 大會公告
+  const notice=document.getElementById("notice");
+  if(state.msg && state.msg.trim()){ notice.hidden=false; document.getElementById("noticebody").textContent=state.msg; }
+  else notice.hidden=true;
+  const msgin=document.getElementById("msgin");
+  if(msgin && document.activeElement!==msgin) msgin.value=state.msg;
   // rain chip
   document.getElementById("raintier").textContent=TIER_TXT[tier];
   document.getElementById("raindet").textContent = r
@@ -418,6 +440,7 @@ document.getElementById("sigset").addEventListener("click",e=>{
   state.sig=b.dataset.sig; writeHash(); render();
 });
 document.getElementById("fc").addEventListener("change",e=>{ state.fc=e.target.checked; writeHash(); render(); });
+document.getElementById("msgin").addEventListener("input",e=>{ state.msg=e.target.value; writeHash(); render(); });
 document.getElementById("copy").addEventListener("click",async()=>{
   writeHash();
   const url=location.href;
@@ -427,8 +450,8 @@ document.getElementById("copy").addEventListener("click",async()=>{
   setTimeout(()=>note.textContent="",6000);
 });
 document.getElementById("reset").addEventListener("click",()=>{
-  state.sig="none"; state.fc=false; writeHash(); render();
-  document.getElementById("copied").textContent="已清除信號。";
+  state.sig="none"; state.fc=false; state.msg=""; writeHash(); render();
+  document.getElementById("copied").textContent="已清除信號 / 公告。";
   setTimeout(()=>document.getElementById("copied").textContent="",4000);
 });
 document.getElementById("refresh").addEventListener("click",load);
