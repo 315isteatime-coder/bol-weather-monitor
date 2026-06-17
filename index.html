@@ -29,7 +29,8 @@
   }
   .disp{font-family:"Baloo 2",sans-serif;font-weight:800}
   .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mut); font-weight:700; font-family:"Baloo 2",sans-serif}
-  .wrap{padding:0 15px}
+  .wrap{padding:0 15px; display:flex; flex-direction:column}
+  #orgpanel{order:9}  /* 推到最底，footer（含 SMG App）之下 */
 
   /* KV banner */
   .kvbanner{width:100%; height:auto; display:block}
@@ -201,7 +202,7 @@
   </details>
 
   <details class="org" id="orgpanel">
-    <summary><span>我係大會工作人員 — 設定 / 廣播官方信號 + 公告</span><span class="plus">＋</span></summary>
+    <summary><span>工作人員專用</span><span class="plus">＋</span></summary>
     <div class="org-body">
       <div id="orglock">
         <p class="hint">呢個區係畀大會工作人員設定 / 廣播官方信號同公告，要密碼先改得。</p>
