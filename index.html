@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f10">
+<title>市集天氣狀態 · 片區戶外生活節 2026（益隆）</title>
+<style>
+  :root{
+    --bg:#0d0f10; --card:#15181a; --card2:#1b1f21;
+    --ink:#ecebe6; --mut:#8a9094; --line:rgba(255,255,255,.09);
+    --grn:#3fae6e; --amb:#d8a23a; --red:#d8493f; --accent:#aeb6b0;
+    --grn-d:rgba(63,174,110,.14); --amb-d:rgba(216,162,58,.14); --red-d:rgba(216,73,63,.16);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.55;
+    padding:max(16px,env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+    max-width:560px; margin:0 auto;
+  }
+  .lab{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--mut); font-weight:600}
+  header{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding-bottom:14px; border-bottom:1px solid var(--line)}
+  header h1{font-size:15px; font-weight:600; margin:2px 0 3px; letter-spacing:.01em}
+  header .sub{font-size:12px; color:var(--mut)}
+  .updated{text-align:right; font-size:11px; color:var(--mut); white-space:nowrap}
+  .updated b{color:var(--ink); font-weight:600}
+  #refresh{margin-top:6px; background:none; border:1px solid var(--line); color:var(--mut); font:inherit; font-size:11px; padding:3px 9px; border-radius:99px; cursor:pointer}
+  #refresh:active{transform:scale(.97)}
+
+  /* verdict */
+  .verdict{margin-top:18px; border:1px solid var(--line); border-radius:14px; padding:20px 18px; background:var(--card); position:relative; overflow:hidden}
+  .verdict::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--accent)}
+  .verdict.g::before{background:var(--grn)} .verdict.a::before{background:var(--amb)} .verdict.r::before{background:var(--red)}
+  .verdict.g{background:linear-gradient(180deg,var(--grn-d),transparent 60%),var(--card)}
+  .verdict.a{background:linear-gradient(180deg,var(--amb-d),transparent 60%),var(--card)}
+  .verdict.r{background:linear-gradient(180deg,var(--red-d),transparent 60%),var(--card)}
+  .v-top{display:flex; align-items:center; gap:11px}
+  .dot{width:13px; height:13px; border-radius:50%; background:var(--accent); flex:none; box-shadow:0 0 0 4px rgba(255,255,255,.05)}
+  .g .dot{background:var(--grn)} .a .dot{background:var(--amb)} .r .dot{background:var(--red)}
+  .v-title{font-size:25px; font-weight:700; letter-spacing:.02em; line-height:1.15}
+  .v-reason{margin-top:11px; font-size:14px; color:var(--ink)}
+  .v-action{margin-top:13px; padding-top:13px; border-top:1px solid var(--line); font-size:13.5px; color:var(--ink)}
+  .v-action .lab{display:block; margin-bottom:5px}
+  .v-action ul{margin:0; padding-left:18px} .v-action li{margin:3px 0; color:#d6d8d3}
+
+  /* factor chips */
+  .factors{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
+  .chip{border:1px solid var(--line); border-radius:11px; padding:11px 12px; background:var(--card2)}
+  .chip .lab{margin-bottom:6px}
+  .chip .big{font-size:15px; font-weight:600}
+  .chip .small{font-size:11.5px; color:var(--mut); margin-top:3px}
+  .chip.warnpulse{border-color:rgba(216,73,63,.5)}
+
+  /* organizer panel */
+  details.org{margin-top:14px; border:1px solid var(--line); border-radius:12px; background:var(--card); overflow:hidden}
+  details.org>summary{list-style:none; cursor:pointer; padding:13px 15px; font-size:13px; color:var(--mut); display:flex; justify-content:space-between; align-items:center}
+  details.org>summary::-webkit-details-marker{display:none}
+  details.org>summary b{color:var(--ink); font-weight:600}
+  .org-body{padding:4px 15px 16px; border-top:1px solid var(--line)}
+  .sigset{display:flex; flex-wrap:wrap; gap:7px; margin:13px 0}
+  .sigset button{font:inherit; font-size:12.5px; padding:7px 11px; border-radius:99px; border:1px solid var(--line); background:var(--card2); color:var(--mut); cursor:pointer}
+  .sigset button.on{color:#0d0f10; font-weight:700}
+  .sigset button[data-sig="none"].on{background:var(--accent); border-color:var(--accent)}
+  .sigset button[data-sig="t1"].on{background:var(--grn); border-color:var(--grn)}
+  .sigset button[data-sig="t3"].on,.sigset button[data-sig="rain_warn"].on,.sigset button[data-sig="thunder"].on{background:var(--red); border-color:var(--red); color:#fff}
+  .fcrow{display:flex; align-items:flex-start; gap:9px; margin:6px 0 15px; font-size:12.5px; color:#d6d8d3; cursor:pointer}
+  .fcrow input{margin-top:3px; flex:none}
+  .share{display:flex; gap:8px}
+  .share button{flex:1; font:inherit; font-size:13px; font-weight:600; padding:11px; border-radius:10px; border:none; background:var(--accent); color:#0d0f10; cursor:pointer}
+  .share button.ghost{background:none; border:1px solid var(--line); color:var(--ink); flex:0 0 auto; padding:11px 14px}
+  .copied{font-size:11.5px; color:var(--grn); margin-top:8px; min-height:14px}
+  .setby{font-size:11.5px; color:var(--mut); margin-top:10px}
+
+  /* rules + footer */
+  details.rules{margin-top:14px; border-top:1px solid var(--line)}
+  details.rules>summary{list-style:none; cursor:pointer; padding:14px 2px; font-size:12px; color:var(--mut)}
+  details.rules>summary::-webkit-details-marker{display:none}
+  .rules table{width:100%; border-collapse:collapse; font-size:12px; margin-bottom:6px}
+  .rules td{padding:7px 6px; border-top:1px solid var(--line); vertical-align:top; color:#cdd0cb}
+  .rules td:first-child{color:var(--mut); white-space:nowrap; width:42%}
+  .rules .rt{color:var(--red)} .rules .at{color:var(--amb)} .rules .gt{color:var(--grn)}
+  footer{margin-top:20px; padding-top:16px; border-top:1px solid var(--line); font-size:11.5px; color:var(--mut)}
+  footer a{color:var(--accent)}
+  .links{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 14px}
+  .links a{flex:1; min-width:130px; text-align:center; border:1px solid var(--line); border-radius:10px; padding:10px; color:var(--ink); text-decoration:none; font-size:12.5px; background:var(--card)}
+  .disc{line-height:1.6}
+  .err{display:none; margin-top:10px; font-size:12px; color:var(--amb)}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="lab">市集天氣狀態</div>
+    <h1>片區戶外生活節 2026 · 世界盃系列</h1>
+    <div class="sub" id="venue">益隆炮竹廠舊址 · 氹仔　|　市集時段 13:00–19:00</div>
+  </div>
+  <div>
+    <div class="updated">更新於 <b id="upd">—</b></div>
+    <button id="refresh">↻ 重新整理</button>
+  </div>
+</header>
+
+<section class="verdict" id="verdict">
+  <div class="v-top"><span class="dot"></span><span class="v-title" id="vtitle">讀取緊…</span></div>
+  <div class="v-reason" id="vreason">正在讀取天氣資料</div>
+  <div class="v-action" id="vaction" style="display:none"></div>
+</section>
+
+<div class="factors">
+  <div class="chip" id="rainchip">
+    <div class="lab">雨情（實時）</div>
+    <div class="big" id="raintier">—</div>
+    <div class="small" id="raindet">過去 1 小時 — ｜ 24 小時累計 —</div>
+  </div>
+  <div class="chip" id="sigchip">
+    <div class="lab">官方信號（SMG）</div>
+    <div class="big" id="signame">未設定</div>
+    <div class="small" id="sigdet">請以氣象局為準</div>
+  </div>
+</div>
+
+<p class="err" id="err"></p>
+
+<details class="org" id="orgpanel">
+  <summary><span>我係大會工作人員 — <b>設定 / 廣播官方信號</b></span><span>＋</span></summary>
+  <div class="org-body">
+    <p style="font-size:12px;color:var(--mut);margin:12px 0 4px">
+      喺 <a href="https://www.smg.gov.mo/zh" target="_blank" rel="noopener" style="color:var(--accent)">SMG 官網</a> / SMG App 睇實際信號，喺下面㩒返同一個，再「複製分享連結」貼入攤主群組。攤主一開連結就會見到最新狀態。
+    </p>
+    <div class="sigset" id="sigset">
+      <button data-sig="none">無 / 已除下</button>
+      <button data-sig="t1">一號戒備信號</button>
+      <button data-sig="rain_warn">暴雨警告</button>
+      <button data-sig="thunder">雷暴警告</button>
+      <button data-sig="t3">三號或更高風球</button>
+    </div>
+    <label class="fcrow"><input type="checkbox" id="fc"><span>氣象局預告今日（不限時段）懸掛三號或更高風球之機率為「中等至較高」→ 全活動取消、改期</span></label>
+    <div class="share">
+      <button id="copy">複製分享連結</button>
+      <button id="reset" class="ghost">清除</button>
+    </div>
+    <div class="copied" id="copied"></div>
+    <div class="setby" id="setby"></div>
+  </div>
+</details>
+
+<details class="rules">
+  <summary>▸ 天氣應變機制全表（依大會《參展商戶活動指引》）</summary>
+  <table>
+    <tr><td>🟢 無雨 / 細雨・有雨<br><span style="font-size:11px">&lt;1mm/時、24h ≤10mm</span></td><td class="gt">市集照常進行。攤主自行做好基本防雨、保護貨品電器。</td></tr>
+    <tr><td>🟢 一號戒備信號 + 有雨</td><td class="gt">市集照常（§9a）。足球機、工作坊等非市集活動移室內或較安全位置。</td></tr>
+    <tr><td>🟢 當日 11:00 前除下所有風球 / 改一號，且當日無雨</td><td class="gt">如常營運，按大會當日公布。</td></tr>
+    <tr><td>🟡 大雨・營運中（13:00–19:00）<br><span style="font-size:11px">24h ≥50mm 或 1 小時 ≥15mm</span></td><td class="at">按現場安全有限度開放，聽大會及工作人員指示。攤主做好避雨、貨品保護、攤位安全。</td></tr>
+    <tr><td>🔴 大雨・開市前已落</td><td class="rt">暫停當日市集，大會另行通知。</td></tr>
+    <tr><td>🔴 暴雨警告 / 已懸掛三號或更高風球</td><td class="rt">暫停相關活動，按實際情況延期、取消或其他應變。</td></tr>
+    <tr><td>🔴 氣象局預告三號+ 機率中等至較高</td><td class="rt">全活動取消，改期由大會另作安排。</td></tr>
+    <tr><td>🔴 雷暴警告信號</td><td class="rt">基於雷擊風險即時取消、收妥電器及金屬物資、按指示撤離戶外範圍。</td></tr>
+  </table>
+</details>
+
+<footer>
+  <div class="links">
+    <a href="https://www.smg.gov.mo/zh" target="_blank" rel="noopener">SMG 即時天氣 / 警告 ↗</a>
+    <a href="https://apps.apple.com/app/id722198173" target="_blank" rel="noopener">SMG App ↗</a>
+  </div>
+  <p class="disc">
+    雨量數據：Open-Meteo 實時氣象（益隆場地座標），每 5 分鐘自動更新，屬近似參考。<br>
+    官方警告（風球 / 暴雨 / 雷暴）一律以 <b style="color:var(--ink)">澳門地球物理暨氣象局（SMG）</b> 發布為準。<br>
+    本頁為攤主判斷輔助，<b style="color:var(--ink)">市集最終開放與否以大會當日公布為準</b>。
+  </p>
+</footer>
+
+<script>
+/* ---------- 設定 ---------- */
+const CFG = {
+  lat: 22.1557, lon: 113.5535,          // 益隆炮竹廠舊址 · 氹仔
+  openHour: 13, closeHour: 19,          // 市集時段
+  eventDays: [                          // 6/19–7/19 逢五六日
+    "2026-06-19","2026-06-20","2026-06-21",
+    "2026-06-26","2026-06-27","2026-06-28",
+    "2026-07-03","2026-07-04","2026-07-05",
+    "2026-07-10","2026-07-11","2026-07-12",
+    "2026-07-17","2026-07-18","2026-07-19"
+  ],
+  refreshMs: 5*60*1000
+};
+const SIG = {
+  none:{name:"無 / 已除下", det:"未有生效信號"},
+  t1:{name:"一號戒備信號", det:"市集照常，非市集活動移室內"},
+  rain_warn:{name:"暴雨警告", det:"暫停，按情況延期或取消"},
+  thunder:{name:"雷暴警告", det:"雷擊風險，即時取消並疏散"},
+  t3:{name:"三號或更高風球", det:"暫停，按情況延期或取消"}
+};
+
+/* ---------- 狀態 ---------- */
+let state = { sig:"none", fc:false, setAt:null, rain:null };
+
+/* ---------- 讀 hash（大會廣播） ---------- */
+function readHash(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  const s = h.get("sig");
+  state.sig = SIG[s] ? s : "none";
+  state.fc = h.get("fc")==="1";
+  const t = h.get("t");
+  state.setAt = t ? new Date(decodeURIComponent(t)) : null;
+}
+function writeHash(){
+  const p = new URLSearchParams();
+  if(state.sig!=="none") p.set("sig",state.sig);
+  if(state.fc) p.set("fc","1");
+  if(state.sig!=="none"||state.fc){ state.setAt=new Date(); p.set("t",state.setAt.toISOString()); }
+  else state.setAt=null;
+  history.replaceState(null,"", location.pathname + (p.toString()?("#"+p.toString()):""));
+}
+
+/* ---------- Open-Meteo ---------- */
+const API = `https://api.open-meteo.com/v1/forecast?latitude=${CFG.lat}&longitude=${CFG.lon}`
+  + `&current=temperature_2m,precipitation,weather_code`
+  + `&minutely_15=precipitation&hourly=precipitation`
+  + `&past_days=1&forecast_days=1&timezone=Asia%2FMacau`;
+
+const RAIN_CODES = new Set([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99]);
+
+function lastIdxAtOrBefore(times, nowStr){
+  let idx=-1; for(let i=0;i<times.length;i++){ if(times[i]<=nowStr) idx=i; else break; } return idx;
+}
+function sum(arr){ return arr.reduce((a,b)=>a+(typeof b==="number"?b:0),0); }
+
+async function fetchRain(){
+  const r = await fetch(API,{cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  const d = await r.json();
+  const now = d.current.time;                       // 場地當地時間
+  // 過去 1 小時雨量：優先用 15 分鐘格
+  let rate1h=null;
+  if(d.minutely_15){
+    const t=d.minutely_15.time, p=d.minutely_15.precipitation;
+    const i=lastIdxAtOrBefore(t,now);
+    if(i>=0) rate1h=sum(p.slice(Math.max(0,i-3),i+1));
+  }
+  // 24 小時累計 + 後備 rate
+  const ht=d.hourly.time, hp=d.hourly.precipitation;
+  const hi=lastIdxAtOrBefore(ht,now);
+  const accum24h = hi>=0 ? sum(hp.slice(Math.max(0,hi-23),hi+1)) : 0;
+  if(rate1h===null) rate1h = hi>=0 ? (hp[hi]||0) : 0;
+  const code=d.current.weather_code;
+  return {
+    rate1h:+rate1h.toFixed(2), accum24h:+accum24h.toFixed(1),
+    nowPrecip:d.current.precipitation, code,
+    raining:(d.current.precipitation>0)||RAIN_CODES.has(code),
+    thunder:(code>=95), now
+  };
+}
+
+/* ---------- 分級 ---------- */
+function rainTier(r){
+  if(!r) return "unknown";
+  if(r.accum24h>=50 || r.rate1h>=15) return "heavy";
+  if(r.accum24h<=10 && r.rate1h<1.0) return (r.raining||r.rate1h>0.05)?"light":"none";
+  return "moderate";
+}
+function phaseNow(r){
+  const today = (r?r.now:new Date().toISOString()).slice(0,10);
+  if(!CFG.eventDays.includes(today)) return "offday";
+  const hh = +(r?r.now:new Date().toISOString()).slice(11,13);
+  if(hh<CFG.openHour) return "before";
+  if(hh<CFG.closeHour) return "during";
+  return "after";
+}
+
+/* ---------- 決策引擎 ---------- */
+function decide(){
+  const r=state.rain, tier=rainTier(r), ph=phaseNow(r);
+  // 最高優先：官方紅線信號
+  if(state.sig==="thunder") return v("r","活動取消","雷暴警告生效 — 戶外場地有雷擊風險。",
+    ["立即停止營運，疏散戶外範圍","收妥攤位電器及金屬物資","按大會及工作人員指示行動，等候改期通知"]);
+  if(state.sig==="rain_warn"||state.sig==="t3") return v("r","暫停 · 待大會通知",
+    (state.sig==="t3"?"已懸掛三號或更高風球":"暴雨警告生效")+" — 基於公眾安全暫停活動。",
+    ["停止營運，保護貨品、電器及攤位物資","固定 / 收起易被風吹之物","留意大會延期、取消或應變公布"]);
+  if(state.fc) return v("r","活動取消 · 改期","氣象局預告今日懸掛三號或更高風球機率中等至較高。",
+    ["當日活動取消","改期日期由大會另行通知"]);
+  // 大雨（雨量自動判斷）
+  if(tier==="heavy"){
+    if(ph==="before") return v("r","暫停當日市集","開市前已現大雨（"+rainLine(r)+"）。",
+      ["暫停當日市集，大會另行通知","做好貨品、電器、攤位防護"]);
+    return v("a","有限度開放","現場大雨（"+rainLine(r)+"）— 按現場安全有限度開放。",
+      ["聽大會及現場工作人員指示行動","做好避雨、貨品保護及攤位安全","留意當日離場或後續安排"]);
+  }
+  // 一號 + 雨：市集照常
+  if(state.sig==="t1") return v("g","市集照常","一號戒備信號 — 市集按原定安排進行。",
+    ["自行做好防雨及貨品保護","足球機 / 工作坊等非市集活動移室內或較安全位置"]);
+  // 中雨：未到大雨但雨勢明顯
+  if(tier==="moderate") return v("a","留意雨勢","雨量介乎之間（"+rainLine(r)+"），未達大雨標準。",
+    ["市集原則上繼續，做好防雨","雨勢若持續加大可能轉「有限度開放」，以大會現場公布為準"]);
+  // 細雨 / 無雨
+  if(tier==="light") return v("g","市集照常","僅細雨 / 一般有雨（"+rainLine(r)+"）。",
+    ["活動原則上繼續進行","撐傘或防潑水外套即可，做好貨品基本防雨"]);
+  if(tier==="none") return v("g","市集照常","目前無雨（"+rainLine(r)+"）。",
+    ["按原定安排進行","留意大會當日公布"]);
+  return v("",("讀取中…"),"正在讀取天氣資料",null);
+}
+function rainLine(r){ return r? `1h ${r.rate1h}mm · 24h ${r.accum24h}mm` : "—"; }
+function v(level,title,reason,action){ return {level,title,reason,action}; }
+
+/* ---------- 渲染 ---------- */
+function fmtTime(d){ return d.toLocaleTimeString("zh-HK",{hour:"2-digit",minute:"2-digit",hour12:false}); }
+function ago(d){
+  if(!d) return ""; const m=Math.round((Date.now()-d.getTime())/60000);
+  if(m<1) return "啱啱"; if(m<60) return m+" 分鐘前";
+  return Math.round(m/60)+" 小時前";
+}
+const TIER_TXT={heavy:"大雨",moderate:"有雨",light:"細雨 / 有雨",none:"無雨",unknown:"—"};
+
+function render(){
+  const r=state.rain, tier=rainTier(r), dec=decide();
+  // verdict
+  const card=document.getElementById("verdict");
+  card.className="verdict "+(dec.level||"");
+  document.getElementById("vtitle").textContent=dec.title;
+  document.getElementById("vreason").textContent=dec.reason;
+  const va=document.getElementById("vaction");
+  if(dec.action){ va.style.display="block";
+    va.innerHTML='<span class="lab">攤主須知</span><ul>'+dec.action.map(x=>"<li>"+x+"</li>").join("")+"</ul>"; }
+  else va.style.display="none";
+  // rain chip
+  document.getElementById("raintier").textContent=TIER_TXT[tier];
+  document.getElementById("raindet").textContent = r
+    ? `過去 1 小時 ${r.rate1h}mm ｜ 24 小時累計 ${r.accum24h}mm`+(r.thunder?" ⚡":"")
+    : "讀取失敗，請睇 SMG";
+  document.getElementById("rainchip").classList.toggle("warnpulse", tier==="heavy");
+  // signal chip
+  document.getElementById("signame").textContent = state.fc&&state.sig==="none" ? "三號+ 機率高（預告）" : SIG[state.sig].name;
+  document.getElementById("sigdet").textContent = state.sig==="none"&&!state.fc ? "請以氣象局為準" : (state.fc?"預告取消：全活動改期":SIG[state.sig].det);
+  document.getElementById("sigchip").classList.toggle("warnpulse", ["thunder","rain_warn","t3"].includes(state.sig)||state.fc);
+  // organizer UI reflect
+  document.querySelectorAll("#sigset button").forEach(b=>b.classList.toggle("on", b.dataset.sig===state.sig));
+  document.getElementById("fc").checked=state.fc;
+  document.getElementById("setby").textContent = state.setAt
+    ? `現時信號由大會於 ${fmtTime(state.setAt)} 設定（${ago(state.setAt)}）` : "";
+  // thunder hint from weather data
+  const err=document.getElementById("err");
+  if(r&&r.thunder&&state.sig!=="thunder"){
+    err.style.display="block";
+    err.textContent="⚡ 天氣資料偵測到雷暴 — 請即刻確認 SMG 是否發出雷暴警告，如有請大會設定信號。";
+  } else if(!r){ /* fetch error handled below */ }
+  else err.style.display="none";
+}
+
+/* ---------- 載入 / 刷新 ---------- */
+async function load(){
+  try{
+    state.rain=await fetchRain();
+    document.getElementById("upd").textContent=fmtTime(new Date());
+    document.getElementById("err").style.display="none";
+  }catch(e){
+    state.rain=null;
+    const err=document.getElementById("err");
+    err.style.display="block";
+    err.textContent="⚠ 暫時讀唔到天氣資料，請直接睇 SMG。官方信號狀態不受影響。";
+  }
+  render();
+}
+
+/* ---------- 大會操作 ---------- */
+document.getElementById("sigset").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  state.sig=b.dataset.sig; writeHash(); render();
+});
+document.getElementById("fc").addEventListener("change",e=>{ state.fc=e.target.checked; writeHash(); render(); });
+document.getElementById("copy").addEventListener("click",async()=>{
+  writeHash();
+  const url=location.href;
+  const note=document.getElementById("copied");
+  try{ await navigator.clipboard.writeText(url); note.textContent="已複製連結 — 貼去攤主群組即可。"; }
+  catch{ note.textContent=url; }
+  setTimeout(()=>note.textContent="",6000);
+});
+document.getElementById("reset").addEventListener("click",()=>{
+  state.sig="none"; state.fc=false; writeHash(); render();
+  document.getElementById("copied").textContent="已清除信號。";
+  setTimeout(()=>document.getElementById("copied").textContent="",4000);
+});
+document.getElementById("refresh").addEventListener("click",load);
+
+/* ---------- init ---------- */
+readHash(); render(); load();
+setInterval(load, CFG.refreshMs);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) load(); });
+</script>
+</body>
+</html>
