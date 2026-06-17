@@ -27,6 +27,10 @@
   }
   .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mut); font-weight:700}
   .wrap{padding:0 15px}
+  .nav{display:flex; gap:8px; margin:14px 0 2px}
+  .nav a{flex:1; text-align:center; font-family:"Baloo 2",sans-serif; font-weight:800; font-size:13.5px; text-decoration:none; padding:10px 8px; border-radius:999px; border:2.5px solid var(--ink); color:var(--ink); background:#fff}
+  .nav a.active{background:var(--ink); color:#fff}
+  .nav a:active{transform:scale(.98)}
   .kvbanner{width:100%; height:auto; display:block}
   .backbar{display:flex; align-items:center; gap:8px; padding:14px 0 2px}
   .back{font:inherit; font-weight:800; font-size:13px; text-decoration:none; color:var(--ink); border:2.5px solid var(--ink); border-radius:999px; padding:7px 14px; background:#fff}
@@ -73,12 +77,13 @@
 <img class="kvbanner" src="assets/kv-landscape.jpg" alt="片區戶外生活節 2026 · 世界盃系列活動 @ 益隆炮竹廠">
 
 <div class="wrap">
-  <div class="backbar"><a class="back" href="./">← 市集天氣狀態</a></div>
   <header>
     <h1>市集攤主 · 活動地圖</h1>
     <div class="sub">世界盃系列 · 益隆炮竹廠舊址（氹仔）｜ 39 個攤主</div>
     <div class="dots"></div>
   </header>
+
+  <nav class="nav"><a href="./">🌦 天氣狀態</a><a href="market.html" class="active">🗺 攤主 · 地圖</a></nav>
 
   <div class="mapcard">
     <a href="assets/event-map.jpg" target="_blank" rel="noopener"><img src="assets/event-map.jpg" alt="活動及市集地圖"></a>
