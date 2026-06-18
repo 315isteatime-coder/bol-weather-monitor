@@ -222,7 +222,7 @@
       <tr><td>🟢 無雨 / 細雨・有雨<br><span style="font-size:11px;font-weight:600;color:var(--mut)">&lt;1mm/時、24h ≤10mm</span></td><td class="gt">市集照常進行。攤主自行做好基本防雨、保護貨品電器。</td></tr>
       <tr><td>🟢 一號戒備信號 + 有雨</td><td class="gt">市集照常（§9a）。足球機、工作坊等非市集活動移室內或較安全位置。</td></tr>
       <tr><td>🟢 當日 11:00 前除下所有風球 / 改一號，且當日無雨</td><td class="gt">如常營運，按大會當日公布。</td></tr>
-      <tr><td>🟡 大雨・營運中（14:00–19:00）<br><span style="font-size:11px;font-weight:600;color:var(--mut)">24h ≥50mm 或 1 小時 ≥15mm</span></td><td class="at">按現場安全有限度開放，聽大會及工作人員指示。攤主做好避雨、貨品保護、攤位安全。</td></tr>
+      <tr><td>🟡 大雨・營運中（14:00–19:00）<br><span style="font-size:11px;font-weight:600;color:var(--mut)">6 小時 ≥40mm 或 3 小時 ≥40mm</span></td><td class="at">按現場安全有限度開放，聽大會及工作人員指示。攤主做好避雨、貨品保護、攤位安全。</td></tr>
       <tr><td>🔴 大雨・開市前已落</td><td class="rt">暫停當日市集，大會另行通知。</td></tr>
       <tr><td>🔴 暴雨警告 / 已懸掛三號或更高風球</td><td class="rt">暫停相關活動，按實際情況延期、取消或其他應變。</td></tr>
       <tr><td>🔴 氣象局預告三號+ 機率中等至較高</td><td class="rt">全活動取消，改期由大會另作安排。</td></tr>
@@ -353,10 +353,12 @@ async function fetchRain(){
   const ht=d.hourly.time, hp=d.hourly.precipitation;
   const hi=lastIdxAtOrBefore(ht,now);
   const accum24h = hi>=0 ? sum(hp.slice(Math.max(0,hi-23),hi+1)) : 0;
+  const accum6h  = hi>=0 ? sum(hp.slice(Math.max(0,hi-5),hi+1))  : 0;
+  const accum3h  = hi>=0 ? sum(hp.slice(Math.max(0,hi-2),hi+1))  : 0;
   if(rate1h===null) rate1h = hi>=0 ? (hp[hi]||0) : 0;
   const code=d.current.weather_code;
   return {
-    rate1h:+rate1h.toFixed(2), accum24h:+accum24h.toFixed(1),
+    rate1h:+rate1h.toFixed(2), accum3h:+accum3h.toFixed(1), accum6h:+accum6h.toFixed(1), accum24h:+accum24h.toFixed(1),
     nowPrecip:d.current.precipitation, code, temp:d.current.temperature_2m,
     raining:(d.current.precipitation>0)||RAIN_CODES.has(code),
     thunder:(code>=95), now
@@ -366,7 +368,7 @@ async function fetchRain(){
 /* ---------- 分級 ---------- */
 function rainTier(r){
   if(!r) return "unknown";
-  if(r.accum24h>=50 || r.rate1h>=15) return "heavy";
+  if(r.accum6h>=40 || r.accum3h>=40) return "heavy";
   if(r.accum24h<=10 && r.rate1h<1.0) return (r.raining||r.rate1h>0.05)?"light":"none";
   return "moderate";
 }
@@ -410,7 +412,7 @@ function decide(){
     ["按原定安排進行","留意大會當日公布"]);
   return v("",("讀取中…"),"正在讀取天氣資料",null);
 }
-function rainLine(r){ return r? `1h ${r.rate1h}mm · 24h ${r.accum24h}mm` : "—"; }
+function rainLine(r){ return r? `3h ${r.accum3h}mm · 6h ${r.accum6h}mm` : "—"; }
 function v(level,title,reason,action){ return {level,title,reason,action}; }
 
 /* ---------- 渲染 ---------- */
@@ -450,7 +452,7 @@ function render(){
   // rain chip
   document.getElementById("raintier").textContent=TIER_TXT[tier];
   document.getElementById("raindet").textContent = r
-    ? `過去 1 小時 ${r.rate1h}mm ｜ 24 小時累計 ${r.accum24h}mm`+(r.thunder?" ⚡":"")
+    ? `過去 3 小時 ${r.accum3h}mm ｜ 6 小時 ${r.accum6h}mm`+(r.thunder?" ⚡":"")
     : "讀取失敗，請睇 SMG";
   document.getElementById("rainchip").classList.toggle("warnpulse", tier==="heavy");
   // signal chip
