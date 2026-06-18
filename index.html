@@ -126,7 +126,7 @@
   .sigset button.on{color:#fff; border-color:transparent}
   .sigset button[data-sig="none"].on{background:#8a8f93}
   .sigset button[data-sig="t1"].on,.sigset button[data-sig="open"].on{background:var(--green)}
-  .sigset button[data-sig="rain_warn"].on,.sigset button[data-sig="thunder"].on,.sigset button[data-sig="t3"].on{background:var(--red)}
+  .sigset button[data-sig="rain_warn"].on,.sigset button[data-sig="thunder"].on,.sigset button[data-sig="t3"].on,.sigset button[data-sig="rain_cancel"].on{background:var(--red)}
   .fcrow{display:flex; align-items:flex-start; gap:9px; margin:8px 0 15px; font-size:12.5px; font-weight:600; color:var(--ink); cursor:pointer; line-height:1.45}
   .fcrow input{margin-top:3px; flex:none; width:17px; height:17px; accent-color:var(--red)}
   .share{display:flex; gap:9px}
@@ -247,6 +247,7 @@
           <button data-sig="open">✅ 市集正常開放</button>
           <button data-sig="none">無 / 已除下</button>
           <button data-sig="t1">一號戒備信號</button>
+          <button data-sig="rain_cancel">🌧 持續大雨 · 取消</button>
           <button data-sig="rain_warn">暴雨警告</button>
           <button data-sig="thunder">雷暴警告</button>
           <button data-sig="t3">三號或更高風球</button>
@@ -300,7 +301,8 @@ const SIG = {
   t1:{name:"一號戒備信號", det:"市集照常，非市集活動移室內"},
   rain_warn:{name:"暴雨警告", det:"暫停，按情況延期或取消"},
   thunder:{name:"雷暴警告", det:"雷擊風險，即時取消並疏散"},
-  t3:{name:"三號或更高風球", det:"暫停，按情況延期或取消"}
+  t3:{name:"三號或更高風球", det:"暫停，按情況延期或取消"},
+  rain_cancel:{name:"持續大雨 · 取消", det:"市集及戶外活動取消，待大會通知"}
 };
 
 /* ---------- 狀態 ---------- */
@@ -392,6 +394,8 @@ function decide(){
   if(state.sig==="rain_warn"||state.sig==="t3") return v("r","暫停 · 待大會通知",
     (state.sig==="t3"?"已懸掛三號或更高風球":"暴雨警告生效")+" — 基於公眾安全暫停活動。",
     ["停止營運，保護貨品、電器及攤位物資","固定 / 收起易被風吹之物","留意大會延期、取消或應變公布"]);
+  if(state.sig==="rain_cancel") return v("r","市集及戶外活動取消","持續大雨 — 大會決定取消今日市集及戶外活動。",
+    ["停止營運，收拾並保護貨品、電器及攤位物資","收拾離場，注意地面濕滑安全","留意大會後續或改期通知"]);
   if(state.fc) return v("r","活動取消 · 改期","氣象局預告今日懸掛三號或更高風球機率中等至較高。",
     ["當日活動取消","改期日期由大會另行通知"]);
   // 大會明確「市集正常開放」：覆寫雨量自動判斷
@@ -463,7 +467,7 @@ function render(){
   // signal chip
   document.getElementById("signame").textContent = state.fc&&state.sig==="none" ? "三號+ 機率高（預告）" : SIG[state.sig].name;
   document.getElementById("sigdet").textContent = state.sig==="none"&&!state.fc ? "請以氣象局為準" : (state.fc?"預告取消：全活動改期":SIG[state.sig].det);
-  document.getElementById("sigchip").classList.toggle("warnpulse", ["thunder","rain_warn","t3"].includes(state.sig)||state.fc);
+  document.getElementById("sigchip").classList.toggle("warnpulse", ["thunder","rain_warn","t3","rain_cancel"].includes(state.sig)||state.fc);
   // organizer UI reflect
   document.querySelectorAll("#sigset button").forEach(b=>b.classList.toggle("on", b.dataset.sig===state.sig));
   document.getElementById("fc").checked=state.fc;
