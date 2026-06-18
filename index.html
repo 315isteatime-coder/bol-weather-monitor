@@ -331,6 +331,26 @@ function writeHash(){
   if(state.sig!=="none"||state.fc||(state.msg && state.msg.trim())){ state.setAt=new Date(); p.set("t",state.setAt.toISOString()); }
   else state.setAt=null;
   history.replaceState(null,"", location.pathname + (p.toString()?("#"+p.toString()):""));
+  saveStatus();
+}
+
+/* ---------- 大會狀態長期保存（存喺工作人員部機 localStorage，直至改／清除為止） ---------- */
+const STORE_KEY="bolwx_status";
+function saveStatus(){
+  try{
+    if(state.sig!=="none" || state.fc || (state.msg && state.msg.trim())){
+      localStorage.setItem(STORE_KEY, JSON.stringify({sig:state.sig, fc:state.fc, msg:state.msg, t:state.setAt?state.setAt.toISOString():null}));
+    } else { localStorage.removeItem(STORE_KEY); }
+  }catch(e){}
+}
+function restoreStatus(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY); if(!raw) return false;
+    const o=JSON.parse(raw);
+    state.sig=SIG[o.sig]?o.sig:"none"; state.fc=!!o.fc; state.msg=o.msg||"";
+    state.setAt=o.t?new Date(o.t):null;
+    return true;
+  }catch(e){ return false; }
 }
 
 /* ---------- Open-Meteo ---------- */
@@ -524,7 +544,7 @@ document.getElementById("copy").addEventListener("click",async()=>{
 });
 document.getElementById("reset").addEventListener("click",()=>{
   state.sig="none"; state.fc=false; state.msg=""; writeHash(); render();
-  document.getElementById("copied").textContent="已清除信號 / 公告。";
+  document.getElementById("copied").textContent="已清除信號 / 公告，回復雨量自動判斷。";
   setTimeout(()=>document.getElementById("copied").textContent="",4000);
 });
 document.getElementById("refresh").addEventListener("click",load);
@@ -554,7 +574,9 @@ document.getElementById("pw").addEventListener("keydown", e=>{ if(e.key==="Enter
 document.getElementById("lockbtn").addEventListener("click", lockOrg);
 
 /* ---------- init ---------- */
-readHash(); render(); load();
+readHash();
+if(!location.hash.slice(1)) restoreStatus();   // 冇 hash（例如開 bare 網址）→ 還原部機上次設定嘅狀態
+render(); load();
 setInterval(load, CFG.refreshMs);
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) load(); });
 </script>
