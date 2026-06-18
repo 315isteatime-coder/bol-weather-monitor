@@ -130,6 +130,9 @@
   .fcrow{display:flex; align-items:flex-start; gap:9px; margin:8px 0 15px; font-size:12.5px; font-weight:600; color:var(--ink); cursor:pointer; line-height:1.45}
   .fcrow input{margin-top:3px; flex:none; width:17px; height:17px; accent-color:var(--red)}
   .share{display:flex; gap:9px}
+  .confirmupd{width:100%; font:inherit; font-weight:800; font-size:15px; padding:13px; margin:10px 0 4px; border-radius:12px; border:3px solid var(--ink); background:var(--green); color:#fff; cursor:pointer}
+  .confirmupd:active{transform:scale(.99)}
+  .confirmed{font-size:12.5px; font-weight:700; color:var(--green); min-height:16px; margin:0 0 8px; line-height:1.5}
   .share button{flex:1; font:inherit; font-family:"Baloo 2"; font-size:14px; font-weight:800; padding:12px; border-radius:999px; border:none; background:var(--cyan); color:#fff; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.12)}
   .share button:active{transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.12)}
   .share button.ghost{flex:0 0 auto; padding:12px 16px; background:#fff; border:2.5px solid var(--ink); color:var(--ink); box-shadow:none}
@@ -255,6 +258,8 @@
         <label class="fcrow"><input type="checkbox" id="fc"><span>氣象局預告今日（不限時段）懸掛三號或更高風球之機率為「中等至較高」→ 全活動取消、改期</span></label>
         <label class="msglab">大會公告（會顯示喺攤主頁面頂；留空 = 唔顯示）</label>
         <textarea id="msgin" rows="2" placeholder="例：今日 16:00 足球體驗工作坊改喺室內舉行。"></textarea>
+        <button id="confirmupd" class="confirmupd">✅ 確認更新狀態</button>
+        <div class="confirmed" id="confirmed"></div>
         <div class="share">
           <button id="copy">複製分享連結</button>
           <button id="reset" class="ghost">清除</button>
@@ -500,6 +505,15 @@ document.getElementById("sigset").addEventListener("click",e=>{
 });
 document.getElementById("fc").addEventListener("change",e=>{ state.fc=e.target.checked; writeHash(); render(); });
 document.getElementById("msgin").addEventListener("input",e=>{ state.msg=e.target.value; writeHash(); render(); });
+document.getElementById("confirmupd").addEventListener("click",()=>{
+  writeHash(); render();
+  const c=document.getElementById("confirmed");
+  if(state.sig==="none" && !state.fc && !(state.msg && state.msg.trim())){
+    c.textContent="ℹ️ 而家係「無 / 已除下」—— 攤主會睇實時雨量自動判斷。要派俾攤主就撳「複製分享連結」。";
+  } else {
+    c.textContent="✓ 狀態已更新（"+fmtTime(state.setAt)+"）。下一步：撳「複製分享連結」貼俾攤主，佢哋一開連結就見到。";
+  }
+});
 document.getElementById("copy").addEventListener("click",async()=>{
   writeHash();
   const url=location.href;
