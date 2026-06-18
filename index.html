@@ -469,13 +469,9 @@ function render(){
   document.getElementById("fc").checked=state.fc;
   document.getElementById("setby").textContent = state.setAt
     ? `現時信號由大會於 ${fmtTime(state.setAt)} 設定（${ago(state.setAt)}）` : "";
-  // thunder hint from weather data
+  // #err 只用於 fetch 失敗（由 load() 設定文字）；已移除自動偵測雷暴嘅提示橫額
   const err=document.getElementById("err");
-  if(r&&r.thunder&&state.sig!=="thunder"){
-    err.style.display="block";
-    err.textContent="⚡ 天氣資料偵測到雷暴 — 請即刻確認 SMG 是否發出雷暴警告，如有請大會設定信號。";
-  } else if(!r){ /* fetch error handled below */ }
-  else err.style.display="none";
+  if(r) err.style.display="none";
 }
 
 /* ---------- 載入 / 刷新 ---------- */
