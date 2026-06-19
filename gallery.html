@@ -138,7 +138,7 @@
   <div class="panel">
     <h2>上載相片</h2>
     <div class="field">
-      <label>邊個分類？</label>
+      <label>① 揀分類 <span style="color:#c0392b;font-weight:800;font-size:11px;background:#fdecea;padding:1px 6px;border-radius:6px">必選</span></label>
       <div class="catpick" id="catpick">
         <button data-c="food">🍢 美食</button>
         <button data-c="game">🎮 遊戲</button>
@@ -147,7 +147,7 @@
       </div>
     </div>
     <div class="field">
-      <label>揀相</label>
+      <label>② 揀相 <span style="color:#c0392b;font-weight:800;font-size:11px;background:#fdecea;padding:1px 6px;border-radius:6px">必選</span></label>
       <div class="filebox" id="filebox">📷 㩒呢度揀相（或影相）</div>
       <input type="file" id="file" accept="image/*" style="display:none">
       <img class="preview" id="preview" alt="預覽">
@@ -161,6 +161,7 @@
       <input type="text" id="caption" maxlength="60" placeholder="例：益隆嘅夕陽真係靚">
     </div>
     <div class="status" id="status"></div>
+    <div id="upHint" style="display:none;font-size:13px;font-weight:700;color:#c0392b;background:#fff3f0;border:1.5px solid #f0c4ba;border-radius:10px;padding:9px 12px;margin:2px 0 10px;text-align:center"></div>
     <div class="row">
       <button class="btn cancel" id="cancelUpload">取消</button>
       <button class="btn go" id="submitUpload" disabled>上載</button>
@@ -222,11 +223,22 @@ if(!SB_URL || !SB_ANON){
 
   /* ---------- upload ---------- */
   const sheet=$("#sheet"); let upCat="", upFile=null;
-  $("#openUpload").onclick=()=>sheet.classList.add("open");
+  $("#openUpload").onclick=()=>{ sheet.classList.add("open"); checkReady(); };
   $("#cancelUpload").onclick=()=>closeSheet();
   sheet.addEventListener("click",e=>{ if(e.target===sheet) closeSheet(); });
   function closeSheet(){ sheet.classList.remove("open"); }
-  function checkReady(){ $("#submitUpload").disabled = !(upCat && upFile && sb); }
+  function checkReady(){
+    const need=[];
+    if(!upCat) need.push("揀分類");
+    if(!upFile) need.push("揀相");
+    const hint=$("#upHint");
+    if(hint){
+      if(need.length){ hint.textContent="⚠️ 仲要："+need.join(" + ")+"，先可以撳「上載」"; hint.style.display="block"; }
+      else if(!sb){ hint.textContent="連線中，等一兩秒…"; hint.style.display="block"; }
+      else { hint.style.display="none"; }
+    }
+    $("#submitUpload").disabled = !(upCat && upFile && sb);
+  }
   $("#catpick").addEventListener("click",e=>{
     const b=e.target.closest("button"); if(!b) return;
     upCat=b.dataset.c;
