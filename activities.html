@@ -61,6 +61,22 @@
   footer{margin-top:26px; padding-top:16px; border-top:3px dotted var(--line); font-size:11.5px; color:var(--mut); font-weight:600; line-height:1.6}
   footer a{color:var(--cyan); font-weight:800}
   .credit{margin-top:10px; color:#8a847d}
+
+  .sec2{font-size:20px; font-weight:800; margin:24px 0 2px; display:flex; align-items:center; gap:7px}
+  .scard{border:3px solid var(--ink); border-radius:18px; overflow:hidden; margin-top:12px; box-shadow:0 6px 0 rgba(0,0,0,.05); background:#fff}
+  .scard .sh{background:var(--purple); color:#fff; padding:12px 16px; font-size:16px; font-weight:800}
+  .scard .sb{padding:11px 16px 14px}
+  .earn .er{display:flex; gap:9px; align-items:baseline; padding:7px 0; border-bottom:1px dashed var(--line); font-size:13.5px}
+  .earn .er:last-child{border-bottom:none}
+  .earn .ev{flex:1; font-weight:600; line-height:1.45}
+  .earn .ec{flex:0 0 auto; font-weight:800; color:var(--teal); white-space:nowrap; font-size:14px}
+  .smalltag{font-size:11px; font-weight:800; color:var(--orange); background:#fde9d6; padding:3px 10px; border-radius:999px; display:inline-block; margin-bottom:10px}
+  .rewards{display:flex; flex-direction:column; gap:8px}
+  .rw{display:flex; align-items:center; gap:11px; background:#faf6ef; border:2px solid var(--line); border-radius:12px; padding:9px 12px}
+  .rw.big{background:#fff3e0; border-color:var(--orange)}
+  .rw .rn{flex:0 0 auto; width:36px; height:36px; border-radius:50%; background:var(--purple); color:#fff; font-weight:800; font-size:16px; display:flex; align-items:center; justify-content:center; line-height:1}
+  .rw.big .rn{background:var(--orange)}
+  .rw .rd{font-weight:700; font-size:14px}
 </style>
 </head>
 <body>
@@ -68,14 +84,56 @@
 <img class="kvbanner" src="assets/kv-landscape.jpg" alt="片區戶外生活節 2026 · 世界盃系列活動 @ 益隆炮竹廠">
 
 <div class="wrap">
-  <nav class="nav"><a href="./">🌦 天氣</a><a href="market.html">🗺 會場地圖</a><a href="activities.html" class="active">🎮 集點卡</a><a href="gallery.html">📸 相片牆</a></nav>
+  <nav class="nav"><a href="./">🌦 益隆天氣</a><a href="market.html">🗺 會場地圖</a><a href="activities.html" class="active">🎮 集點卡</a><a href="gallery.html">📸 相片牆</a></nav>
   <header>
-    <h1>活動介紹 · 遊戲挑戰</h1>
+    <h1>集點卡 · 活動介紹</h1>
     <div class="sub">世界盃系列 · 益隆炮竹廠舊址（氹仔）｜ 6 個足球遊戲</div>
     <div class="dots"></div>
   </header>
 
-  <div class="lead">⚽ 場內設有 6 個足球遊戲挑戰，完成可獲得 <b>印章 🏅</b>。各遊戲玩法、成功條件如下 —— 現場跟工作人員指示參與。</div>
+  <div class="lead">⚽ 場內嘅<b>遊戲、工作坊、打卡、消費</b>都可以儲 <b>印章 🏅</b> —— 集滿去服務處換領禮物。現場跟工作人員指示參與。</div>
+
+  <h2 class="sec2">🎟 集點卡 · 儲印章換禮物</h2>
+  <div class="scard">
+    <div class="sh">如何獲得印章 🏅</div>
+    <div class="sb">
+      <div class="earn">
+        <div class="er"><span class="ev">🎮 參與指定遊戲</span><span class="ec">每項 +1</span></div>
+        <div class="er"><span class="ev">🛠 參與指定工作坊</span><span class="ec">完成 +2</span></div>
+        <div class="er"><span class="ev">📸 完成打卡拍照，向工作人員展示</span><span class="ec">+1</span></div>
+        <div class="er"><span class="ev">🧾 場內消費，憑單據換領</span><span class="ec">+1</span></div>
+        <div class="er"><span class="ev">🏪 氹仔合作商戶消費（憑即日有效單據到服務處）</span><span class="ec">+1</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="scard">
+    <div class="sh">集章獎賞 🎁</div>
+    <div class="sb">
+      <span class="smalltag">數量有限 · 送完即止</span>
+      <div class="rewards">
+        <div class="rw"><span class="rn">2</span><span class="rd">立減優惠券 1 張</span></div>
+        <div class="rw"><span class="rn">4</span><span class="rd">限定小禮物 1 份</span></div>
+        <div class="rw"><span class="rn">8</span><span class="rd">限定中禮物 1 份</span></div>
+        <div class="rw"><span class="rn">10</span><span class="rd">限定工作坊體驗 1 次</span></div>
+        <div class="rw big"><span class="rn">11</span><span class="rd">限定大禮物 1 份 🎉</span></div>
+      </div>
+    </div>
+  </div>
+  <details class="terms">
+    <summary>📋 集點卡注意事項</summary>
+    <div class="termsbody">
+      <ul>
+        <li>每人限領 1 本集點卡。</li>
+        <li>印章須由指定工作人員蓋印方為有效。</li>
+        <li>每張單據只可換領一次印章。</li>
+        <li>禮品數量有限，送完即止。</li>
+        <li>集點卡遺失或損毀恕不補發。</li>
+        <li>主辦單位保留最終決定權。</li>
+      </ul>
+    </div>
+  </details>
+
+  <h2 class="sec2">⚽ 遊戲挑戰</h2>
 
   <!-- 1. 泡泡足球 -->
   <div class="game">
