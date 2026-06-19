@@ -35,10 +35,10 @@ window.BRANDS=[
    "retail"
   ],
   "cat": "古著 · vintage（聯乘）",
-  "origin": "",
+  "origin": "macau",
   "intro": "EC VINTAGE 係古著／二手衣物店，今次以與 U3G1 聯乘形式擺檔。",
-  "ig": "@ec_vintage_store",
-  "igUrl": "https://www.instagram.com/ec_vintage_store/",
+  "ig": "@usagi_vintage_mo",
+  "igUrl": "https://www.instagram.com/usagi_vintage_mo/",
   "site": "",
   "photos": []
  },
