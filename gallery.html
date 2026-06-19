@@ -234,13 +234,34 @@ if(!SB_URL || !SB_ANON){
     checkReady();
   });
   $("#filebox").onclick=()=>$("#file").click();
-  $("#file").onchange=e=>{
+  async function compressImage(file){
+    /* 揀相時 resize 到最長邊 1600px + JPEG 0.82，套返 EXIF 方向；任何失敗都退返原檔，唔阻上載 */
+    try{
+      if(!file.type.startsWith("image/")) return file;
+      let bmp;
+      try{ bmp=await createImageBitmap(file,{imageOrientation:"from-image"}); }
+      catch(_){ bmp=await createImageBitmap(file); }
+      let w=bmp.width, h=bmp.height; const M=1600;
+      if(Math.max(w,h)>M){ const s=M/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
+      const cv=document.createElement("canvas"); cv.width=w; cv.height=h;
+      cv.getContext("2d").drawImage(bmp,0,0,w,h); if(bmp.close) bmp.close();
+      const blob=await new Promise(r=>cv.toBlob(r,"image/jpeg",0.82));
+      if(blob && blob.size>0 && blob.size<file.size)
+        return new File([blob],(file.name.replace(/\.[^.]+$/,"")||"photo")+".jpg",{type:"image/jpeg"});
+      return file;
+    }catch(_){ return file; }
+  }
+  $("#file").onchange=async e=>{
     const f=e.target.files[0]; if(!f) return;
     if(!f.type.startsWith("image/")){ setStatus("淨係收相片檔","err"); return; }
-    if(f.size>10*1024*1024){ setStatus("相片太大（上限 10MB）","err"); return; }
-    upFile=f; $("#filebox").classList.add("has"); $("#filebox").textContent="✓ "+f.name;
+    if(f.size>20*1024*1024){ setStatus("相片太大（上限 20MB）","err"); return; }
+    upFile=null; checkReady();
+    $("#filebox").classList.add("has"); $("#filebox").textContent="✓ "+f.name;
     const pv=$("#preview"); pv.src=URL.createObjectURL(f); pv.style.display="block";
-    setStatus(""); checkReady();
+    setStatus("處理緊相片…");
+    upFile=await compressImage(f);
+    setStatus("✓ 相片已準備（"+Math.round(upFile.size/1024)+"KB）","ok");
+    checkReady();
   };
   function setStatus(t,cls){ const s=$("#status"); s.textContent=t; s.className="status"+(cls?" "+cls:""); }
   $("#submitUpload").onclick=async()=>{
