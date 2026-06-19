@@ -287,11 +287,10 @@ if(!SB_URL || !SB_ANON){
       if(up.error) throw up.error;
       const ins=await sb.from(TABLE).insert({category:upCat, caption:$("#caption").value.trim(), nickname:$("#nickname").value.trim(), path, approved:false});
       if(ins.error) throw ins.error;
-      setStatus("✓ 多謝！相片已交俾大會審核，通過後就會喺相片牆出現。","ok");
-      upFile=null; upCat=""; $("#file").value=""; $("#caption").value=""; $("#nickname").value="";
+      setStatus("✓ 多謝！已交俾大會審核。分類同稱呼幫你保留咗，可以再揀相繼續上載；傳完撳「取消」或㩒視窗外關閉。","ok");
+      upFile=null; $("#file").value=""; $("#caption").value="";
       $("#filebox").classList.remove("has"); $("#filebox").textContent="📷 㩒呢度揀相（或影相）"; $("#preview").style.display="none";
-      [...$("#catpick").children].forEach(x=>x.classList.remove("on"));
-      setTimeout(closeSheet,2200);
+      checkReady();
     }catch(err){ setStatus("上載失敗："+(err.message||err),"err"); $("#submitUpload").disabled=false; }
   };
 
