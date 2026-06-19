@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>集點卡蓋章 / 核消 · 工作人員</title>
+<style>
+  :root{ --bg:#fffdf6; --ink:#1d1b1a; --mut:#76706a; --line:#ece1cd; --red:#ec1c24; --green:#1fa971; --yellow:#ffc20e; --teal:#14a08f; --purple:#7a57a5; --orange:#f5821f; }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{max-width:620px; margin:0 auto; padding:16px 14px calc(44px + env(safe-area-inset-bottom)); background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .nav{display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap}
+  .nav a{font-size:12px; font-weight:800; text-decoration:none; color:var(--mut); border:2px solid var(--line); border-radius:999px; padding:6px 11px}
+  h1{font-size:20px; font-weight:800; margin:2px 0 2px}
+  .sub{font-size:12.5px; color:var(--mut); margin-bottom:16px}
+  input{width:100%; font:inherit; font-size:16px; padding:11px 12px; border:2px solid var(--ink); border-radius:10px; margin-bottom:9px; background:#fff; color:var(--ink)}
+  .codein{font-size:22px; font-weight:800; letter-spacing:.08em; text-align:center; text-transform:uppercase}
+  .btn{font:inherit; font-weight:800; font-size:14px; padding:11px 15px; border-radius:11px; border:2.5px solid var(--ink); background:var(--ink); color:#fff; cursor:pointer}
+  .btn.alt{background:#fff; color:var(--ink)}
+  .btn.go{background:var(--green); border-color:var(--green)}
+  .btn:active{transform:scale(.98)} .btn:disabled{opacity:.4}
+  .bar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px}
+  .status{font-size:13px; font-weight:700; margin:10px 0; min-height:18px}
+  .err{color:var(--red)} .okc{color:var(--green)}
+  .lock{font-size:12px; color:var(--mut); margin-top:10px; line-height:1.6}
+
+  .cardhd{display:flex; align-items:baseline; justify-content:space-between; gap:8px; border:3px solid var(--ink); border-radius:14px; padding:12px 14px; background:#fff; margin-bottom:6px}
+  .cardhd .cc{font-size:22px; font-weight:800; letter-spacing:.06em; color:var(--purple)}
+  .cardhd .ct{font-size:14px; font-weight:800}
+  .cardhd .ct b{font-size:22px; color:var(--purple)}
+
+  .sech{font-size:13px; font-weight:800; color:var(--mut); margin:16px 2px 8px}
+  .stampgrid{display:grid; grid-template-columns:1fr 1fr; gap:9px}
+  .sbtn{font:inherit; font-weight:800; font-size:15px; padding:14px 10px; border-radius:14px; border:3px solid var(--purple); background:#fff; color:var(--purple); cursor:pointer; text-align:center; line-height:1.3}
+  .sbtn .n{display:block; font-size:11.5px; color:var(--mut); font-weight:700; margin-top:3px}
+  .sbtn:active{transform:scale(.97)}
+  .sbtn:disabled{opacity:.45; border-color:var(--line); color:var(--mut)}
+
+  .rwbtn{display:flex; align-items:center; gap:11px; width:100%; text-align:left; font:inherit; padding:11px 13px; border-radius:12px; border:2.5px solid var(--orange); background:#fff3e0; color:var(--ink); cursor:pointer; margin-bottom:8px}
+  .rwbtn .rn{flex:0 0 auto; width:32px; height:32px; border-radius:50%; background:var(--orange); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .rwbtn .rd{flex:1; font-weight:800; font-size:14px}
+  .rwbtn .ra{flex:0 0 auto; font-weight:800; font-size:13px; color:var(--orange)}
+  .rwbtn:active{transform:scale(.99)}
+  .rwdone{display:flex; align-items:center; gap:11px; padding:9px 13px; border-radius:12px; border:2px dashed var(--line); background:#fff; margin-bottom:8px; color:var(--mut)}
+  .rwdone .rn{flex:0 0 auto; width:32px; height:32px; border-radius:50%; background:var(--mut); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .rwdone .rd{flex:1; font-weight:700; font-size:14px; text-decoration:line-through}
+  .rwlock{font-size:12px; color:var(--mut); font-weight:600; padding:4px 2px}
+</style>
+</head>
+<body>
+<div class="nav"><a href="./">🌦 益隆天氣</a><a href="market.html">🗺 會場地圖</a><a href="activities.html">🎮 集點卡</a><a href="gallery.html">📸 相片牆</a><a href="survey-admin.html">📊 問卷答案</a></div>
+<h1>📇 集點卡蓋章 / 核消 · 工作人員</h1>
+<div class="sub">大會專用 —— 登入後輸入參加者卡號，幫佢蓋章或核消獎賞。</div>
+<div id="app"><div class="status">載入緊…</div></div>
+
+<script type="module">
+const SB_URL  = "https://pofaxxvjcdugqimummsr.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners";
+const TABLE   = "cards";
+const CATS = [
+  {k:"game",     emoji:"🎮", label:"遊戲",     max:4, inc:1},
+  {k:"workshop", emoji:"🛠", label:"工作坊",   max:2, inc:2},
+  {k:"checkin",  emoji:"📸", label:"打卡",     max:2, inc:1},
+  {k:"market",   emoji:"🧾", label:"場內消費", max:3, inc:1},
+  {k:"partner",  emoji:"🏪", label:"合作商戶", max:1, inc:1},
+];
+const TOTAL_MAX = CATS.reduce((s,c)=>s+c.max,0);
+const TIERS = [2,4,8,10,11];
+const TIER_LABEL = {2:"立減優惠券 1 張",4:"限定小禮物 1 份",8:"限定中禮物 1 份",10:"限定工作坊體驗 1 次",11:"限定大禮物 1 份"};
+
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const total = st => CATS.reduce((s,c)=>s+(st[c.k]||0),0);
+let sb=null, cur=null;   // cur = 目前查緊嗰張卡
+
+async function getSb(){
+  if(sb) return sb;
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  sb = createClient(SB_URL, SB_ANON);   // default persistSession：staff 登入記住
+  return sb;
+}
+function normCode(s){ s=(s||"").trim().toUpperCase().replace(/\s+/g,""); if(s && !s.startsWith("IEC-")) s = s.replace(/^IEC/,"") ? ("IEC-"+s.replace(/^IEC-?/,"")) : ("IEC-"+s); return s; }
+
+async function boot(){
+  const c = await getSb();
+  const { data:{ session } } = await c.auth.getSession();
+  if(!session) return renderLogin();
+  renderLookup();
+}
+function renderLogin(){
+  app.innerHTML='<input id="em" type="email" placeholder="工作人員 email" autocomplete="username">'+
+    '<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">'+
+    '<button class="btn" id="login" style="width:100%">登入</button><div class="status" id="ls"></div>'+
+    '<div class="lock">🔒 用大會配發嘅工作人員帳號登入。登入一次會記住。</div>';
+  $("#login").onclick = async ()=>{
+    $("#ls").textContent="登入緊…"; $("#ls").className="status";
+    const c = await getSb();
+    const { error } = await c.auth.signInWithPassword({ email:$("#em").value.trim(), password:$("#pw").value });
+    if(error){ $("#ls").textContent="登入失敗："+error.message; $("#ls").className="status err"; }
+    else renderLookup();
+  };
+}
+function renderLookup(msg, cls){
+  cur=null;
+  app.innerHTML='<div class="bar"><input class="codein" id="code" placeholder="IEC-XXXXX" autocapitalize="characters" autocomplete="off" style="margin-bottom:0">'+
+    '<button class="btn go" id="find">查卡</button><button class="btn alt" id="lo">登出</button></div>'+
+    '<div class="status '+(cls||'')+'" id="st">'+(msg||'')+'</div>';
+  const go = async ()=>{
+    const code = normCode($("#code").value);
+    if(!code || code.length<5){ $("#st").textContent="請輸入卡號"; $("#st").className="status err"; return; }
+    $("#st").textContent="搵緊…"; $("#st").className="status";
+    const c = await getSb();
+    const { data, error } = await c.from(TABLE).select("*").eq("code", code).maybeSingle();
+    if(error){ $("#st").textContent="讀取失敗："+error.message; $("#st").className="status err"; return; }
+    if(!data){ $("#st").textContent="搵唔到「"+code+"」，請核對卡號。"; $("#st").className="status err"; return; }
+    cur = data; renderCard();
+  };
+  $("#find").onclick = go;
+  $("#code").addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+  $("#lo").onclick = logout;
+}
+
+function renderCard(){
+  const st = cur.stamps||{}, redeemed = Array.isArray(cur.redeemed)?cur.redeemed:[];
+  const tot = total(st);
+  let buttons = CATS.map(cat=>{
+    const n = Math.min(st[cat.k]||0, cat.max);
+    const full = n>=cat.max || tot>=TOTAL_MAX;
+    return '<button class="sbtn" data-cat="'+cat.k+'"'+(full?' disabled':'')+'>+'+cat.inc+' '+cat.emoji+' '+cat.label+
+      '<span class="n">'+n+' / '+cat.max+'</span></button>';
+  }).join('');
+  let rewards = TIERS.map(t=>{
+    if(redeemed.includes(t)) return '<div class="rwdone"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span>已核消 ✔︎</span></div>';
+    if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span class="ra">核消 →</span></button>';
+    return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（仲爭 '+(t-tot)+' 章）</div>';
+  }).join('');
+  app.innerHTML =
+    '<div class="cardhd"><span class="cc">'+esc(cur.code)+'</span><span class="ct">共 <b>'+tot+'</b> / '+TOTAL_MAX+' 章</span></div>'+
+    '<div class="status okc" id="st"></div>'+
+    '<div class="sech">蓋章（撳一下 +印章，到上限自動鎖）</div><div class="stampgrid">'+buttons+'</div>'+
+    '<div class="sech">核消獎賞（夠章先出，核消後唔可重複）</div>'+rewards+
+    '<div class="bar" style="margin-top:18px"><button class="btn alt" id="another">查另一張卡</button><button class="btn alt" id="lo">登出</button></div>';
+  app.querySelectorAll(".sbtn").forEach(b=> b.onclick = ()=>doStamp(b));
+  app.querySelectorAll(".rwbtn").forEach(b=> b.onclick = ()=>doRedeem(b));
+  $("#another").onclick = ()=>renderLookup();
+  $("#lo").onclick = logout;
+}
+
+async function doStamp(btn){
+  const catKey = btn.dataset.cat; const cat = CATS.find(c=>c.k===catKey);
+  btn.disabled=true;
+  const c = await getSb();
+  // 並發安全：re-fetch 最新 → clamp → 寫返
+  const { data:fresh, error:e1 } = await c.from(TABLE).select("stamps").eq("code",cur.code).single();
+  if(e1){ setSt("寫入失敗："+e1.message,"err"); btn.disabled=false; return; }
+  const stamps = Object.assign({}, fresh.stamps||{});
+  const next = Math.min((stamps[catKey]||0)+cat.inc, cat.max);
+  if(next===(stamps[catKey]||0)){ setSt("「"+cat.label+"」已達上限","err"); cur.stamps=stamps; renderCard(); return; }
+  stamps[catKey]=next;
+  const { data, error:e2 } = await c.from(TABLE).update({stamps}).eq("code",cur.code).select().single();
+  if(e2){ setSt("寫入失敗："+e2.message,"err"); btn.disabled=false; return; }
+  cur = data; renderCard(); setSt("✓ 已蓋「"+cat.label+"」+"+cat.inc,"okc");
+}
+async function doRedeem(btn){
+  const tier = +btn.dataset.tier;
+  btn.disabled=true;
+  const c = await getSb();
+  const { data:fresh, error:e1 } = await c.from(TABLE).select("redeemed").eq("code",cur.code).single();
+  if(e1){ setSt("寫入失敗："+e1.message,"err"); btn.disabled=false; return; }
+  const redeemed = Array.isArray(fresh.redeemed)?fresh.redeemed.slice():[];
+  if(redeemed.includes(tier)){ setSt("呢個獎已核消過","err"); cur.redeemed=redeemed; renderCard(); return; }
+  redeemed.push(tier);
+  const { data, error:e2 } = await c.from(TABLE).update({redeemed}).eq("code",cur.code).select().single();
+  if(e2){ setSt("寫入失敗："+e2.message,"err"); btn.disabled=false; return; }
+  cur = data; renderCard(); setSt("✓ 已核消："+TIER_LABEL[tier],"okc");
+}
+function setSt(t,cls){ const s=$("#st"); if(s){ s.textContent=t; s.className="status "+(cls||""); } }
+async function logout(){ const c=await getSb(); await c.auth.signOut(); renderLogin(); }
+
+boot();
+</script>
+</body>
+</html>
