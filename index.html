@@ -513,7 +513,7 @@ function sbc(){
   if(_sb) return Promise.resolve(_sb);
   if(!SB_URL || SB_URL.indexOf("__")===0) return Promise.resolve(null);
   if(!_sbReady) _sbReady=import("https://esm.sh/@supabase/supabase-js@2")
-    .then(m=>{ _sb=m.createClient(SB_URL,SB_ANON); return _sb; }).catch(()=>null);
+    .then(m=>{ _sb=m.createClient(SB_URL,SB_ANON,{auth:{persistSession:false,autoRefreshToken:false}}); return _sb; }).catch(()=>null);
   return _sbReady;
 }
 let _bcStamp=null;
