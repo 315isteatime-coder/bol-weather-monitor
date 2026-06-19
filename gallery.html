@@ -187,14 +187,14 @@ if(!SB_URL || !SB_ANON){
   $(".admin").style.display="none";
   gallery.innerHTML='<div class="notready">📸 相片牆即將開放<br><span style="font-weight:600;font-size:13px">設定完成後，大家就可以喺度上載同睇返活動相片。</span></div>';
 } else {
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  const sb = createClient(SB_URL, SB_ANON);
+  let sb=null;
   const pubUrl = path => sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   const esc = s => (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
   /* ---------- public gallery ---------- */
   let curCat="all";
   async function load(){
+    if(!sb) return;
     gallery.innerHTML='<div class="empty">載入緊…</div>';
     let q = sb.from(TABLE).select("*").eq("approved",true).order("created_at",{ascending:false}).limit(300);
     if(curCat!=="all") q = q.eq("category",curCat);
@@ -213,7 +213,12 @@ if(!SB_URL || !SB_ANON){
     [...$("#tabs").children].forEach(x=>x.classList.toggle("on",x===b));
     load();
   });
-  load();
+
+  /* ---------- 背景載入 Supabase（唔阻塞下面上載 UI；網絡慢／失敗都唔會卡死個掣）---------- */
+  gallery.innerHTML='<div class="empty">載入緊…</div>';
+  import("https://esm.sh/@supabase/supabase-js@2")
+    .then(({createClient})=>{ sb=createClient(SB_URL,SB_ANON); checkReady(); load(); })
+    .catch(()=>{ gallery.innerHTML='<div class="empty">相片牆載入失敗，請檢查網絡後重新整理 🔄</div>'; });
 
   /* ---------- upload ---------- */
   const sheet=$("#sheet"); let upCat="", upFile=null;
@@ -221,7 +226,7 @@ if(!SB_URL || !SB_ANON){
   $("#cancelUpload").onclick=()=>closeSheet();
   sheet.addEventListener("click",e=>{ if(e.target===sheet) closeSheet(); });
   function closeSheet(){ sheet.classList.remove("open"); }
-  function checkReady(){ $("#submitUpload").disabled = !(upCat && upFile); }
+  function checkReady(){ $("#submitUpload").disabled = !(upCat && upFile && sb); }
   $("#catpick").addEventListener("click",e=>{
     const b=e.target.closest("button"); if(!b) return;
     upCat=b.dataset.c;
@@ -240,6 +245,7 @@ if(!SB_URL || !SB_ANON){
   function setStatus(t,cls){ const s=$("#status"); s.textContent=t; s.className="status"+(cls?" "+cls:""); }
   $("#submitUpload").onclick=async()=>{
     if(!upCat||!upFile) return;
+    if(!sb){ setStatus("仲連緊線，等一兩秒再試…","err"); return; }
     $("#submitUpload").disabled=true; setStatus("上載緊…");
     try{
       const ext=(upFile.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
@@ -260,6 +266,7 @@ if(!SB_URL || !SB_ANON){
   const adminBody=$("#adminBody");
   $("#adminToggle").onclick=()=>{ adminBody.classList.toggle("open"); if(adminBody.classList.contains("open")) renderAdmin(); };
   async function renderAdmin(){
+    if(!sb){ adminBody.innerHTML='<div class="status">連線中，請稍候…</div>'; return; }
     const { data:{ session } } = await sb.auth.getSession();
     if(!session){
       adminBody.innerHTML='<input id="aemail" type="email" placeholder="工作人員 email" autocomplete="username"><input id="apass" type="password" placeholder="密碼" autocomplete="current-password"><button class="btn go" id="alogin" style="width:100%">登入</button><div class="status" id="astatus"></div>';
