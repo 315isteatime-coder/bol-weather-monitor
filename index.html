@@ -264,7 +264,7 @@
         <button id="confirmupd" class="confirmupd">✅ 確認更新狀態</button>
         <div class="confirmed" id="confirmed"></div>
         <div class="share">
-          <button id="copy">複製分享連結</button>
+          <button id="copy">複製活動連結（派一次）</button>
           <button id="reset" class="ghost">清除</button>
         </div>
         <div class="copied" id="copied"></div>
@@ -506,6 +506,42 @@ function render(){
   if(r) err.style.display="none";
 }
 
+/* ---------- 大會狀態即時廣播（Supabase；攤主部機自動讀，唔使再派 link） ---------- */
+const SB_URL="https://pofaxxvjcdugqimummsr.supabase.co", SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners", BC_TABLE="broadcast";
+let _sb=null,_sbReady=null;
+function sbc(){
+  if(_sb) return Promise.resolve(_sb);
+  if(!SB_URL || SB_URL.indexOf("__")===0) return Promise.resolve(null);
+  if(!_sbReady) _sbReady=import("https://esm.sh/@supabase/supabase-js@2")
+    .then(m=>{ _sb=m.createClient(SB_URL,SB_ANON); return _sb; }).catch(()=>null);
+  return _sbReady;
+}
+let _bcStamp=null;
+function isOrg(){ try{ return sessionStorage.getItem("bolwx_org")==="1"; }catch(e){ return false; } }
+async function fetchBroadcast(){
+  if(isOrg()) return;                        // 大會本機顯示自己嘅狀態，唔被覆寫
+  const c=await sbc(); if(!c) return;
+  try{
+    const { data, error } = await c.from(BC_TABLE).select("sig,fc,msg,updated_at").eq("id",1).maybeSingle();
+    if(error || !data) return;
+    if(data.updated_at===_bcStamp) return;   // 冇變就唔郁
+    _bcStamp=data.updated_at;
+    state.sig=SIG[data.sig]?data.sig:"none"; state.fc=!!data.fc; state.msg=data.msg||"";
+    state.setAt=data.updated_at?new Date(data.updated_at):null;
+    render();
+  }catch(e){}
+}
+async function broadcastNow(){
+  const c=await sbc(); if(!c) return {ok:false,err:"未連到伺服器"};
+  try{
+    const { error } = await c.from(BC_TABLE)
+      .update({ sig:state.sig, fc:state.fc, msg:state.msg, updated_at:new Date().toISOString() }).eq("id",1);
+    if(error) return {ok:false,err:error.message};
+    _bcStamp=null;
+    return {ok:true};
+  }catch(e){ return {ok:false,err:(e&&e.message)||String(e)}; }
+}
+
 /* ---------- 載入 / 刷新 ---------- */
 async function load(){
   try{
@@ -528,27 +564,32 @@ document.getElementById("sigset").addEventListener("click",e=>{
 });
 document.getElementById("fc").addEventListener("change",e=>{ state.fc=e.target.checked; writeHash(); render(); });
 document.getElementById("msgin").addEventListener("input",e=>{ state.msg=e.target.value; writeHash(); render(); });
-document.getElementById("confirmupd").addEventListener("click",()=>{
+document.getElementById("confirmupd").addEventListener("click",async()=>{
   writeHash(); render();
   const c=document.getElementById("confirmed");
+  c.textContent="廣播緊… Broadcasting…";
+  const r=await broadcastNow();
+  if(!r.ok){ c.textContent="⚠ 廣播失敗："+r.err+"（攤主部機可能收唔到更新，請再試一次）"; return; }
   if(state.sig==="none" && !state.fc && !(state.msg && state.msg.trim())){
-    c.textContent="ℹ️ 而家係「無 / 已除下」—— 攤主會睇實時雨量自動判斷。要派俾攤主就撳「複製分享連結」。";
+    c.textContent="✓ 已更新：回復雨量自動判斷。攤主部機會喺約 30 秒內自動更新。";
   } else {
-    c.textContent="✓ 狀態已更新（"+fmtTime(state.setAt)+"）。下一步：撳「複製分享連結」貼俾攤主，佢哋一開連結就見到。";
+    c.textContent="✓ 狀態已廣播（"+fmtTime(state.setAt)+"）。攤主部機會自動更新，唔使再派 link。";
   }
 });
 document.getElementById("copy").addEventListener("click",async()=>{
-  writeHash();
-  const url=location.href;
+  const url=location.origin+location.pathname;   // 固定連結，派一次就夠；之後你更新，攤主自動收到
   const note=document.getElementById("copied");
-  try{ await navigator.clipboard.writeText(url); note.textContent="已複製連結 — 貼去攤主群組即可。"; }
+  try{ await navigator.clipboard.writeText(url); note.textContent="已複製固定連結 — 派一次俾攤主就得；之後你更新，佢哋部機會自動更新。"; }
   catch{ note.textContent=url; }
-  setTimeout(()=>note.textContent="",6000);
+  setTimeout(()=>note.textContent="",7000);
 });
-document.getElementById("reset").addEventListener("click",()=>{
+document.getElementById("reset").addEventListener("click",async()=>{
   state.sig="none"; state.fc=false; state.msg=""; writeHash(); render();
-  document.getElementById("copied").textContent="已清除信號 / 公告，回復雨量自動判斷。";
-  setTimeout(()=>document.getElementById("copied").textContent="",4000);
+  const m=document.getElementById("msgin"); if(m) m.value="";
+  const note=document.getElementById("copied"); note.textContent="清除緊…";
+  const r=await broadcastNow();
+  note.textContent = r.ok ? "已清除，回復雨量自動判斷；攤主部機會自動更新。" : "已喺本機清除（廣播失敗："+r.err+"）。";
+  setTimeout(()=>note.textContent="",5000);
 });
 document.getElementById("refresh").addEventListener("click",load);
 
@@ -579,9 +620,10 @@ document.getElementById("lockbtn").addEventListener("click", lockOrg);
 /* ---------- init ---------- */
 readHash();
 if(!location.hash.slice(1)) restoreStatus();   // 冇 hash（例如開 bare 網址）→ 還原部機上次設定嘅狀態
-render(); load();
+render(); load(); fetchBroadcast();
 setInterval(load, CFG.refreshMs);
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden) load(); });
+setInterval(fetchBroadcast, 30000);            // 攤主部機每 30 秒讀返大會最新狀態（即時廣播）
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ load(); fetchBroadcast(); } });
 </script>
 </body>
 </html>
