@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>問卷答案 · 工作人員</title>
+<style>
+  :root{ --bg:#fffdf6; --ink:#1d1b1a; --mut:#76706a; --line:#ece1cd; --red:#ec1c24; --green:#1fa971; --yellow:#ffc20e; --teal:#14a08f; }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{max-width:780px; margin:0 auto; padding:16px 14px calc(44px + env(safe-area-inset-bottom)); background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .nav{display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap}
+  .nav a{font-size:12px; font-weight:800; text-decoration:none; color:var(--mut); border:2px solid var(--line); border-radius:999px; padding:6px 11px}
+  .nav a:active{transform:scale(.97)}
+  h1{font-size:20px; font-weight:800; margin:2px 0 2px}
+  .sub{font-size:12.5px; color:var(--mut); margin-bottom:16px}
+  input{width:100%; font:inherit; font-size:16px; padding:11px 12px; border:2px solid var(--ink); border-radius:10px; margin-bottom:9px; background:#fff; color:var(--ink)}
+  .btn{font:inherit; font-weight:800; font-size:14px; padding:11px 15px; border-radius:11px; border:2.5px solid var(--ink); background:var(--ink); color:#fff; cursor:pointer}
+  .btn.alt{background:#fff; color:var(--ink)}
+  .btn.go{background:var(--green); border-color:var(--green)}
+  .btn:active{transform:scale(.98)}
+  .bar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:13px}
+  .count{font-weight:800; font-size:16px; margin-right:auto}
+  .resp{border:2px solid var(--line); border-radius:14px; padding:12px 13px; margin-bottom:11px; background:#fff; box-shadow:0 3px 0 rgba(0,0,0,.03)}
+  .rh{display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-bottom:1.5px dashed var(--line); padding-bottom:7px; margin-bottom:8px}
+  .code{font-weight:800; font-size:14px; letter-spacing:.05em; color:var(--teal)}
+  .t{font-size:11.5px; color:var(--mut); white-space:nowrap}
+  .qa{font-size:13px; margin:5px 0; display:flex; gap:9px; align-items:baseline}
+  .ql{color:var(--mut); font-weight:700; flex:0 0 44%; max-width:44%}
+  .qv{font-weight:600; flex:1}
+  .status{font-size:13px; font-weight:700; margin:10px 0; min-height:18px}
+  .err{color:var(--red)}
+  .empty{text-align:center; color:var(--mut); padding:42px 0; font-weight:600; line-height:1.8}
+  .lock{font-size:12px; color:var(--mut); margin-top:10px; line-height:1.6}
+</style>
+</head>
+<body>
+<div class="nav"><a href="./">🌦 天氣</a><a href="market.html">🗺 攤主</a><a href="gallery.html">📸 相片牆</a><a href="survey.html">📝 問卷</a></div>
+<h1>📊 問卷答案 · 工作人員</h1>
+<div class="sub">大會專用 —— 登入後睇晒所有問卷回應，可一鍵匯出 CSV（Excel／Numbers 可開）。</div>
+<div id="app"><div class="status">載入緊…</div></div>
+
+<script type="module">
+const SB_URL  = "https://pofaxxvjcdugqimummsr.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners";
+const TABLE   = "survey_responses";
+
+/* q1–q18 對應問題（同 survey.html 一致；CSV 欄名同畫面標籤都用呢個）*/
+const QLABELS = [
+  {k:"q1",      label:"Q1 您的身份"},
+  {k:"q1_from", label:"Q1b 遊客來自"},
+  {k:"q2",      label:"Q2 年齡範圍"},
+  {k:"q3",      label:"Q3 如何前來"},
+  {k:"q4",      label:"Q4 得悉途徑（多選）"},
+  {k:"q5",      label:"Q5 最喜歡內容（多選）"},
+  {k:"q6",      label:"Q6 是否到澳主因"},
+  {k:"q7",      label:"Q7 來此主因"},
+  {k:"q8",      label:"Q8 延長留澳"},
+  {k:"q9",      label:"Q9 鄰近社區消費"},
+  {k:"q10",     label:"Q10 周邊消費金額"},
+  {k:"q11",     label:"Q11 知道中銀優惠"},
+  {k:"q12",     label:"Q12 優惠鼓勵消費"},
+  {k:"q13",     label:"Q13 整體吸引力（1-10）"},
+  {k:"q14",     label:"Q14 消費金額（含票）"},
+  {k:"q15",     label:"Q15 提升片區認識（1-10）"},
+  {k:"q16",     label:"Q16 願否再到訪"},
+  {k:"q17",     label:"Q17 整體滿意度（1-10）"},
+  {k:"q18",     label:"Q18 建議／意見"}
+];
+
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let sb=null, rows=[];
+
+async function getSb(){
+  if(sb) return sb;
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  sb = createClient(SB_URL, SB_ANON);   // 預設 persistSession：登入一次記住
+  return sb;
+}
+function fmtTime(s){ try{ return new Date(s).toLocaleString("zh-HK",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}); }catch(e){ return s||""; } }
+function fmtVal(v){ return Array.isArray(v) ? v.join("、") : (v==null?"":String(v)); }
+function hasVal(v){ return v!==undefined && v!=="" && !(Array.isArray(v) && !v.length); }
+
+async function render(){
+  app.innerHTML='<div class="status">載入緊…</div>';
+  const c = await getSb();
+  const { data:{ session } } = await c.auth.getSession();
+  if(!session){ return renderLogin(); }
+  const { data, error } = await c.from(TABLE).select("*").order("created_at",{ascending:false});
+  if(error){
+    app.innerHTML='<div class="status err">讀取失敗：'+esc(error.message)+'</div><button class="btn alt" id="lo">登出</button>';
+    $("#lo").onclick=logout; return;
+  }
+  rows = data || [];
+  let html='<div class="bar"><span class="count">共 '+rows.length+' 份回應</span>'+
+    '<button class="btn go" id="csv">⬇︎ 匯出 CSV</button>'+
+    '<button class="btn alt" id="rf">↻ 重新整理</button>'+
+    '<button class="btn alt" id="lo">登出</button></div>';
+  if(!rows.length){
+    html+='<div class="empty">仲未有人填問卷 📝<br>有人提交就會喺度出現。</div>';
+  } else {
+    html += rows.map(r=>{
+      const a = r.answers || {};
+      const qa = QLABELS.filter(q=>hasVal(a[q.k]))
+        .map(q=>'<div class="qa"><span class="ql">'+esc(q.label)+'</span><span class="qv">'+esc(fmtVal(a[q.k]))+'</span></div>').join('');
+      return '<div class="resp"><div class="rh"><span class="code">'+esc(r.code||"—")+'</span>'+
+        '<span class="t">'+esc(fmtTime(r.created_at))+'</span></div>'+
+        (qa || '<div class="qa"><span class="qv" style="color:var(--mut)">（冇答案內容）</span></div>')+'</div>';
+    }).join('');
+  }
+  app.innerHTML = html;
+  $("#csv").onclick = exportCsv;
+  $("#rf").onclick = render;
+  $("#lo").onclick = logout;
+}
+
+function renderLogin(){
+  app.innerHTML='<input id="em" type="email" placeholder="工作人員 email" autocomplete="username">'+
+    '<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">'+
+    '<button class="btn" id="login" style="width:100%">登入睇答案</button>'+
+    '<div class="status" id="ls"></div>'+
+    '<div class="lock">🔒 只有大會工作人員（同相片牆審核同一個帳號）登入後先睇到答案；公眾交完問卷睇唔到人哋嘅。</div>';
+  $("#login").onclick = async ()=>{
+    $("#ls").textContent="登入緊…"; $("#ls").className="status";
+    const c = await getSb();
+    const { error } = await c.auth.signInWithPassword({ email:$("#em").value.trim(), password:$("#pw").value });
+    if(error){ $("#ls").textContent="登入失敗："+error.message; $("#ls").className="status err"; }
+    else render();
+  };
+}
+
+async function logout(){ const c=await getSb(); await c.auth.signOut(); render(); }
+
+function csvCell(v){ v = v==null?"":String(v); return /[",\r\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function exportCsv(){
+  if(!rows.length) return;
+  const header = ["提交時間","換領碼", ...QLABELS.map(q=>q.label)];
+  const lines = [ header.map(csvCell).join(",") ];
+  rows.forEach(r=>{
+    const a = r.answers || {};
+    const row = [ fmtTime(r.created_at), r.code||"", ...QLABELS.map(q=>fmtVal(a[q.k])) ];
+    lines.push(row.map(csvCell).join(","));
+  });
+  const csv = "﻿" + lines.join("\r\n");          // BOM：Excel 開 UTF-8 中文唔亂碼
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const ts = fmtTime(new Date().toISOString()).replace(/[\/: ]/g,"-");
+  const a = document.createElement("a");
+  a.href = url; a.download = "問卷答案-"+ts+".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+render();
+</script>
+</body>
+</html>
