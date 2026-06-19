@@ -204,7 +204,7 @@ if(!SB_URL || SB_URL.indexOf("__")===0){
     let code="IEC-"; for(let i=0;i<5;i++) code+="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)];
     try{
       const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-      const sb = createClient(SB_URL, SB_ANON);
+      const sb = createClient(SB_URL, SB_ANON, {auth:{persistSession:false, autoRefreshToken:false}});
       const { error } = await sb.from(TABLE).insert({ code, answers });
       if(error) throw error;
       form.style.display="none";
