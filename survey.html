@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ec1c24">
+<title>公眾問卷 · 填完換禮物 · 片區戶外生活節 2026（益隆）</title>
+<meta property="og:title" content="公眾問卷 · 填完換禮物 · 世界盃系列（益隆）">
+<meta property="og:description" content="填問卷分享你嘅活動體驗，完成即可向工作人員換領禮物 🎁">
+<meta property="og:image" content="https://ieclong.com/assets/kv-portrait.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fffdf6; --ink:#1d1b1a; --mut:#76706a; --line:#ece1cd; --card:#fff;
+    --red:#ec1c24; --cyan:#00a6e0; --teal:#14a08f; --green:#1fa971;
+    --yellow:#ffc20e; --orange:#f5821f; --purple:#7a57a5; --pink:#f49bc3; --magenta:#e6007e;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Baloo 2",-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    max-width:560px; margin:0 auto; padding:0 0 calc(40px + env(safe-area-inset-bottom)); overflow-x:hidden;
+  }
+  .wrap{padding:0 15px}
+  .nav{display:flex; gap:6px; margin:14px 0 2px}
+  .nav a{flex:1; text-align:center; font-weight:800; font-size:12.5px; text-decoration:none; padding:10px 5px; border-radius:999px; border:2.5px solid var(--ink); color:var(--ink); background:#fff; white-space:nowrap}
+  .nav a:active{transform:scale(.98)}
+  .kvbanner{width:100%; height:auto; display:block}
+  header h1{font-size:25px; font-weight:800; margin:14px 0 4px; line-height:1.2}
+  header .sub{font-size:12.5px; color:var(--mut); font-weight:600; line-height:1.6}
+  .giftnote{display:flex; align-items:center; gap:10px; background:#fff4d6; border:2.5px solid var(--yellow); border-radius:14px; padding:12px 14px; margin:14px 0 4px; font-weight:700; font-size:13.5px; line-height:1.5}
+  .giftnote .g{font-size:24px; flex:none}
+  .dots{height:14px; margin:13px 0 2px; background-image:radial-gradient(var(--red) 2px, transparent 2.4px); background-size:11px 11px; opacity:.5}
+
+  .q{border:2.5px solid var(--line); border-radius:16px; padding:14px 14px 12px; margin:12px 0; background:#fff}
+  .q.missing{border-color:var(--red); background:#fff5f4}
+  .q .qn{font-size:12px; font-weight:800; color:var(--cyan); letter-spacing:.04em}
+  .q .qz{font-size:15.5px; font-weight:700; margin:3px 0 1px; line-height:1.4}
+  .q .qe{font-size:11.5px; color:var(--mut); font-weight:600; margin-bottom:10px; line-height:1.4}
+  .q .req{color:var(--red)}
+
+  .opts{display:flex; flex-direction:column; gap:7px}
+  .opt{display:flex; align-items:flex-start; gap:9px; border:2px solid var(--line); border-radius:11px; padding:9px 11px; cursor:pointer; background:#fff}
+  .opt:active{transform:scale(.995)}
+  .opt input{margin-top:3px; flex:none; width:18px; height:18px; accent-color:var(--red)}
+  .opt.sel{border-color:var(--ink); background:#fff7e6}
+  .opt .ot{font-size:13.5px; font-weight:600; line-height:1.35}
+  .opt .oe{color:var(--mut); font-size:11px; font-weight:600}
+  .frombox{margin-top:8px}
+  .frombox input, .q textarea{width:100%; font:inherit; font-size:16px; padding:10px 12px; border:2.5px solid var(--ink); border-radius:11px; background:#fff; color:var(--ink)}
+  .q textarea{min-height:76px; resize:vertical}
+
+  .scale{display:grid; grid-template-columns:repeat(5,1fr); gap:7px}
+  .scale button{font:inherit; font-weight:800; font-size:15px; padding:11px 0; border-radius:11px; border:2.5px solid var(--line); background:#fff; color:var(--ink); cursor:pointer}
+  .scale button.sel{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .scends{display:flex; justify-content:space-between; font-size:10.5px; color:var(--mut); font-weight:600; margin-top:5px}
+
+  .submit{width:100%; font:inherit; font-weight:800; font-size:17px; padding:16px; margin:18px 0 6px; border-radius:14px; border:3px solid var(--ink); background:var(--red); color:#fff; cursor:pointer}
+  .submit:active{transform:scale(.99)}
+  .submit:disabled{opacity:.55}
+  .formerr{font-size:13px; font-weight:700; color:var(--red); min-height:18px; margin-bottom:6px; line-height:1.5}
+
+  .done{text-align:center; padding:30px 10px}
+  .done .big{font-size:54px; line-height:1}
+  .done h2{font-size:26px; font-weight:800; margin:12px 0 2px}
+  .done p{font-size:14px; color:var(--mut); font-weight:600; margin:2px 0}
+  .giftcode{display:inline-block; font-weight:800; font-size:30px; letter-spacing:.12em; color:var(--red); background:#fff5f4; border:3px dashed var(--red); border-radius:14px; padding:14px 22px; margin:18px 0 10px}
+  .giftmsg{font-size:15px !important; color:var(--ink) !important; font-weight:700 !important; line-height:1.7; margin-top:6px}
+  .notready{text-align:center; padding:44px 18px; line-height:1.9; font-weight:700; background:#fff7e6; border:2px dashed var(--yellow); border-radius:16px; margin-top:18px; color:#8a6d1a}
+
+  footer{margin-top:26px; padding-top:16px; border-top:3px dotted var(--line); font-size:11px; color:var(--mut); font-weight:600; line-height:1.6}
+  footer a{color:var(--cyan); font-weight:800}
+</style>
+</head>
+<body>
+
+<img class="kvbanner" src="assets/kv-landscape.jpg" alt="片區戶外生活節 2026 · 世界盃系列活動 @ 益隆炮竹廠">
+
+<div class="wrap">
+  <nav class="nav"><a href="./">🌦 天氣</a><a href="market.html">🗺 攤主地圖</a><a href="gallery.html">📸 相片牆</a></nav>
+  <header>
+    <h1>公眾問卷 · 填完換禮物</h1>
+    <div class="sub">Customer Questionnaire — 分享你嘅活動體驗，幫助大會優化。資料只用於活動總結。<br>The information collected is used only for event evaluation.</div>
+  </header>
+
+  <div class="giftnote"><span class="g">🎁</span><span>填完成個問卷 → 完成畫面會出一個「換領碼」→ 向工作人員出示即可換領禮物。<br><span style="color:var(--mut)">Complete the survey, then show the redemption code to staff for your gift.</span></span></div>
+  <div class="dots"></div>
+
+  <form id="form"></form>
+  <div id="done"></div>
+
+  <footer>
+    <p>主辦：澳門街坊會聯合總會 × 片區發展中心　|　益隆炮竹廠舊址 · 氹仔</p>
+    <p><a href="./">← 返市集天氣狀態</a></p>
+  </footer>
+</div>
+
+<script type="module">
+/* ===== Supabase（同相片牆共用 project）===== */
+const SB_URL  = "https://pofaxxvjcdugqimummsr.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners";
+const TABLE   = "survey_responses";
+/* ============================================================= */
+
+const Q = [
+ {id:1, type:"single", req:true, zh:"您的身份", en:"You are", from:true, opts:[{zh:"本地居民",en:"Local Resident"},{zh:"遊客",en:"Tourist"}]},
+ {id:2, type:"single", req:true, zh:"您的年齡範圍", en:"Your age range", opts:[{zh:"18 歲以下",en:"Under 18"},{zh:"18-24",en:"18-24"},{zh:"25-34",en:"25-34"},{zh:"35-44",en:"35-44"},{zh:"45 歲或以上",en:"45 or above"}]},
+ {id:3, type:"single", req:true, zh:"您今日是如何前來活動場地的？", en:"How did you get here today?", opts:[{zh:"公共巴士",en:"Bus"},{zh:"輕軌",en:"Light Rail"},{zh:"自行駕駛",en:"Self-drive"},{zh:"的士",en:"Taxi"},{zh:"步行",en:"Walk"},{zh:"飛機",en:"Airplane"},{zh:"船",en:"Ferry"},{zh:"其他",en:"Others"}]},
+ {id:4, type:"multi", req:false, zh:"您是通過甚麼途徑得悉此次活動的？（可多選）", en:"How did you know about this event? (multiple)", opts:[{zh:"社交平台",en:"Social Media"},{zh:"報章、雜誌、報導、電視或電台",en:"Newspapers / Magazines / TV / Radio"},{zh:"線下廣告宣傳品",en:"Offline Advertising"},{zh:"友人告知",en:"Friends informed"},{zh:"其他",en:"Others"}]},
+ {id:5, type:"multi", req:false, zh:"您最喜歡哪些活動內容或元素？（可多選）", en:"Which activities did you enjoy the most? (multiple)", opts:[{zh:"世界盃特色市集",en:"World Cup Themed Market"},{zh:"運動球衣快閃店",en:"Sports Jersey Pop-up"},{zh:"足球體驗工作坊",en:"Football Workshops"},{zh:"足球挑戰",en:"Football Challenges"},{zh:"音樂派對",en:"Music Party"},{zh:"大型互動裝置",en:"Large Interactive Installations"}]},
+ {id:6, type:"single", req:true, zh:"本次活動是否為您到訪澳門的主因，或增加您來澳的動力？", en:"Was this event the main reason for / motivation to visit Macao?", opts:[{zh:"是",en:"Yes"},{zh:"否",en:"No"}]},
+ {id:7, type:"single", req:true, zh:"您今日來到這裏主要是因為", en:"What brought you here today?", opts:[{zh:"專程來澳門參加這個活動",en:"Came specifically for this event"},{zh:"剛好路過",en:"Just passing by"}]},
+ {id:8, type:"single", req:true, zh:"參與本次活動有否延長您留澳遊覽的時間？", en:"Did this event make you stay longer in Macau?", opts:[{zh:"延長半天以下",en:"Less than half a day"},{zh:"延長半天或以上",en:"Half a day or more"},{zh:"延長一天或以上（過夜）",en:"One day or more (overnight)"}]},
+ {id:9, type:"single", req:true, zh:"在活動前或後，您有否到鄰近社區消費？", en:"Did you shop in nearby communities before/after the event?", opts:[{zh:"是",en:"Yes"},{zh:"否",en:"No"}]},
+ {id:10, type:"single", req:true, zh:"因參與本次活動而到周邊商戶消費金額約為", en:"Extra spending at nearby merchants due to this event", opts:[{zh:"沒有額外消費",en:"No extra spending"},{zh:"MOP 500 以下",en:"Less than MOP 500"},{zh:"MOP 500 - 1,000",en:"MOP 500 - 1,000"},{zh:"MOP 1,000 - 1,500",en:"MOP 1,000 - 1,500"},{zh:"MOP 1,500 以上",en:"More than MOP 1,500"}]},
+ {id:11, type:"single", req:true, zh:"您是否知道本次活動與中國銀行聯動推出消費立減優惠？", en:"Did you know this event partnered with Bank of China for instant discounts?", opts:[{zh:"知道",en:"Yes"},{zh:"不知道",en:"No"}]},
+ {id:12, type:"single", req:true, zh:"這些優惠是否鼓勵了您在片區內進行更多消費？", en:"Did these rewards encourage you to spend more in this district?", opts:[{zh:"是",en:"Yes"},{zh:"否",en:"No"}]},
+ {id:13, type:"scale", req:true, zh:"您認為本次活動的整體吸引力如何？", en:"Overall attractiveness of the event", lo:"非常不吸引 Not attractive", hi:"非常吸引 Very attractive"},
+ {id:14, type:"single", req:true, zh:"您在本次活動 / 行程中的消費金額（含購票）", en:"Total spending during the event (including tickets)", opts:[{zh:"0-100 MOP",en:"0-100 MOP"},{zh:"101-300 MOP",en:"101-300 MOP"},{zh:"301-500 MOP",en:"301-500 MOP"},{zh:"501-1000 MOP",en:"501-1000 MOP"},{zh:"1000 元以上",en:"Above 1000 MOP"}]},
+ {id:15, type:"scale", req:true, zh:"本次活動是否提升您對該片區的認識？", en:"Did this event enhance your understanding of the district?", lo:"完全沒有 Not at all", hi:"提升很大 Very much"},
+ {id:16, type:"single", req:true, zh:"您未來是否願意再次到訪該片區？", en:"Would you consider visiting this district again?", opts:[{zh:"會",en:"Yes"},{zh:"視情況",en:"Maybe"},{zh:"不會",en:"No"}]},
+ {id:17, type:"scale", req:true, zh:"您對本次活動的整體滿意度", en:"Overall satisfaction with the event", lo:"非常不滿意 Very dissatisfied", hi:"非常滿意 Very satisfied"},
+ {id:18, type:"text", req:false, zh:"您對本次活動有何建議或意見？", en:"Any suggestions for improving the event?"}
+];
+
+const $ = s => document.querySelector(s);
+const form = $("#form");
+const answers = {};
+
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+if(!SB_URL || SB_URL.indexOf("__")===0){
+  form.style.display="none";
+  $("#done").innerHTML='<div class="notready">📋 問卷即將開放<br><span style="font-weight:600;font-size:13px">設定完成後就可以填問卷換禮物。</span></div>';
+} else {
+  // render questions
+  Q.forEach(q=>{
+    const card=document.createElement("div");
+    card.className="q"; card.id="q"+q.id;
+    let body="";
+    if(q.type==="single"||q.type==="multi"){
+      const inp=q.type==="single"?"radio":"checkbox";
+      body='<div class="opts">'+q.opts.map((o,i)=>
+        '<label class="opt"><input type="'+inp+'" name="q'+q.id+'" value="'+esc(o.zh)+'"><span class="ot">'+esc(o.zh)+'<span class="oe"> · '+esc(o.en)+'</span></span></label>'
+      ).join('')+'</div>';
+      if(q.from) body+='<div class="frombox"><input type="text" id="q'+q.id+'from" maxlength="40" placeholder="（遊客）來自邊度？ Tourist — from?"></div>';
+    } else if(q.type==="scale"){
+      body='<div class="scale">'+Array.from({length:10},(_,i)=>'<button type="button" data-v="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div>'+
+           '<div class="scends"><span>1 · '+esc(q.lo)+'</span><span>10 · '+esc(q.hi)+'</span></div>';
+    } else if(q.type==="text"){
+      body='<textarea id="q'+q.id+'txt" maxlength="500" placeholder="（可選）寫低你嘅諗法… Optional"></textarea>';
+    }
+    card.innerHTML='<div class="qn">Q'+q.id+(q.req?' <span class="req">*</span>':'')+'</div><div class="qz">'+esc(q.zh)+'</div><div class="qe">'+esc(q.en)+'</div>'+body;
+    form.appendChild(card);
+  });
+  const submit=document.createElement("button");
+  submit.className="submit"; submit.id="submit"; submit.type="button"; submit.textContent="提交問卷 · 換領禮物 🎁";
+  const ferr=document.createElement("div"); ferr.className="formerr"; ferr.id="formerr";
+  form.appendChild(ferr); form.appendChild(submit);
+
+  // interactions
+  form.addEventListener("change",e=>{
+    const t=e.target;
+    if(t.name && t.name.indexOf("q")===0){
+      const card=t.closest(".q"); card.classList.remove("missing");
+      if(t.type==="radio"){ card.querySelectorAll(".opt").forEach(o=>o.classList.toggle("sel", o.contains(t))); answers[t.name]=t.value; }
+      else { const o=t.closest(".opt"); o.classList.toggle("sel", t.checked); answers[t.name]=[...card.querySelectorAll('input:checked')].map(x=>x.value); }
+    }
+  });
+  form.addEventListener("click",e=>{
+    const b=e.target.closest(".scale button"); if(!b) return;
+    const card=b.closest(".q"); card.classList.remove("missing");
+    card.querySelectorAll(".scale button").forEach(x=>x.classList.toggle("sel",x===b));
+    answers["q"+card.id.slice(1)]=+b.dataset.v;
+  });
+
+  $("#submit").addEventListener("click", submitSurvey);
+
+  async function submitSurvey(){
+    // validate
+    let firstMissing=null;
+    Q.forEach(q=>{
+      if(!q.req) return;
+      const v=answers["q"+q.id];
+      const ok = q.type==="multi" ? (Array.isArray(v)&&v.length) : (v!==undefined && v!=="" && !(Array.isArray(v)&&!v.length));
+      const card=$("#q"+q.id);
+      if(!ok){ card.classList.add("missing"); if(!firstMissing) firstMissing=card; }
+    });
+    if(firstMissing){
+      $("#formerr").textContent="仲有必答題未填（紅色嗰啲）。Please answer the highlighted questions.";
+      firstMissing.scrollIntoView({behavior:"smooth",block:"center"});
+      return;
+    }
+    $("#formerr").textContent="";
+    const btn=$("#submit"); btn.disabled=true; btn.textContent="提交緊… Submitting…";
+    // collect extras
+    const fromEl=$("#q1from"); if(fromEl && fromEl.value.trim()) answers["q1_from"]=fromEl.value.trim();
+    const txtEl=$("#q18txt"); if(txtEl && txtEl.value.trim()) answers["q18"]=txtEl.value.trim();
+    // code: IEC-XXXXX
+    let code="IEC-"; for(let i=0;i<5;i++) code+="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)];
+    try{
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const sb = createClient(SB_URL, SB_ANON);
+      const { error } = await sb.from(TABLE).insert({ code, answers });
+      if(error) throw error;
+      form.style.display="none";
+      $("#done").innerHTML =
+        '<div class="done"><div class="big">🎉</div><h2>多謝參與！</h2><p>Thank you for your feedback!</p>'+
+        '<div class="giftcode">'+esc(code)+'</div>'+
+        '<p class="giftmsg">🎁 請向工作人員出示呢個畫面（連換領碼）換領禮物。<br>Show this screen with the code to our staff to redeem your gift.</p>'+
+        '<p style="margin-top:14px">想睇市集天氣？<a href="./" style="color:var(--cyan);font-weight:800">返天氣狀態 →</a></p></div>';
+      $("#done").scrollIntoView({behavior:"smooth",block:"start"});
+    }catch(err){
+      btn.disabled=false; btn.textContent="提交問卷 · 換領禮物 🎁";
+      $("#formerr").textContent="提交失敗，請稍後再試或搵工作人員。（"+(err.message||err)+"）";
+    }
+  }
+}
+</script>
+</body>
+</html>
