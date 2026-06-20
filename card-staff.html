@@ -136,6 +136,8 @@ function renderLookup(msg, cls){
   $("#find").onclick = go;
   $("#code").addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
   $("#lo").onclick = logout;
+  const pre = new URLSearchParams(location.search).get("code");
+  if(pre){ $("#code").value = normCode(pre); history.replaceState(null,"",location.pathname); go(); }
 }
 
 function renderCard(){
