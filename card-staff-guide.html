@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>集點卡蓋章 · 工作人員操作指引</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#fffdf6; --ink:#1d1b1a; --mut:#6f6963; --line:#ece1cd; --red:#ec1c24; --green:#1fa971; --yellow:#ffc20e; --teal:#14a08f; --purple:#7a57a5; --orange:#f5821f; }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{ background:var(--bg); color:var(--ink);
+    font-family:"Baloo 2",-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.6;
+    max-width:600px; margin:0 auto; padding:18px 16px calc(44px + env(safe-area-inset-bottom)); }
+  h1{font-size:23px; font-weight:800; margin:2px 0 3px}
+  .sub{font-size:12.5px; color:var(--mut); font-weight:600; margin-bottom:14px}
+  .quick{border:3px solid var(--ink); border-radius:16px; background:#fff; padding:13px 15px; box-shadow:0 5px 0 rgba(0,0,0,.05)}
+  .quick .qt{font-size:12px; font-weight:800; color:var(--purple); letter-spacing:.05em; margin-bottom:7px}
+  .kv{display:flex; gap:8px; font-size:14px; margin:5px 0}
+  .kv .k{flex:0 0 64px; color:var(--mut); font-weight:800; font-size:12.5px}
+  .kv .v{flex:1; font-weight:700; word-break:break-all}
+  .kv .v code{background:var(--bg); border:1.5px solid var(--line); border-radius:6px; padding:1px 6px; font-family:inherit}
+  h2{font-size:18px; font-weight:800; margin:24px 0 4px; display:flex; align-items:center; gap:8px}
+  .step{counter-reset:none}
+  ol{margin:8px 0; padding-left:22px} ol li{margin:6px 0; font-size:14px; font-weight:600}
+  ul{margin:6px 0; padding-left:20px} ul li{margin:5px 0; font-size:13.5px; font-weight:600}
+  b.hl{color:var(--red)}
+  .card{border:2.5px solid var(--line); border-radius:14px; background:#fff; padding:6px 14px; margin-top:8px}
+  table{width:100%; border-collapse:collapse; font-size:13.5px; margin-top:8px}
+  th,td{text-align:left; padding:8px 6px; border-bottom:1px dashed var(--line)}
+  th{font-weight:800; color:var(--mut); font-size:12px}
+  td.c{font-weight:800; white-space:nowrap}
+  .rn{display:inline-block; min-width:24px; text-align:center; background:var(--purple); color:#fff; font-weight:800; border-radius:999px; padding:1px 8px; font-size:12.5px}
+  .tip{border:2px solid var(--yellow); background:#fffbe9; border-radius:12px; padding:11px 14px; margin-top:10px; font-size:13px; font-weight:600; line-height:1.65}
+  .tip b{color:var(--orange)}
+  .warn{border:2px solid var(--red); background:#fff1f0; border-radius:12px; padding:11px 14px; margin-top:10px; font-size:13px; font-weight:600; line-height:1.65}
+  .warn b{color:var(--red)}
+  .faq{border-bottom:1px dashed var(--line); padding:9px 0}
+  .faq .q{font-weight:800; font-size:13.5px}
+  .faq .a{font-size:13px; font-weight:600; color:#333; margin-top:2px}
+  a.gobtn{display:flex; align-items:center; justify-content:center; gap:7px; width:100%; font-weight:800; font-size:15px; padding:13px; margin-top:14px; border-radius:12px; border:3px solid var(--ink); background:var(--green); color:#fff; text-decoration:none}
+  footer{margin-top:26px; padding-top:14px; border-top:3px dotted var(--line); font-size:11.5px; color:var(--mut); font-weight:600}
+</style>
+</head>
+<body>
+
+<h1>📇 集點卡蓋章 · 工作人員操作指引</h1>
+<div class="sub">世界盃系列活動（益隆）· 電子集點卡蓋章 / 核消</div>
+
+<div class="quick">
+  <div class="qt">一分鐘上手</div>
+  <div class="kv"><span class="k">蓋章工具</span><span class="v"><code>ieclong.com/card-staff</code></span></div>
+  <div class="kv"><span class="k">登入帳號</span><span class="v"><code>moria@bolmacau.com</code><br><span style="color:var(--mut);font-weight:600;font-size:12px">（密碼由大會提供，唔好畀參加者）</span></span></div>
+  <div class="kv"><span class="k">流程</span><span class="v">參加者報卡號 → 你輸入 → 蓋章 / 核消</span></div>
+</div>
+
+<a class="gobtn" href="card-staff.html">▶ 開蓋章工具</a>
+
+<h2>① 登入（開工時做一次）</h2>
+<ol>
+  <li>手機瀏覽器開 <code>ieclong.com/card-staff</code></li>
+  <li>輸入 email <b class="hl">moria@bolmacau.com</b> + 密碼 → 撳「登入」</li>
+  <li>登入一次，同一部手機之後會記住，唔使再登入</li>
+</ol>
+
+<h2>② 幫參加者蓋章 🏅</h2>
+<ol>
+  <li>叫參加者開「<b>電子集點卡</b>」（活動頁個黃色掣，或 <code>ieclong.com/card</code>），報佢個<b>卡號</b>（樣 <b class="hl">IEC-XXXXX</b>）</li>
+  <li>喺最上面格輸入卡號 → 撳「<b>查卡</b>」</li>
+  <li>見到佢張卡 → 撳返佢做咗嗰個分類嘅蓋章掣（見下面對照表）</li>
+  <li>到上限嘅分類，個掣會<b>自動變灰鎖住</b>，唔會蓋多</li>
+  <li>參加者部手機會喺 <b>25 秒內自動更新</b>，唔使佢 refresh</li>
+</ol>
+<div class="tip">💡 一個參加者連續蓋幾個分類冇問題，逐個分類撳；撳完想查下一位，撳「<b>查另一張卡</b>」。</div>
+
+<h2>③ 核消換獎（喺草地旁服務處 A29–A30）</h2>
+<ol>
+  <li>輸入參加者卡號 → 查卡</li>
+  <li>夠章嘅獎賞會出「<b>核消 →</b>」掣（未夠章嘅會顯示「仲爭 X 章」）</li>
+  <li><b class="hl">確認畀咗禮物之後</b>，先撳「核消」→ 變「已核消 ✔︎」</li>
+  <li>已核消嘅獎賞唔會再出掣，<b>防止重複領取</b></li>
+</ol>
+<div class="warn">⚠️ 如果參加者<b>同時用緊實體紙卡</b>：核消電子卡之後，<b>請喺實體卡都劃走/蓋「已換」</b>，免佢兩邊各領一次。</div>
+
+<h2>🏅 印章對照表</h2>
+<div class="card">
+<table>
+  <tr><th>分類</th><th>點樣儲</th><th>上限</th></tr>
+  <tr><td class="c">🎮 遊戲</td><td>每玩一個指定遊戲 +1</td><td class="c">4</td></tr>
+  <tr><td class="c">🛠 工作坊</td><td>完成一個指定工作坊 +2</td><td class="c">2</td></tr>
+  <tr><td class="c">📸 打卡</td><td>打卡拍照向工作人員展示 +1</td><td class="c">2</td></tr>
+  <tr><td class="c">🧾 場內消費</td><td>場內市集消費憑單 +1</td><td class="c">3</td></tr>
+  <tr><td class="c">🏪 合作商戶</td><td>氹仔合作商戶憑即日單 +1</td><td class="c">1</td></tr>
+</table>
+</div>
+<div class="sub" style="margin-top:8px">每張卡最多 <b>12</b> 個印章。</div>
+
+<h2>🎁 獎賞對照表</h2>
+<div class="card">
+<table>
+  <tr><th>印章</th><th>獎賞</th></tr>
+  <tr><td><span class="rn">2</span></td><td>立減優惠券 1 張</td></tr>
+  <tr><td><span class="rn">4</span></td><td>限定小禮物 1 份</td></tr>
+  <tr><td><span class="rn">8</span></td><td>限定中禮物 1 份</td></tr>
+  <tr><td><span class="rn">10</span></td><td>限定工作坊體驗 1 次</td></tr>
+  <tr><td><span class="rn">11</span></td><td>限定大禮物 1 份 🎉</td></tr>
+</table>
+</div>
+<div class="sub" style="margin-top:8px">逐級可換（數量有限，送完即止）。</div>
+
+<h2>❓ 常見情況</h2>
+<div class="faq"><div class="q">搵唔到卡？</div><div class="a">核對卡號（<code>IEC-</code> 開頭 + 5 個英文/數字）。或叫參加者喺電子卡頁面重新整理一次。</div></div>
+<div class="faq"><div class="q">參加者冇手機 / 唔想用電子卡？</div><div class="a">照用實體紙卡蓋印，唔影響。電子卡係額外方便。</div></div>
+<div class="faq"><div class="q">蓋錯咗想取消？</div><div class="a">v1 暫時喺工具改唔到（只可加章），請搵大會喺後台處理。</div></div>
+<div class="faq"><div class="q">參加者換咗手機 / 清咗瀏覽器？</div><div class="a">電子卡會消失，以<b>實體卡為憑</b>。叫佢重新開一張電子卡（會係新卡號、由 0 開始）。</div></div>
+<div class="faq"><div class="q">驚重複蓋 / 重複核消？</div><div class="a">系統有防護：到上限自動鎖、已核消唔再出掣。放心。</div></div>
+
+<div class="warn" style="margin-top:18px">🔒 <b>唔好同參加者講登入密碼。</b>蓋章工具只係工作人員用。</div>
+
+<footer>
+  片區戶外生活節 2026 · 世界盃系列（益隆）｜ 主辦：澳門街坊會聯合總會 × 片區發展中心
+</footer>
+</body>
+</html>
