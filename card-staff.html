@@ -66,7 +66,8 @@ const TABLE   = "cards";
 const CATS = [
   {k:"game",     emoji:"🎮", label:"遊戲",     max:4, inc:1},
   {k:"workshop", emoji:"🛠", label:"工作坊",   max:2, inc:1},
-  {k:"checkin",  emoji:"📸", label:"打卡",     max:2, inc:1},
+  {k:"checkin",  emoji:"📸", label:"打卡",     max:1, inc:1},
+  {k:"survey",   emoji:"📋", label:"問卷",     max:1, inc:1},
   {k:"market",   emoji:"🧾", label:"場內消費", max:3, inc:1},
   {k:"partner",  emoji:"🏪", label:"合作商戶", max:1, inc:1},
 ];
@@ -83,7 +84,7 @@ const STAFF_LIMITS = {
   "game-a@bolmacau.com":   {game:2},      // 🎮 遊戲·內場A
   "game-b@bolmacau.com":   {game:2},      // 🎮 遊戲·內場B
   "workshop@bolmacau.com": {workshop:1},  // 🛠 工作坊
-  "center@bolmacau.com":   {workshop:2, checkin:2, market:3, partner:1, redeem:true}, // 🏛 大會中心：工作坊2 + 打卡/消費/商戶 + 核消（唔蓋遊戲）
+  "center@bolmacau.com":   {workshop:2, checkin:1, survey:1, market:3, partner:1, redeem:true}, // 🏛 大會中心：工作坊2 + 打卡/問卷/消費/商戶 + 核消（唔蓋遊戲）
 };
 
 const $ = s => document.querySelector(s);
