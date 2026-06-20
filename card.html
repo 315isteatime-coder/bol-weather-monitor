@@ -101,12 +101,12 @@ const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const TABLE   = "cards";
 const CATS = [
   {k:"game",     emoji:"🎮", label:"遊戲",     max:4},
-  {k:"workshop", emoji:"🛠", label:"工作坊",   max:1},
+  {k:"workshop", emoji:"🛠", label:"工作坊",   max:2},
   {k:"checkin",  emoji:"📸", label:"打卡",     max:2},
   {k:"market",   emoji:"🧾", label:"場內消費", max:3},
   {k:"partner",  emoji:"🏪", label:"合作商戶", max:1},
 ];
-const TOTAL_MAX = CATS.reduce((s,c)=>s+c.max,0);   // 11
+const TOTAL_MAX = CATS.reduce((s,c)=>s+c.max,0);   // 12
 const TIERS = [2,4,8,10,11];
 const TIER_LABEL = {2:"立減優惠券 1 張",4:"限定小禮物 1 份",8:"限定中禮物 1 份",10:"限定工作坊體驗 1 次",11:"限定大禮物 1 份"};
 const LS_KEY = "iec_card_code";
