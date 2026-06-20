@@ -210,12 +210,15 @@ function renderCard(){
 
   let rewardsHtml;
   if(canRedeem()){
+    const used = redeemed.length>0;   // 每卡淨係換一次
     const rewards = TIERS.map(t=>{
-      if(redeemed.includes(t)) return '<div class="rwdone"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span>已核消 ✔︎</span></div>';
-      if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span class="ra">核消 →</span></button>';
+      if(redeemed.includes(t)) return '<div class="rwdone"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span>已換領 ✔︎</span></div>';
+      if(used) return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（此卡已換領，唔可再換）</div>';
+      if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span class="ra">換領 →</span></button>';
       return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（仲爭 '+(t-tot)+' 章）</div>';
     }).join('');
-    rewardsHtml = '<div class="sech">核消獎賞（夠章先出，核消後唔可重複）</div>'+rewards;
+    const hd = used ? '核消獎賞（此卡已換領 ✔︎，已鎖）' : '核消獎賞（每卡淨係換一次，揀一份夠到嘅）';
+    rewardsHtml = '<div class="sech">'+hd+'</div>'+rewards;
   } else {
     rewardsHtml = '<div class="sech">核消獎賞</div><div class="lock">🎁 核消喺服務處（A29–A30）由負責帳號處理；你呢個帳號淨係蓋章，唔出核消掣。</div>';
   }
@@ -259,16 +262,17 @@ async function doStamp(btn){
 async function doRedeem(btn){
   if(!canRedeem()){ setSt("你帳號唔負責核消（去服務處 A29–A30）","err"); return; }
   const tier = +btn.dataset.tier;
+  if(!confirm("確認換領「"+TIER_LABEL[tier]+"」？\n每張卡淨係可以換一次，換完就鎖，唔可以再換第二樣。")) return;
   btn.disabled=true;
   const c = await getSb();
   const { data:fresh, error:e1 } = await c.from(TABLE).select("redeemed").eq("code",cur.code).single();
-  if(e1){ setSt("寫入失敗："+e1.message,"err"); btn.disabled=false; return; }
+  if(e1){ setSt("讀取失敗："+e1.message,"err"); btn.disabled=false; return; }
   const redeemed = Array.isArray(fresh.redeemed)?fresh.redeemed.slice():[];
-  if(redeemed.includes(tier)){ setSt("呢個獎已核消過","err"); cur.redeemed=redeemed; renderCard(); return; }
+  if(redeemed.length>0){ setSt("⚠️ 呢張卡已經換領過（"+(TIER_LABEL[redeemed[0]]||"")+"），唔可以再換","err"); cur.redeemed=redeemed; renderCard(); return; }
   redeemed.push(tier);
   const { data, error:e2 } = await c.from(TABLE).update({redeemed}).eq("code",cur.code).select().single();
   if(e2){ setSt("寫入失敗："+e2.message,"err"); btn.disabled=false; return; }
-  cur = data; renderCard(); setSt("✓ 已核消："+TIER_LABEL[tier],"okc");
+  cur = data; renderCard(); setSt("✓ 已換領："+TIER_LABEL[tier]+"（此卡已鎖）","okc");
 }
 function setSt(t,cls){ const s=$("#st"); if(s){ s.textContent=t; s.className="status "+(cls||""); } }
 async function logout(){ const c=await getSb(); await c.auth.signOut(); renderLogin(); }
