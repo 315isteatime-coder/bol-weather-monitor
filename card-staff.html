@@ -60,7 +60,7 @@ const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const TABLE   = "cards";
 const CATS = [
   {k:"game",     emoji:"🎮", label:"遊戲",     max:4, inc:1},
-  {k:"workshop", emoji:"🛠", label:"工作坊",   max:2, inc:2},
+  {k:"workshop", emoji:"🛠", label:"工作坊",   max:2, inc:1},
   {k:"checkin",  emoji:"📸", label:"打卡",     max:2, inc:1},
   {k:"market",   emoji:"🧾", label:"場內消費", max:3, inc:1},
   {k:"partner",  emoji:"🏪", label:"合作商戶", max:1, inc:1},
@@ -69,11 +69,27 @@ const TOTAL_MAX = CATS.reduce((s,c)=>s+c.max,0);
 const TIERS = [2,4,8,10,11];
 const TIER_LABEL = {2:"立減優惠券 1 張",4:"限定小禮物 1 份",8:"限定中禮物 1 份",10:"限定工作坊體驗 1 次",11:"限定大禮物 1 份"};
 
+// ── 每帳號 · 每分類 · 每卡 蓋章上限 ───────────────────────────
+// key = 登入 email（細階）。value = {分類:每卡上限, redeem:可唔可核消}。
+// 同一分類可拆畀幾個帳號（遊戲 = 門口1 + 內場A2 + 內場B2），
+// 但每卡該分類總數仍受 CATS.max 封頂（遊戲封 4）。
+const STAFF_LIMITS = {
+  "door@bolmacau.com":       {game:1},                                      // 🎮 遊戲·門口
+  "game-a@bolmacau.com":     {game:2},                                      // 🎮 遊戲·內場A
+  "game-b@bolmacau.com":     {game:2},                                      // 🎮 遊戲·內場B
+  "workshop@bolmacau.com":   {workshop:1},                                  // 🛠 工作坊
+  "moria@bolmacau.com":      {checkin:2, market:3, partner:1, redeem:true}, // 📸🧾🏪 剩低章 + 核消
+  "moria62333139@gmail.com": {game:4, workshop:2, checkin:2, market:3, partner:1, redeem:true}, // 👑 大會總管
+};
+
 const $ = s => document.querySelector(s);
 const app = $("#app");
 const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const total = st => CATS.reduce((s,c)=>s+(st[c.k]||0),0);
-let sb=null, cur=null;   // cur = 目前查緊嗰張卡
+let sb=null, cur=null, staffEmail=null;   // cur = 查緊嗰張卡；staffEmail = 登入帳號 email（細階）
+function myLimits(){ return STAFF_LIMITS[(staffEmail||"").toLowerCase()] || {}; }
+function canRedeem(){ return !!myLimits().redeem; }
+function myCatCount(slog, k){ const m = slog && slog[k]; return (m && typeof m==="object" && !Array.isArray(m)) ? (m[staffEmail]||0) : 0; }
 
 async function getSb(){
   if(sb) return sb;
@@ -87,6 +103,7 @@ async function boot(){
   const c = await getSb();
   const { data:{ session } } = await c.auth.getSession();
   if(!session) return renderLogin();
+  staffEmail = (session.user.email||"").toLowerCase();
   renderLookup();
 }
 function renderLogin(){
@@ -99,7 +116,7 @@ function renderLogin(){
     const c = await getSb();
     const { error } = await c.auth.signInWithPassword({ email:$("#em").value.trim(), password:$("#pw").value });
     if(error){ $("#ls").textContent="登入失敗："+error.message; $("#ls").className="status err"; }
-    else renderLookup();
+    else boot();
   };
 }
 function renderLookup(msg, cls){
@@ -125,22 +142,46 @@ function renderLookup(msg, cls){
 function renderCard(){
   const st = cur.stamps||{}, redeemed = Array.isArray(cur.redeemed)?cur.redeemed:[];
   const tot = total(st);
-  let buttons = CATS.map(cat=>{
-    const n = Math.min(st[cat.k]||0, cat.max);
-    const full = n>=cat.max || tot>=TOTAL_MAX;
-    return '<button class="sbtn" data-cat="'+cat.k+'"'+(full?' disabled':'')+'>+'+cat.inc+' '+cat.emoji+' '+cat.label+
-      '<span class="n">'+n+' / '+cat.max+'</span></button>';
-  }).join('');
-  let rewards = TIERS.map(t=>{
-    if(redeemed.includes(t)) return '<div class="rwdone"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span>已核消 ✔︎</span></div>';
-    if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span class="ra">核消 →</span></button>';
-    return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（仲爭 '+(t-tot)+' 章）</div>';
-  }).join('');
+  const slog = cur.stamp_log||{};
+  const lim = myLimits();
+  const myCats = CATS.filter(cat => (lim[cat.k]||0) > 0);
+  const roleDesc = myCats.length ? myCats.map(c=>c.emoji+c.label+' '+lim[c.k]).join('　') : '冇蓋章權限';
+
+  let buttons;
+  if(!myCats.length){
+    buttons = '<div class="lock" style="grid-column:1/-1">⚠️ 呢個帳號未配置蓋章權限，淨係睇得卡。要蓋章請改用對應分類嘅工作人員帳號登入。</div>';
+  } else {
+    buttons = myCats.map(cat=>{
+      const n = Math.min(st[cat.k]||0, cat.max);   // 呢張卡該分類總數
+      const mine = myCatCount(slog, cat.k);        // 你帳號喺呢張卡蓋咗幾多
+      const cap = lim[cat.k];                      // 你帳號上限
+      const full = mine>=cap || n>=cat.max || tot>=TOTAL_MAX;
+      const lbl = mine>=cap ? '✓ 你帳號蓋夠'
+                : n>=cat.max ? '✓ 此分類已滿'
+                : ('+'+cat.inc+' '+cat.emoji+' '+cat.label);
+      return '<button class="sbtn" data-cat="'+cat.k+'"'+(full?' disabled':'')+'>'+lbl+
+        '<span class="n">卡 '+n+'/'+cat.max+'　·　你 '+mine+'/'+cap+'</span></button>';
+    }).join('');
+  }
+
+  let rewardsHtml;
+  if(canRedeem()){
+    const rewards = TIERS.map(t=>{
+      if(redeemed.includes(t)) return '<div class="rwdone"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span>已核消 ✔︎</span></div>';
+      if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span class="ra">核消 →</span></button>';
+      return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（仲爭 '+(t-tot)+' 章）</div>';
+    }).join('');
+    rewardsHtml = '<div class="sech">核消獎賞（夠章先出，核消後唔可重複）</div>'+rewards;
+  } else {
+    rewardsHtml = '<div class="sech">核消獎賞</div><div class="lock">🎁 核消喺服務處（A29–A30）由負責帳號處理；你呢個帳號淨係蓋章，唔出核消掣。</div>';
+  }
+
   app.innerHTML =
     '<div class="cardhd"><span class="cc">'+esc(cur.code)+'</span><span class="ct">共 <b>'+tot+'</b> / '+TOTAL_MAX+' 章</span></div>'+
+    '<div class="lock" style="margin:3px 0 0">👤 '+esc(staffEmail||"?")+'　|　你可蓋：'+esc(roleDesc)+'</div>'+
     '<div class="status okc" id="st"></div>'+
-    '<div class="sech">蓋章（撳一下 +印章，到上限自動鎖）</div><div class="stampgrid">'+buttons+'</div>'+
-    '<div class="sech">核消獎賞（夠章先出，核消後唔可重複）</div>'+rewards+
+    '<div class="sech">蓋章（淨係出你負責嘅分類；夠數自動鎖）</div><div class="stampgrid">'+buttons+'</div>'+
+    rewardsHtml+
     '<div class="bar" style="margin-top:18px"><button class="btn alt" id="another">查另一張卡</button><button class="btn alt" id="lo">登出</button></div>';
   app.querySelectorAll(".sbtn").forEach(b=> b.onclick = ()=>doStamp(b));
   app.querySelectorAll(".rwbtn").forEach(b=> b.onclick = ()=>doRedeem(b));
@@ -150,20 +191,29 @@ function renderCard(){
 
 async function doStamp(btn){
   const catKey = btn.dataset.cat; const cat = CATS.find(c=>c.k===catKey);
+  const cap = myLimits()[catKey]||0;
+  if(!cap){ setSt("你帳號唔負責「"+(cat?cat.label:catKey)+"」","err"); return; }
   btn.disabled=true;
   const c = await getSb();
+  if(!staffEmail){ const {data:{session}}=await c.auth.getSession(); if(session) staffEmail=(session.user.email||"").toLowerCase(); else { setSt("請重新登入","err"); return renderLogin(); } }
   // 並發安全：re-fetch 最新 → clamp → 寫返
-  const { data:fresh, error:e1 } = await c.from(TABLE).select("stamps").eq("code",cur.code).single();
-  if(e1){ setSt("寫入失敗："+e1.message,"err"); btn.disabled=false; return; }
+  const { data:fresh, error:e1 } = await c.from(TABLE).select("stamps,stamp_log").eq("code",cur.code).single();
+  if(e1){ setSt("讀取失敗："+e1.message,"err"); btn.disabled=false; return; }
   const stamps = Object.assign({}, fresh.stamps||{});
+  const slog   = Object.assign({}, fresh.stamp_log||{});
+  const prev = slog[catKey];
+  const catlog = Object.assign({}, (prev && typeof prev==="object" && !Array.isArray(prev)) ? prev : {});
+  const mine = catlog[staffEmail]||0;
+  if(mine>=cap){ setSt("⚠️ 你帳號喺呢張卡已蓋夠「"+cat.label+"」（"+mine+"/"+cap+"）","err"); cur.stamps=stamps; cur.stamp_log=slog; renderCard(); return; }
   const next = Math.min((stamps[catKey]||0)+cat.inc, cat.max);
-  if(next===(stamps[catKey]||0)){ setSt("「"+cat.label+"」已達上限","err"); cur.stamps=stamps; renderCard(); return; }
-  stamps[catKey]=next;
-  const { data, error:e2 } = await c.from(TABLE).update({stamps}).eq("code",cur.code).select().single();
+  if(next===(stamps[catKey]||0)){ setSt("「"+cat.label+"」呢張卡已達上限 "+cat.max,"err"); cur.stamps=stamps; cur.stamp_log=slog; renderCard(); return; }
+  stamps[catKey]=next; catlog[staffEmail]=mine+1; slog[catKey]=catlog;
+  const { data, error:e2 } = await c.from(TABLE).update({stamps, stamp_log:slog}).eq("code",cur.code).select().single();
   if(e2){ setSt("寫入失敗："+e2.message,"err"); btn.disabled=false; return; }
   cur = data; renderCard(); setSt("✓ 已蓋「"+cat.label+"」+"+cat.inc,"okc");
 }
 async function doRedeem(btn){
+  if(!canRedeem()){ setSt("你帳號唔負責核消（去服務處 A29–A30）","err"); return; }
   const tier = +btn.dataset.tier;
   btn.disabled=true;
   const c = await getSb();
