@@ -51,6 +51,12 @@
   .scanov .scanhd{color:#fff; font-weight:800; font-size:15px; margin-bottom:14px; text-align:center; max-width:340px; line-height:1.5}
   .scanov #reader{width:min(86vw,330px); border-radius:14px; overflow:hidden; background:#000}
   .scanov .scanerr{color:#ffb3b3; font-weight:700; font-size:13px; margin-top:12px; text-align:center; max-width:330px; line-height:1.6}
+
+  .rstk{display:inline-block; font-size:11px; font-weight:800; color:var(--teal); background:#dcefe6; border-radius:999px; padding:2px 8px; margin-left:6px; white-space:nowrap}
+  .rstk.out{color:#fff; background:var(--red)}
+  .rsrow{display:flex; align-items:center; gap:10px; padding:9px 2px; border-bottom:1px dashed var(--line)}
+  .rsl{flex:1; font-size:13px; font-weight:700; line-height:1.3}
+  .rsin{flex:0 0 92px; width:92px; margin-bottom:0; text-align:center; font-weight:800}
 </style>
 </head>
 <body>
@@ -96,6 +102,14 @@ function myLimits(){ return STAFF_LIMITS[(staffEmail||"").toLowerCase()] || {}; 
 function canRedeem(){ return !!myLimits().redeem; }
 function myCatCount(slog, k){ const m = slog && slog[k]; return (m && typeof m==="object" && !Array.isArray(m)) ? (m[staffEmail]||0) : 0; }
 
+// ── 獎賞庫存 ──────────────────────────────
+const STOCK_TABLE = "reward_stock";
+const ADMINS = ["moria62333139@gmail.com","moria@bolmacau.com"];   // 只有呢啲帳號見到補貨面板
+function isAdmin(){ return ADMINS.includes((staffEmail||"").toLowerCase()); }
+let stockData = {};
+async function loadStock(){ try{ const c=await getSb(); const {data}=await c.from(STOCK_TABLE).select("stock").eq("id",1).maybeSingle(); stockData=(data&&data.stock)||{}; }catch(e){} return stockData; }
+function stockOf(t){ const v=stockData[t]; return (v==null)?null:(+v); }   // null = 未設庫存（唔限量/未建表）
+
 async function getSb(){
   if(sb) return sb;
   const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
@@ -137,7 +151,7 @@ function renderLookup(msg, cls){
     const { data, error } = await c.from(TABLE).select("*").eq("code", code).maybeSingle();
     if(error){ $("#st").textContent="讀取失敗："+error.message; $("#st").className="status err"; return; }
     if(!data){ $("#st").textContent="搵唔到「"+code+"」，請核對卡號。"; $("#st").className="status err"; return; }
-    cur = data; renderCard();
+    cur = data; await loadStock(); renderCard();
   };
   $("#find").onclick = go;
   $("#scan").onclick = ()=>openScanner(go);
@@ -145,6 +159,12 @@ function renderLookup(msg, cls){
   $("#lo").onclick = logout;
   const pre = new URLSearchParams(location.search).get("code");
   if(pre){ $("#code").value = normCode(pre); history.replaceState(null,"",location.pathname); go(); }
+  if(isAdmin()){
+    const d = document.createElement("div");
+    d.innerHTML = '<button class="btn" id="restock" style="width:100%;margin-top:10px;background:var(--orange);border-color:var(--orange)">📦 補貨 / 改庫存（大會）</button>';
+    app.appendChild(d);
+    $("#restock").onclick = renderRestock;
+  }
 }
 
 // QR 內容可能係深連結（card-staff.html?code=IEC-XXXXX）或淨係卡號 → 抽返卡號
@@ -213,10 +233,13 @@ function renderCard(){
   if(canRedeem()){
     const used = redeemed.length>0;   // 每卡淨係換一次
     const rewards = TIERS.map(t=>{
+      const left = stockOf(t);
+      const lt = left==null ? '' : '<span class="rstk'+(left<=0?' out':'')+'">剩 '+left+'</span>';
       if(redeemed.includes(t)) return '<div class="rwdone"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span>已換領 ✔︎</span></div>';
-      if(used) return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（此卡已換領，唔可再換）</div>';
-      if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span><span class="ra">換領 →</span></button>';
-      return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（仲爭 '+(t-tot)+' 章）</div>';
+      if(used) return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（此卡已換領）'+lt+'</div>';
+      if(left!=null && left<=0) return '<div class="rwlock">🚫 '+t+' 章 — '+esc(TIER_LABEL[t])+'（已換晒，揀第二份）'+lt+'</div>';
+      if(tot>=t) return '<button class="rwbtn" data-tier="'+t+'"><span class="rn">'+t+'</span><span class="rd">'+esc(TIER_LABEL[t])+'</span>'+lt+'<span class="ra">換領 →</span></button>';
+      return '<div class="rwlock">🔒 '+t+' 章 — '+esc(TIER_LABEL[t])+'（仲爭 '+(t-tot)+' 章）'+lt+'</div>';
     }).join('');
     const hd = used ? '核消獎賞（此卡已換領 ✔︎，已鎖）' : '核消獎賞（每卡淨係換一次，揀一份夠到嘅）';
     rewardsHtml = '<div class="sech">'+hd+'</div>'+rewards;
@@ -266,6 +289,10 @@ async function doRedeem(btn){
   if(!confirm("確認換領「"+TIER_LABEL[tier]+"」？\n每張卡淨係可以換一次，換完就鎖，唔可以再換第二樣。")) return;
   btn.disabled=true;
   const c = await getSb();
+  // 庫存檢查（換晒就唔畀換）
+  const { data:fs0 } = await c.from(STOCK_TABLE).select("stock").eq("id",1).maybeSingle();
+  if(fs0 && fs0.stock){ stockData = fs0.stock; if(stockData[tier]!=null && (+stockData[tier])<=0){ setSt("⚠️「"+TIER_LABEL[tier]+"」已換晒，請揀第二份或叫大會補貨","err"); btn.disabled=false; renderCard(); return; } }
+  // 每卡淨係換一次
   const { data:fresh, error:e1 } = await c.from(TABLE).select("redeemed").eq("code",cur.code).single();
   if(e1){ setSt("讀取失敗："+e1.message,"err"); btn.disabled=false; return; }
   const redeemed = Array.isArray(fresh.redeemed)?fresh.redeemed.slice():[];
@@ -273,7 +300,33 @@ async function doRedeem(btn){
   redeemed.push(tier);
   const { data, error:e2 } = await c.from(TABLE).update({redeemed}).eq("code",cur.code).select().single();
   if(e2){ setSt("寫入失敗："+e2.message,"err"); btn.disabled=false; return; }
-  cur = data; renderCard(); setSt("✓ 已換領："+TIER_LABEL[tier]+"（此卡已鎖）","okc");
+  cur = data;
+  // 扣庫存（re-fetch + clamp，防並發）
+  try{
+    const { data:fs1 } = await c.from(STOCK_TABLE).select("stock").eq("id",1).single();
+    const stk = Object.assign({}, (fs1&&fs1.stock)||{});
+    if(stk[tier]!=null){ stk[tier]=Math.max(0,(+stk[tier])-1); await c.from(STOCK_TABLE).update({stock:stk}).eq("id",1); stockData=stk; }
+  }catch(e){}
+  renderCard(); setSt("✓ 已換領："+TIER_LABEL[tier]+"（此卡已鎖）","okc");
+}
+async function renderRestock(){
+  await loadStock();
+  const rows = TIERS.map(t=>'<div class="rsrow"><span class="rsl"><b>'+t+' 章</b>　'+esc(TIER_LABEL[t])+'</span><input class="rsin" id="rs_'+t+'" type="number" min="0" inputmode="numeric" value="'+(stockData[t]!=null?(+stockData[t]):0)+'"></div>').join('');
+  app.innerHTML =
+    '<div class="sech">📦 補貨 / 改庫存（大會專用）</div>'+
+    '<div class="lock" style="margin-top:0">改完撳「儲存」即時生效；換領時系統自動 −1，換晒會自動鎖。</div>'+
+    rows +
+    '<div class="status" id="st"></div>'+
+    '<div class="bar" style="margin-top:14px"><button class="btn go" id="savestock">儲存庫存</button><button class="btn alt" id="back">← 返查卡</button></div>';
+  $("#savestock").onclick = async ()=>{
+    const stk={}; TIERS.forEach(t=>{ const v=parseInt($("#rs_"+t).value,10); stk[t]=isNaN(v)?0:Math.max(0,v); });
+    $("#st").textContent="儲存緊…"; $("#st").className="status";
+    const c=await getSb();
+    const { error } = await c.from(STOCK_TABLE).update({stock:stk}).eq("id",1);
+    if(error){ $("#st").textContent="儲存失敗："+error.message; $("#st").className="status err"; return; }
+    stockData=stk; $("#st").textContent="✓ 已更新庫存"; $("#st").className="status okc";
+  };
+  $("#back").onclick = ()=>renderLookup();
 }
 function setSt(t,cls){ const s=$("#st"); if(s){ s.textContent=t; s.className="status "+(cls||""); } }
 async function logout(){ const c=await getSb(); await c.auth.signOut(); renderLogin(); }
