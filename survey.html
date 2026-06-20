@@ -70,6 +70,8 @@
   .done p{font-size:14px; color:var(--mut); font-weight:600; margin:2px 0}
   .giftcode{display:inline-block; font-weight:800; font-size:30px; letter-spacing:.12em; color:var(--red); background:#fff5f4; border:3px dashed var(--red); border-radius:14px; padding:14px 22px; margin:18px 0 10px}
   .giftmsg{font-size:15px !important; color:var(--ink) !important; font-weight:700 !important; line-height:1.7; margin-top:6px}
+  .bonus{font-size:14.5px; font-weight:800; color:var(--teal); background:#e1f3ec; border:2px solid var(--teal); border-radius:12px; padding:11px 14px; margin:12px 0 4px; line-height:1.6}
+  .bonus .en{font-size:11.5px; font-weight:600; color:var(--mut)}
   .notready{text-align:center; padding:44px 18px; line-height:1.9; font-weight:700; background:#fff7e6; border:2px dashed var(--yellow); border-radius:16px; margin-top:18px; color:#8a6d1a}
 
   footer{margin-top:26px; padding-top:16px; border-top:3px dotted var(--line); font-size:11px; color:var(--mut); font-weight:600; line-height:1.6}
@@ -212,6 +214,7 @@ if(!SB_URL || SB_URL.indexOf("__")===0){
         '<div class="done"><div class="big">🎉</div><h2>多謝參與！</h2><p>Thank you for your feedback!</p>'+
         '<div class="giftcode">'+esc(code)+'</div>'+
         '<p class="giftmsg">🎁 請向工作人員出示呢個畫面（連換領碼）換領禮物。<br>Show this screen with the code to our staff to redeem your gift.</p>'+
+        '<div class="bonus">🎮 仲有：填完問卷，遊戲可以再玩多次！向工作人員出示呢個畫面就得。<br><span class="en">Bonus — show this to staff to replay the games.</span></div>'+
         '<p style="margin-top:14px">想睇市集天氣？<a href="./" style="color:var(--cyan);font-weight:800">返天氣狀態 →</a></p></div>';
       $("#done").scrollIntoView({behavior:"smooth",block:"start"});
     }catch(err){
