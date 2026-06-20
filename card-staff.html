@@ -46,6 +46,11 @@
   .rwdone .rn{flex:0 0 auto; width:32px; height:32px; border-radius:50%; background:var(--mut); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center}
   .rwdone .rd{flex:1; font-weight:700; font-size:14px; text-decoration:line-through}
   .rwlock{font-size:12px; color:var(--mut); font-weight:600; padding:4px 2px}
+
+  .scanov{position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.92); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px}
+  .scanov .scanhd{color:#fff; font-weight:800; font-size:15px; margin-bottom:14px; text-align:center; max-width:340px; line-height:1.5}
+  .scanov #reader{width:min(86vw,330px); border-radius:14px; overflow:hidden; background:#000}
+  .scanov .scanerr{color:#ffb3b3; font-weight:700; font-size:13px; margin-top:12px; text-align:center; max-width:330px; line-height:1.6}
 </style>
 </head>
 <body>
@@ -121,7 +126,7 @@ function renderLogin(){
 function renderLookup(msg, cls){
   cur=null;
   app.innerHTML='<div class="bar"><input class="codein" id="code" placeholder="IEC-XXXXX" autocapitalize="characters" autocomplete="off" style="margin-bottom:0">'+
-    '<button class="btn go" id="find">查卡</button><button class="btn alt" id="lo">登出</button></div>'+
+    '<button class="btn go" id="find">查卡</button><button class="btn" id="scan" style="background:var(--purple);border-color:var(--purple)">📷 掃 QR</button><button class="btn alt" id="lo">登出</button></div>'+
     '<div class="status '+(cls||'')+'" id="st">'+(msg||'')+'</div>';
   const go = async ()=>{
     const code = normCode($("#code").value);
@@ -134,10 +139,48 @@ function renderLookup(msg, cls){
     cur = data; renderCard();
   };
   $("#find").onclick = go;
+  $("#scan").onclick = ()=>openScanner(go);
   $("#code").addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
   $("#lo").onclick = logout;
   const pre = new URLSearchParams(location.search).get("code");
   if(pre){ $("#code").value = normCode(pre); history.replaceState(null,"",location.pathname); go(); }
+}
+
+// QR 內容可能係深連結（card-staff.html?code=IEC-XXXXX）或淨係卡號 → 抽返卡號
+function extractCode(text){
+  if(!text) return "";
+  try{ const u = new URL(text); const c = u.searchParams.get("code"); if(c) return normCode(c); }catch(e){}
+  return normCode(text);
+}
+async function openScanner(go){
+  const ov = document.createElement("div"); ov.className="scanov";
+  ov.innerHTML =
+    '<div class="scanhd">📷 對準參加者電子卡上嘅 QR code</div>'+
+    '<div id="reader"></div>'+
+    '<div class="scanerr" id="scanerr"></div>'+
+    '<button class="btn alt" id="scanclose" style="margin-top:14px">取消</button>';
+  document.body.appendChild(ov);
+  let scanner=null, done=false;
+  const cleanup = async ()=>{ if(done) return; done=true; try{ if(scanner){ await scanner.stop(); scanner.clear(); } }catch(e){} ov.remove(); };
+  ov.querySelector("#scanclose").onclick = cleanup;
+  try{
+    const mod = await import("https://esm.sh/html5-qrcode@2.3.8");
+    const Html5Qrcode = mod.Html5Qrcode || (mod.default && mod.default.Html5Qrcode) || mod.default;
+    if(done) return;
+    scanner = new Html5Qrcode("reader", { verbose:false });
+    await scanner.start({ facingMode:"environment" }, { fps:10, qrbox:{ width:230, height:230 } },
+      async (decoded)=>{
+        const code = extractCode(decoded);
+        if(!code || code.length<5) return;
+        await cleanup();
+        const inp = $("#code"); if(inp) inp.value = code;
+        if(go) go();
+      },
+      ()=>{} );
+  }catch(e){
+    const er = ov.querySelector("#scanerr");
+    if(er) er.textContent = "開唔到相機："+((e&&e.message)||e)+"。可改用手動輸入卡號 / 用手機相機直接掃 QR。";
+  }
 }
 
 function renderCard(){
