@@ -244,7 +244,7 @@ function renderCard(){
     const hd = used ? '核消獎賞（此卡已換領 ✔︎，已鎖）' : '核消獎賞（每卡淨係換一次，揀一份夠到嘅）';
     rewardsHtml = '<div class="sech">'+hd+'</div>'+rewards;
   } else {
-    rewardsHtml = '<div class="sech">核消獎賞</div><div class="lock">🎁 核消喺服務處（A29–A30）由負責帳號處理；你呢個帳號淨係蓋章，唔出核消掣。</div>';
+    rewardsHtml = '<div class="sech">核消獎賞</div><div class="lock">🎁 核消喺 A26 大會服務中心由負責帳號處理；你呢個帳號淨係蓋章，唔出核消掣。</div>';
   }
 
   app.innerHTML =
@@ -284,7 +284,7 @@ async function doStamp(btn){
   cur = data; renderCard(); setSt("✓ 已蓋「"+cat.label+"」+"+cat.inc,"okc");
 }
 async function doRedeem(btn){
-  if(!canRedeem()){ setSt("你帳號唔負責核消（去服務處 A29–A30）","err"); return; }
+  if(!canRedeem()){ setSt("你帳號唔負責核消（去 A26 大會服務中心）","err"); return; }
   const tier = +btn.dataset.tier;
   if(!confirm("確認換領「"+TIER_LABEL[tier]+"」？\n每張卡淨係可以換一次，換完就鎖，唔可以再換第二樣。")) return;
   btn.disabled=true;
