@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d1b1a">
+<meta name="robots" content="noindex,nofollow">
+<title>網站後台 · 片區戶外生活節（大會專用）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fffdf6; --ink:#1d1b1a; --mut:#76706a; --line:#ece1cd;
+    --red:#ec1c24; --cyan:#00a6e0; --teal:#14a08f; --green:#1fa971;
+    --yellow:#ffc20e; --orange:#f5821f; --purple:#7a57a5; --magenta:#e6007e;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{ background:var(--bg); color:var(--ink);
+    font-family:"Baloo 2",-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    max-width:560px; margin:0 auto; padding:16px 15px calc(40px + env(safe-area-inset-bottom)); }
+  h1{font-size:24px; font-weight:800; margin:4px 0 2px}
+  .sub{font-size:12.5px; color:var(--mut); font-weight:600; margin-bottom:12px}
+  input,textarea,select{width:100%; font:inherit; font-size:16px; padding:10px 13px; border:2.5px solid var(--ink); border-radius:12px; background:#fff; color:var(--ink); margin:4px 0 10px}
+  textarea{min-height:96px; line-height:1.6}
+  label{font-size:12.5px; font-weight:800; color:var(--mut)}
+  .btn{font:inherit; font-weight:800; font-size:15px; padding:12px 16px; border-radius:12px; border:3px solid var(--ink); background:var(--yellow); color:var(--ink); cursor:pointer; width:100%; margin-top:6px}
+  .btn:active{transform:scale(.99)}
+  .btn.teal{background:var(--teal); border-color:var(--teal); color:#fff}
+  .btn.red{background:#fff; border-color:var(--red); color:var(--red)}
+  .btn.ghost{background:#fff}
+  .btn.sm{width:auto; font-size:13px; padding:8px 13px; border-width:2.5px; margin:0}
+  .tabs{display:flex; gap:6px; margin:10px 0 14px}
+  .tabs button{flex:1; font:inherit; font-weight:800; font-size:12.5px; padding:10px 4px; border-radius:999px; border:2.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer; white-space:nowrap}
+  .tabs button.on{background:var(--ink); color:#fff}
+  .status{font-size:13.5px; font-weight:700; margin:8px 0; min-height:20px}
+  .status.err{color:var(--red)} .status.ok{color:var(--green)}
+  .lock{font-size:12px; color:var(--mut); font-weight:600; margin-top:10px; line-height:1.7}
+  .vrow{display:flex; align-items:center; gap:9px; width:100%; text-align:left; font:inherit; font-weight:700; font-size:14px; padding:11px 13px; border:2.5px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); cursor:pointer; margin-top:8px}
+  .vrow:active{transform:scale(.99)}
+  .vrow .cd{font-weight:800; color:var(--cyan); flex:0 0 auto}
+  .vrow .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .vrow .ed{flex:0 0 auto; color:var(--mut)}
+  .sechd{display:flex; align-items:center; gap:8px; margin:20px 0 4px}
+  .sechd h2{font-size:17px; font-weight:800; margin:0; flex:1}
+  .chk{display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 10px}
+  .chk label{display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:var(--ink); border:2.5px solid var(--line); border-radius:999px; padding:7px 12px; background:#fff; cursor:pointer}
+  .chk label.on{border-color:var(--ink); background:var(--ink); color:#fff}
+  .chk input{display:none}
+  .phgrid{display:flex; flex-wrap:wrap; gap:9px; margin:4px 0 10px}
+  .ph{position:relative; width:96px}
+  .ph img{width:96px; height:96px; object-fit:cover; border-radius:10px; border:2.5px solid var(--ink); display:block; background:#f3ede1}
+  .ph .rm{position:absolute; top:-7px; right:-7px; width:24px; height:24px; border-radius:50%; border:2px solid #fff; background:var(--red); color:#fff; font-weight:800; font-size:13px; line-height:1; cursor:pointer}
+  .ph .mv{display:flex; gap:4px; margin-top:4px}
+  .ph .mv button{flex:1; font:inherit; font-size:12px; font-weight:800; padding:3px 0; border:2px solid var(--line); border-radius:8px; background:#fff; cursor:pointer}
+  .bar{display:flex; gap:8px; align-items:center}
+  .bar .btn{margin-top:0}
+  .irow{display:flex; gap:6px; align-items:flex-start; margin-bottom:6px}
+  .irow input,.irow select,.irow textarea{margin:0}
+  .irow .k{flex:0 0 92px}
+  .irow textarea{min-height:52px; flex:1}
+  .irow .x{flex:0 0 auto; font:inherit; font-weight:800; font-size:14px; padding:9px 11px; border:2.5px solid var(--line); border-radius:10px; background:#fff; color:var(--red); cursor:pointer}
+  .addrow{font:inherit; font-weight:800; font-size:12.5px; padding:7px 13px; border:2.5px dashed var(--line); border-radius:999px; background:#fff; color:var(--mut); cursor:pointer; margin:2px 0 10px}
+  .card{border:2.5px solid var(--line); border-radius:14px; background:#fff; padding:13px 15px; margin-top:10px}
+  .toolslink{display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:15px; padding:14px 16px; border-radius:13px; border:3px solid var(--ink); color:var(--ink); background:#fff; margin-top:10px}
+  .toolslink small{display:block; font-weight:600; color:var(--mut); font-size:12px}
+  .toolslink .ar{margin-left:auto}
+  .note{background:#fffbe9; border:2.5px solid var(--yellow); border-radius:13px; padding:12px 14px; font-size:13px; font-weight:600; line-height:1.7; margin-top:12px}
+  .hdrow{display:flex; align-items:center; gap:8px}
+  .hdrow h1{flex:1}
+  .back{font:inherit; font-weight:800; font-size:13px; color:var(--ink); border:2.5px solid var(--ink); border-radius:999px; padding:7px 14px; background:#fff; cursor:pointer}
+</style>
+</head>
+<body>
+<div class="hdrow"><h1>🛠 網站後台</h1><button class="back" id="logout" style="display:none">登出</button></div>
+<div class="sub">大會專用 —— 改攤主／集點卡資料，<b>儲存後即刻喺 ieclong.com 生效</b>，唔使等任何發佈。</div>
+<div id="app"><div class="status">載入緊…</div></div>
+
+<script type="module">
+const SB_URL  = "https://pofaxxvjcdugqimummsr.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners";
+const BUCKET  = "wall";
+
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const esc=s=>(s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let sb=null, vendors=[], items=[], tab="vendors";
+
+const TYPES=[["fb","餐飲"],["retail","服飾·生活"],["exp","體驗"],["hk","香港品牌"],["bol","BOL"]];
+const ORIGINS=[["","（未定）"],["macau","澳門"],["hong-kong","香港"],["japan","日本"],["taiwan","台灣"],["uk","英國"],["other","海外"]];
+const KINDS=[
+  {k:"earn",    title:"🏅 印章規則（如何獲得印章）", label:d=>d.txt||"（未填）"},
+  {k:"reward",  title:"🎁 集章獎賞", label:d=>(d.n||"?")+" 章 · "+(d.txt||"（未填）")},
+  {k:"game",    title:"⚽ 遊戲挑戰", label:d=>d.zh||"（未填）"},
+  {k:"workshop",title:"🛠 活動工作坊", label:d=>d.zh||"（未填）"},
+];
+const BCLS=[["","🏅 普通"],["fee","💵 費用"],["win","🏆 勝出"]];
+
+async function getSb(){
+  if(sb) return sb;
+  const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2");
+  sb=createClient(SB_URL,SB_ANON);
+  return sb;
+}
+async function boot(){
+  const c=await getSb();
+  const {data:{session}}=await c.auth.getSession();
+  if(!session) return renderLogin();
+  $("#logout").style.display="";
+  $("#logout").onclick=async()=>{ await (await getSb()).auth.signOut(); location.reload(); };
+  await loadAll();
+}
+function renderLogin(){
+  app.innerHTML='<input id="em" type="email" placeholder="工作人員 email" autocomplete="username">'+
+    '<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">'+
+    '<button class="btn" id="login">登入</button><div class="status" id="ls"></div>'+
+    '<div class="lock">🔒 用大會配發嘅工作人員帳號登入（同相片審核／蓋章後台同一個帳號）。登入一次會記住。</div>';
+  $("#login").onclick=async()=>{
+    $("#ls").textContent="登入緊…"; $("#ls").className="status";
+    const c=await getSb();
+    const {error}=await c.auth.signInWithPassword({email:$("#em").value.trim(), password:$("#pw").value});
+    if(error){ $("#ls").textContent="登入失敗："+error.message; $("#ls").className="status err"; }
+    else boot();
+  };
+  $("#pw") && $("#pw").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#login").click(); });
+}
+async function loadAll(){
+  const c=await getSb();
+  const [v,i]=await Promise.all([
+    c.from("vendors").select("*").order("code"),
+    c.from("content_items").select("*").order("sort"),
+  ]);
+  if(v.error||i.error){
+    const msg=(v.error||i.error).message||"";
+    if(/does not exist|relation|schema cache/i.test(msg)){
+      app.innerHTML='<div class="note">⚠️ 後台數據庫仲未開通。<br>要喺 Supabase SQL Editor 跑一次 <b>supabase-admin-setup.sql</b>（搵 BOL 仔攞／佢會幫你開好）。跑完 refresh 呢頁就用得。</div>';
+    }else{
+      app.innerHTML='<div class="status err">讀取失敗：'+esc(msg)+'</div>';
+    }
+    return;
+  }
+  vendors=v.data||[]; items=i.data||[];
+  renderMain();
+}
+function renderMain(){
+  app.innerHTML='<div class="tabs">'+
+    '<button data-t="vendors" class="'+(tab==="vendors"?"on":"")+'">🧺 攤主 ('+vendors.length+')</button>'+
+    '<button data-t="content" class="'+(tab==="content"?"on":"")+'">🎮 集點卡內容</button>'+
+    '<button data-t="tools" class="'+(tab==="tools"?"on":"")+'">🔗 其他後台</button></div>'+
+    '<div id="view"></div>';
+  app.querySelector(".tabs").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    tab=b.dataset.t; renderMain();
+  });
+  if(tab==="vendors") renderVendorList();
+  else if(tab==="content") renderContent();
+  else renderTools();
+}
+
+/* ── 攤主 ─────────────────────────── */
+function renderVendorList(){
+  const view=$("#view");
+  view.innerHTML='<input id="vq" type="search" placeholder="搵攤主…（名 / A01）" autocomplete="off">'+
+    '<div id="vl"></div><button class="btn ghost" id="vnew">＋ 新增攤主</button>';
+  const draw=q=>{
+    const list=vendors.filter(v=>!q||((v.code+" "+(v.n||"")).toLowerCase().includes(q)));
+    $("#vl").innerHTML=list.map(v=>'<button class="vrow" data-c="'+esc(v.code)+'"><span class="cd">'+esc(v.code)+'</span><span class="nm">'+esc(v.n||"（未命名）")+'</span><span class="ed">✏️</span></button>').join("")||'<div class="status">冇符合嘅攤主</div>';
+  };
+  draw("");
+  $("#vq").addEventListener("input",e=>draw(e.target.value.trim().toLowerCase()));
+  $("#vl").addEventListener("click",e=>{
+    const b=e.target.closest(".vrow"); if(!b) return;
+    renderVendorEdit(vendors.find(v=>v.code===b.dataset.c));
+  });
+  $("#vnew").onclick=()=>renderVendorEdit(null);
+}
+function renderVendorEdit(v){
+  const isNew=!v;
+  v=v||{code:"",n:"",t:[],cat:"",origin:"",intro:"",ig:"",ig_url:"",site:"",photos:[]};
+  let photos=(v.photos||[]).slice();
+  const view=$("#view");
+  view.innerHTML=
+    '<div class="bar"><button class="back" id="vback">← 攤主名單</button></div>'+
+    '<label>攤位編號（例 A01）</label><input id="f_code" value="'+esc(v.code)+'" '+(isNew?'':'disabled style="background:#f4efe4"')+' autocapitalize="characters">'+
+    '<label>名稱</label><input id="f_n" value="'+esc(v.n||"")+'">'+
+    '<label>分類文字（顯示喺名下面，例：古著 · vintage）</label><input id="f_cat" value="'+esc(v.cat||"")+'">'+
+    '<label>類型（影響篩選標籤）</label><div class="chk" id="f_t">'+TYPES.map(([k,lab])=>'<label class="'+((v.t||[]).includes(k)?"on":"")+'" data-k="'+k+'"><input type="checkbox" '+((v.t||[]).includes(k)?"checked":"")+'>'+lab+'</label>').join("")+'</div>'+
+    '<label>地區</label><select id="f_origin">'+ORIGINS.map(([k,lab])=>'<option value="'+k+'" '+((v.origin||"")===k?"selected":"")+'>'+lab+'</option>').join("")+'</select>'+
+    '<label>介紹（可以斷行；留空 = 顯示「整理緊」）</label><textarea id="f_intro">'+esc(v.intro||"")+'</textarea>'+
+    '<label>IG 帳號（例 @bol.official）</label><input id="f_ig" value="'+esc(v.ig||"")+'" autocapitalize="off">'+
+    '<label>IG 連結（留空會照 IG 帳號自動生成）</label><input id="f_igurl" value="'+esc(v.ig_url||"")+'" autocapitalize="off">'+
+    '<label>官方網站（冇就留空）</label><input id="f_site" value="'+esc(v.site||"")+'" autocapitalize="off">'+
+    '<label>相片（第一張做封面）</label><div class="phgrid" id="phg"></div>'+
+    '<input id="phfile" type="file" accept="image/*" multiple style="display:none">'+
+    '<button class="btn ghost" id="phadd">📷 加相（自動壓細）</button>'+
+    '<button class="btn teal" id="vsave">💾 儲存</button>'+
+    (isNew?'':'<button class="btn red" id="vdel">🗑 刪除呢個攤主</button>')+
+    '<div class="status" id="vst"></div>';
+  const st=(m,c)=>{ $("#vst").textContent=m; $("#vst").className="status "+(c||""); };
+  const drawPh=()=>{
+    $("#phg").innerHTML=photos.map((p,i)=>'<div class="ph"><img src="'+esc(p)+'" loading="lazy"><button class="rm" data-i="'+i+'">✕</button><div class="mv"><button data-mv="-1" data-i="'+i+'">◀</button><button data-mv="1" data-i="'+i+'">▶</button></div></div>').join("")||'<div class="status">未有相</div>';
+  };
+  drawPh();
+  $("#phg").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    const i=+b.dataset.i;
+    if(b.classList.contains("rm")){ photos.splice(i,1); drawPh(); return; }
+    const d=+b.dataset.mv, j=i+d;
+    if(j<0||j>=photos.length) return;
+    [photos[i],photos[j]]=[photos[j],photos[i]]; drawPh();
+  });
+  $("#vback").onclick=()=>renderVendorList();
+  $("#f_t").addEventListener("click",e=>{
+    const lab=e.target.closest("label"); if(!lab) return;
+    setTimeout(()=>lab.classList.toggle("on",lab.querySelector("input").checked),0);
+  });
+  $("#phadd").onclick=()=>$("#phfile").click();
+  $("#phfile").addEventListener("change",async e=>{
+    const files=[...e.target.files]; if(!files.length) return;
+    const code=($("#f_code").value.trim()||"x").toLowerCase();
+    st("上載緊 "+files.length+" 張相…");
+    try{
+      const c=await getSb();
+      for(let i=0;i<files.length;i++){
+        const blob=await shrink(files[i]);
+        const path="brands/"+code.replace(/[^a-z0-9-]/g,"")+"-"+Date.now()+"-"+i+".jpg";
+        const up=await c.storage.from(BUCKET).upload(path,blob,{contentType:"image/jpeg",upsert:false});
+        if(up.error) throw up.error;
+        photos.push(c.storage.from(BUCKET).getPublicUrl(path).data.publicUrl);
+      }
+      drawPh(); st("相上載咗 ✓（記住撳「儲存」先算完成）","ok");
+    }catch(err){ st("上載失敗："+(err.message||err),"err"); }
+    e.target.value="";
+  });
+  $("#vsave").onclick=async()=>{
+    const code=$("#f_code").value.trim().toUpperCase();
+    if(!code){ st("要填攤位編號","err"); return; }
+    const t=[...view.querySelectorAll("#f_t label")].filter(l=>l.querySelector("input").checked).map(l=>l.dataset.k);
+    let igu=$("#f_igurl").value.trim();
+    const ig=$("#f_ig").value.trim();
+    if(!igu&&ig) igu="https://www.instagram.com/"+ig.replace(/^@/,"")+"/";
+    const row={code, n:$("#f_n").value.trim(), t, cat:$("#f_cat").value.trim(), origin:$("#f_origin").value,
+      intro:$("#f_intro").value.trim(), ig, ig_url:igu, site:$("#f_site").value.trim(), photos, updated_at:new Date().toISOString()};
+    st("儲存緊…");
+    const c=await getSb();
+    const {error}=await c.from("vendors").upsert(row);
+    if(error){ st("儲存失敗："+error.message,"err"); return; }
+    const ix=vendors.findIndex(x=>x.code===code);
+    if(ix>=0) vendors[ix]=row; else { vendors.push(row); vendors.sort((a,b)=>a.code<b.code?-1:1); }
+    st("儲存咗 ✓ 網站已即時更新","ok");
+  };
+  const del=$("#vdel");
+  if(del) del.onclick=async()=>{
+    if(!confirm("確定刪除 "+v.code+"（"+(v.n||"")+"）？呢個動作會即時喺網站消失。")) return;
+    const c=await getSb();
+    const {error}=await c.from("vendors").delete().eq("code",v.code);
+    if(error){ st("刪除失敗："+error.message,"err"); return; }
+    vendors=vendors.filter(x=>x.code!==v.code);
+    renderVendorList();
+  };
+}
+async function shrink(file){
+  try{
+    const img=await createImageBitmap(file);
+    const M=1200, s=Math.min(1,M/Math.max(img.width,img.height));
+    const cv=document.createElement("canvas");
+    cv.width=Math.round(img.width*s); cv.height=Math.round(img.height*s);
+    cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    const blob=await new Promise(r=>cv.toBlob(r,"image/jpeg",.82));
+    return blob||file;
+  }catch(e){ return file; }
+}
+
+/* ── 集點卡內容 ─────────────────────────── */
+function renderContent(){
+  const view=$("#view");
+  view.innerHTML='<div class="note" style="margin-top:0">呢度改嘅嘢會即時反映喺「🎮 集點卡」頁。順序用 ↑↓ 較。</div><div id="cl"></div>';
+  const cl=$("#cl");
+  cl.innerHTML=KINDS.map(K=>{
+    const rows=items.filter(x=>x.kind===K.k);
+    return '<div class="sechd"><h2>'+K.title+'</h2><button class="btn sm ghost" data-new="'+K.k+'">＋ 新增</button></div>'+
+      (rows.map((it,i)=>'<button class="vrow" data-id="'+it.id+'"><span class="cd">'+
+        '<span data-ud="-1" data-id="'+it.id+'">'+(i>0?"↑":"　")+'</span> <span data-ud="1" data-id="'+it.id+'">'+(i<rows.length-1?"↓":"　")+'</span></span>'+
+        '<span class="nm">'+esc(K.label(it.data||{}))+'</span><span class="ed">✏️</span></button>').join("")||'<div class="status">未有項目</div>');
+  }).join("");
+  cl.addEventListener("click",async e=>{
+    const ud=e.target.closest("[data-ud]");
+    if(ud){
+      e.stopPropagation();
+      const it=items.find(x=>x.id===ud.dataset.id); if(!it) return;
+      const sib=items.filter(x=>x.kind===it.kind);
+      const i=sib.indexOf(it), j=i+(+ud.dataset.ud);
+      if(j<0||j>=sib.length) return;
+      const other=sib[j];
+      const c=await getSb();
+      const s1=it.sort, s2=other.sort;
+      await c.from("content_items").update({sort:s2}).eq("id",it.id);
+      await c.from("content_items").update({sort:s1}).eq("id",other.id);
+      it.sort=s2; other.sort=s1;
+      items.sort((a,b)=>a.sort-b.sort);
+      renderContent(); return;
+    }
+    const b=e.target.closest(".vrow");
+    if(b){ renderItemEdit(items.find(x=>x.id===b.dataset.id)); return; }
+    const nb=e.target.closest("[data-new]");
+    if(nb) renderItemEdit(null, nb.dataset.new);
+  });
+}
+function renderItemEdit(it, newKind){
+  const isNew=!it;
+  const kind=isNew?newKind:it.kind;
+  const d=isNew?(kind==="earn"?{txt:"",pts:"+1"}:kind==="reward"?{n:"",txt:"",small:"",big:false}:{zh:"",en:"",rows:[{k:"玩法",v:""}],badges:[]}):JSON.parse(JSON.stringify(it.data||{}));
+  const K=KINDS.find(x=>x.k===kind);
+  const view=$("#view");
+  let inner='<div class="bar"><button class="back" id="iback">← '+K.title+'</button></div><div class="card">';
+  if(kind==="earn"){
+    inner+='<label>內容（例：🎮 參與指定遊戲）</label><input id="e_txt" value="'+esc(d.txt)+'">'+
+      '<label>章數（例：+1 / 每項 +1 / 完成 +2）</label><input id="e_pts" value="'+esc(d.pts)+'">';
+  }else if(kind==="reward"){
+    inner+='<label>需要章數（例 4）</label><input id="r_n" value="'+esc(d.n)+'" inputmode="numeric">'+
+      '<label>獎品</label><input id="r_txt" value="'+esc(d.txt)+'">'+
+      '<label>細字備註（冇就留空）</label><input id="r_small" value="'+esc(d.small||"")+'">'+
+      '<div class="chk"><label id="r_big" class="'+(d.big?"on":"")+'"><input type="checkbox" '+(d.big?"checked":"")+'>壓軸大獎（紅色highlight）</label></div>';
+  }else{
+    inner+='<label>標題（中文，可以連 emoji，例：🎯 射球挑戰）</label><input id="g_zh" value="'+esc(d.zh)+'">'+
+      '<label>英文標題</label><input id="g_en" value="'+esc(d.en)+'">'+
+      '<label>內容行（標籤 + 內容，例：玩法／成功／場地／備註）</label><div id="g_rows"></div><button class="addrow" id="g_addrow">＋ 加一行</button>'+
+      '<label>標籤 badge（費用／印章）</label><div id="g_badges"></div><button class="addrow" id="g_addbadge">＋ 加一個 badge</button>';
+  }
+  inner+='<button class="btn teal" id="isave">💾 儲存</button>'+
+    (isNew?'':'<button class="btn red" id="idel">🗑 刪除呢項</button>')+
+    '<div class="status" id="ist"></div></div>';
+  view.innerHTML=inner;
+  const st=(m,c)=>{ $("#ist").textContent=m; $("#ist").className="status "+(c||""); };
+  $("#iback").onclick=()=>renderContent();
+  if(kind==="game"||kind==="workshop"){
+    const drawRows=()=>{
+      $("#g_rows").innerHTML=d.rows.map((r,i)=>'<div class="irow"><input class="k" data-rk="'+i+'" value="'+esc(r.k)+'" placeholder="標籤"><textarea data-rv="'+i+'" placeholder="內容">'+esc(r.v)+'</textarea><button class="x" data-rx="'+i+'">✕</button></div>').join("");
+    };
+    const drawBadges=()=>{
+      $("#g_badges").innerHTML=d.badges.map((b,i)=>'<div class="irow"><select class="k" data-bc="'+i+'">'+BCLS.map(([k,lab])=>'<option value="'+k+'" '+(b.cls===k?"selected":"")+'>'+lab+'</option>').join("")+'</select><input data-bt="'+i+'" value="'+esc(b.txt)+'" placeholder="例：💵 $36 / 人 或 🏅 成功挑戰 1 印章" style="flex:1"><button class="x" data-bx="'+i+'">✕</button></div>').join("");
+    };
+    drawRows(); drawBadges();
+    const syncRows=()=>{ view.querySelectorAll("[data-rk]").forEach(el=>d.rows[+el.dataset.rk].k=el.value); view.querySelectorAll("[data-rv]").forEach(el=>d.rows[+el.dataset.rv].v=el.value); };
+    const syncBadges=()=>{ view.querySelectorAll("[data-bc]").forEach(el=>d.badges[+el.dataset.bc].cls=el.value); view.querySelectorAll("[data-bt]").forEach(el=>d.badges[+el.dataset.bt].txt=el.value); };
+    $("#g_rows").addEventListener("click",e=>{ const b=e.target.closest("[data-rx]"); if(!b) return; syncRows(); syncBadges(); d.rows.splice(+b.dataset.rx,1); drawRows(); });
+    $("#g_badges").addEventListener("click",e=>{ const b=e.target.closest("[data-bx]"); if(!b) return; syncRows(); syncBadges(); d.badges.splice(+b.dataset.bx,1); drawBadges(); });
+    $("#g_addrow").onclick=()=>{ syncRows(); syncBadges(); d.rows.push({k:"",v:""}); drawRows(); };
+    $("#g_addbadge").onclick=()=>{ syncRows(); syncBadges(); d.badges.push({cls:"",txt:""}); drawBadges(); };
+    view._sync=()=>{ syncRows(); syncBadges(); d.zh=$("#g_zh").value.trim(); d.en=$("#g_en").value.trim(); d.rows=d.rows.filter(r=>r.k.trim()||r.v.trim()); d.badges=d.badges.filter(b=>b.txt.trim()); };
+  }
+  const rbig=$("#r_big");
+  if(rbig) rbig.addEventListener("click",()=>setTimeout(()=>rbig.classList.toggle("on",rbig.querySelector("input").checked),0));
+  $("#isave").onclick=async()=>{
+    let data;
+    if(kind==="earn") data={txt:$("#e_txt").value.trim(), pts:$("#e_pts").value.trim()};
+    else if(kind==="reward") data={n:$("#r_n").value.trim(), txt:$("#r_txt").value.trim(), small:$("#r_small").value.trim(), big:rbig.querySelector("input").checked};
+    else { view._sync(); data=d; }
+    st("儲存緊…");
+    const c=await getSb();
+    const row={ id:isNew?crypto.randomUUID():it.id, kind,
+      sort:isNew?(Math.max(0,...items.filter(x=>x.kind===kind).map(x=>x.sort))+10):it.sort,
+      data, updated_at:new Date().toISOString() };
+    const {error}=await c.from("content_items").upsert(row);
+    if(error){ st("儲存失敗："+error.message,"err"); return; }
+    if(isNew) items.push(row); else { it.data=data; it.updated_at=row.updated_at; }
+    items.sort((a,b)=>a.sort-b.sort);
+    st("儲存咗 ✓ 網站已即時更新","ok");
+  };
+  const idel=$("#idel");
+  if(idel) idel.onclick=async()=>{
+    if(!confirm("確定刪除「"+K.label(it.data||{})+"」？")) return;
+    const c=await getSb();
+    const {error}=await c.from("content_items").delete().eq("id",it.id);
+    if(error){ st("刪除失敗："+error.message,"err"); return; }
+    items=items.filter(x=>x.id!==it.id);
+    renderContent();
+  };
+}
+
+/* ── 其他後台 ─────────────────────────── */
+function renderTools(){
+  $("#view").innerHTML=
+    '<a class="toolslink" href="./#staff">🌦 天氣狀態廣播<small>市集開放／取消・大會公告（頁面最底）</small><span class="ar">→</span></a>'+
+    '<a class="toolslink" href="gallery.html">📸 相片牆審核<small>批准／刪除參加者上載嘅相</small><span class="ar">→</span></a>'+
+    '<a class="toolslink" href="card-staff.html">📇 集點卡蓋章／核銷<small>掃 QR 蓋章、換領獎品、補庫存</small><span class="ar">→</span></a>'+
+    '<a class="toolslink" href="survey-admin.html">📊 問卷答案<small>睇問卷提交結果</small><span class="ar">→</span></a>'+
+    '<a class="toolslink" href="card-staff-guide.html">📖 工作人員操作指引<small>畀現場同事睇嘅教學</small><span class="ar">→</span></a>'+
+    '<div class="note">💡 呢頁網址係 <b>ieclong.com/admin.html</b>，唔會喺公開網站見到，自己 bookmark。所有修改儲存即生效，公眾 refresh 就見到。</div>';
+}
+boot();
+</script>
+</body>
+</html>
