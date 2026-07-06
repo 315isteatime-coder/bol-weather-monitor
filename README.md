@@ -70,10 +70,22 @@ gh api --method PUT repos/315isteatime-coder/bol-weather-monitor/contents/index.
 ### 想要靚啲嘅網址？
 可以喺 repo → Settings → Pages 加 custom domain，例如 `weather.bolmacau.com`（要喺域名商加一條 CNAME 指去 `315isteatime-coder.github.io`）。要嘅話搵 BOL 仔幫手。
 
+## ⭐ 網站後台（admin.html）— 大會自助改資料，唔使搵人 re-deploy
+- 網址：**https://ieclong.com/admin.html**（noindex、公開頁面冇 link，自己 bookmark）
+- 登入：同相片審核／集點卡蓋章**同一個工作人員帳號**（Supabase Auth）。
+- 可以改：
+  - 🧺 **攤主**：名、分類、地區、介紹、IG／網站連結、相片（手機影相直接上載、自動壓細）；可新增／刪除攤位。
+  - 🎮 **集點卡內容**：印章規則、集章獎賞、遊戲挑戰、工作坊，連排序（↑↓）。
+  - 🔗 **其他後台**：天氣廣播、相片牆審核、蓋章核銷、問卷答案嘅入口集中喺呢度。
+- **儲存即生效**：market.html／brand.html／activities.html 直接由 Supabase 讀資料，公眾 refresh 就見到。
+- 讀唔到 Supabase（未開通／斷網）時，公開頁自動 fallback 返 `brands.js`＋頁內靜態版，唔會白屏。
+- 一次性開通：Supabase Dashboard → SQL Editor → 跑晒 `supabase-admin-setup.sql`（起 vendors + content_items 表＋權限＋搬入現有資料；**重複跑安全**，已有資料唔會覆蓋）。
+
 ## 市集攤主頁（market.html + brand.html + brands.js）
-- `market.html` — 39 攤主名單 + 活動地圖 + 篩選／搜尋。㩒任何攤主名牌 → 開佢嘅品牌頁。
-- `brand.html?c=A06` — 單一品牌頁模板，按 `?c=` 由 `brands.js` 讀資料（介紹 + 官方 IG/網 + 攤位編號）。一個檔服務 39 個品牌。
-- `brands.js` — 39 攤主嘅**單一資料來源**（market 同 brand 共用）。改攤主資料淨係改呢個檔。
+- `market.html` — 攤主名單（A01–A32）+ 活動地圖 + 篩選／搜尋。㩒任何攤主名牌 → 開佢嘅品牌頁。
+- `brand.html?c=A06` — 單一品牌頁模板，按 `?c=` 讀資料（介紹 + 官方 IG/網 + 攤位編號）。一個檔服務全部攤位。
+- 資料流：**Supabase `vendors` 表為準**（admin.html 改）→ 讀唔到先 fallback `brands.js`。
+- `brands.js` — 攤主資料嘅**靜態 fallback 快照**。日常改資料用 admin.html；呢個檔唔使日日跟住改。
   - 欄位：`c, n, t, cat, origin, intro, ig, igUrl, site, photos[]`。
   - `intro` 留空 = 網上未搵到實證 → 品牌頁自動顯示「整理緊」note，唔亂寫。
   - `photos:["assets/brands/xxx.jpg"]` 有相先顯示 gallery（橫向 scroll）；冇相就淨係文字 + 連結。
