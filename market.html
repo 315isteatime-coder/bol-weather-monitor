@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#ec1c24">
 <title>會場地圖 · 世界盃系列（益隆）</title>
 <meta property="og:title" content="會場地圖 · 世界盃系列（益隆）">
-<meta property="og:description" content="片區戶外生活節 2026 — 39 個市集攤主名單 + 活動地圖">
+<meta property="og:description" content="片區戶外生活節 2026 — 市集攤主名單 + 活動地圖">
 <meta property="og:image" content="https://ieclong.com/assets/event-map.jpg?v=5">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,7 +116,10 @@
 
 <script src="brands.js"></script>
 <script>
-const V=window.BRANDS||[];
+/* 資料來源：Supabase（admin.html 後台改完即時反映）；讀唔到就用 brands.js 靜態版頂住 */
+const SB_URL="https://pofaxxvjcdugqimummsr.supabase.co";
+const SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners";
+let V=window.BRANDS||[];
 
 const vlistEl=document.getElementById("vlist"), countEl=document.getElementById("count");
 let filter="all", q="";
@@ -147,6 +150,18 @@ document.getElementById("filters").addEventListener("click",e=>{
 });
 document.getElementById("q").addEventListener("input",e=>{ q=e.target.value.trim().toLowerCase(); render(); });
 render();
+(async()=>{
+  try{
+    const r=await fetch(SB_URL+"/rest/v1/vendors?select=*&order=code",{headers:{apikey:SB_ANON,Authorization:"Bearer "+SB_ANON}});
+    if(!r.ok) return;
+    const rows=await r.json();
+    if(!Array.isArray(rows)||!rows.length) return;
+    V=rows.map(x=>({c:x.code,n:x.n||"",t:x.t||[],cat:x.cat||"",origin:x.origin||"",intro:x.intro||"",ig:x.ig||"",igUrl:x.ig_url||"",site:x.site||"",photos:x.photos||[]}));
+    const sub=document.querySelector("header .sub");
+    if(sub) sub.textContent="世界盃系列 · 益隆炮竹廠舊址（氹仔）｜ "+V.length+" 個攤主";
+    render();
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
