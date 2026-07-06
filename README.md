@@ -81,6 +81,19 @@ gh api --method PUT repos/315isteatime-coder/bol-weather-monitor/contents/index.
 - 讀唔到 Supabase（未開通／斷網）時，公開頁自動 fallback 返 `brands.js`＋頁內靜態版，唔會白屏。
 - 一次性開通：Supabase Dashboard → SQL Editor → 跑晒 `supabase-admin-setup.sql`（起 vendors + content_items 表＋權限＋搬入現有資料；**重複跑安全**，已有資料唔會覆蓋）。
 
+## 🎁 答題抽獎＋現金券（lucky.html + lucky-staff.html）
+- **公眾頁 `lucky.html`**（nav「🎁 抽獎」）：入電話號碼 → 答一條隨機題目（答錯可以再試）→ 抽獎。中獎即出電子券（券號 `LK-XXXXX` + QR），有「我嘅獎券」列表＋活動條款；電話記住喺部機，隨時返嚟開返張券。
+- **規則（全部喺 Supabase RPC server 端 enforce，改前端冇用）**：
+  - 每個電話每日抽 1 次（澳門時間 00:00 重計；答錯唔算，抽咗先算）
+  - 每個電話每星期（週一至週日）現金券上限 **MOP 100**（後台可改）——會超上限嘅現金獎抽中當「多謝參與」
+  - 機率後台自由較，合共 ≤ 100%，其餘 = 多謝參與；冇貨嘅獎自動當「多謝參與」（唔會偷偷灌大其他獎）
+- **獎項（預設）**：MOP 10／20／50 現金券＋限定毛巾＋迷你相機，每樣有獨立機率同庫存（空 = 不限）。
+- **staff 頁 `lucky-staff.html`**（工作人員帳號登入，同蓋章後台同一套）：掃券 QR／輸入券號／輸入電話 → 核銷。現金券喺攤位消費時核銷（**一次消費一張**）；禮品喺 A26 派。核銷會記低邊個帳號、幾點。
+  - **大會帳號**（ADMINS，即 moria 兩個 email）另有：⚙️ 抽獎設定（暫停掣、週上限、獎項機率／庫存／增刪、題目管理）＋ 📊 統計（今日／累計、現金券發出／核銷額、庫存）。
+- **一次性開通**：Supabase Dashboard → SQL Editor → 跑晒 `supabase-lucky-setup.sql`（4 張表＋3 個 RPC＋預設獎項題目；**重複跑安全**）。未跑之前，公眾頁只會顯示「準備緊」，唔會 error。
+- 數據表：`lucky_settings`（總掣）／`lucky_prizes`（獎項）／`lucky_questions`（題目，公眾 API 讀唔到答案）／`lucky_draws`（抽獎紀錄＋券，有電話 PII，公眾只可經 RPC 存取自己嗰啲）。
+- ⚠️ 電話冇 SMS 驗證（慳成本），限次靠號碼本身；領獎現場核對電話號碼把關。毛巾／相機庫存同集點卡 `reward_stock` 係**兩個獨立 pool**，要分開補。
+
 ## 市集攤主頁（market.html + brand.html + brands.js）
 - `market.html` — 攤主名單（A01–A32）+ 活動地圖 + 篩選／搜尋。㩒任何攤主名牌 → 開佢嘅品牌頁。
 - `brand.html?c=A06` — 單一品牌頁模板，按 `?c=` 讀資料（介紹 + 官方 IG/網 + 攤位編號）。一個檔服務全部攤位。
