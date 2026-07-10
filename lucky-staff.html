@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>抽獎現金券核銷 · 工作人員</title>
+<style>
+  :root{ --bg:#fffdf6; --ink:#1d1b1a; --mut:#76706a; --line:#ece1cd; --red:#ec1c24; --green:#1fa971; --yellow:#ffc20e; --teal:#14a08f; --purple:#7a57a5; --orange:#f5821f; --cyan:#00a6e0; }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{max-width:620px; margin:0 auto; padding:16px 14px calc(44px + env(safe-area-inset-bottom)); background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .nav{display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap}
+  .nav a{font-size:12px; font-weight:800; text-decoration:none; color:var(--mut); border:2px solid var(--line); border-radius:999px; padding:6px 11px}
+  h1{font-size:20px; font-weight:800; margin:2px 0 2px}
+  .sub{font-size:12.5px; color:var(--mut); margin-bottom:16px}
+  input,select,textarea{width:100%; font:inherit; font-size:16px; padding:11px 12px; border:2px solid var(--ink); border-radius:10px; margin-bottom:9px; background:#fff; color:var(--ink)}
+  textarea{min-height:60px; line-height:1.5}
+  .codein{font-size:22px; font-weight:800; letter-spacing:.08em; text-align:center; text-transform:uppercase}
+  .btn{font:inherit; font-weight:800; font-size:14px; padding:11px 15px; border-radius:11px; border:2.5px solid var(--ink); background:var(--ink); color:#fff; cursor:pointer}
+  .btn.alt{background:#fff; color:var(--ink)}
+  .btn.go{background:var(--green); border-color:var(--green)}
+  .btn.warn{background:var(--orange); border-color:var(--orange)}
+  .btn:active{transform:scale(.98)} .btn:disabled{opacity:.4}
+  .bar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px}
+  .status{font-size:13px; font-weight:700; margin:10px 0; min-height:18px}
+  .err{color:var(--red)} .okc{color:var(--green)}
+  .lock{font-size:12px; color:var(--mut); margin-top:10px; line-height:1.6}
+  .sech{font-size:13px; font-weight:800; color:var(--mut); margin:16px 2px 8px}
+
+  .vbox{border:3px solid var(--ink); border-radius:14px; background:#fff; padding:14px 16px; margin-bottom:10px}
+  .vbox .vt{font-size:19px; font-weight:800}
+  .vbox .vt.cash{color:var(--red)} .vbox .vt.gift{color:var(--teal)}
+  .vbox .vrow{display:flex; gap:8px; font-size:13.5px; padding:3px 0}
+  .vbox .vrow .k{flex:0 0 84px; color:var(--mut); font-weight:700}
+  .vbox .vrow .v{flex:1; font-weight:700}
+  .stbadge{display:inline-block; font-size:12px; font-weight:800; border-radius:999px; padding:3px 12px}
+  .stbadge.issued{background:#e7f6ee; color:var(--green); border:2px solid var(--green)}
+  .stbadge.redeemed{background:#eee; color:var(--mut); border:2px solid #ccc}
+
+  .wrow{display:flex; align-items:center; gap:10px; width:100%; text-align:left; font:inherit; background:#fff; border:2px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:8px; cursor:pointer}
+  .wrow .wl{flex:1; min-width:0}
+  .wrow .wt{font-weight:800; font-size:14px}
+  .wrow .wd{font-size:11.5px; color:var(--mut); font-weight:700}
+  .wrow .wc{flex:0 0 auto; font-size:11.5px; font-weight:800; padding:3px 10px; border-radius:999px}
+  .wrow .wc.issued{background:#e7f6ee; color:var(--green)}
+  .wrow .wc.redeemed{background:#eee; color:var(--mut)}
+  .wrow .wc.none{background:#fff3f2; color:var(--red)}
+
+  .scanov{position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.92); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px}
+  .scanov .scanhd{color:#fff; font-weight:800; font-size:15px; margin-bottom:14px; text-align:center; max-width:340px; line-height:1.5}
+  .scanov #reader{width:min(86vw,330px); border-radius:14px; overflow:hidden; background:#000}
+  .scanov .scanerr{color:#ffb3b3; font-weight:700; font-size:13px; margin-top:12px; text-align:center; max-width:330px; line-height:1.6}
+
+  .prow{border:2px solid var(--line); border-radius:12px; background:#fff; padding:11px 12px; margin-bottom:9px}
+  .prow .ptop{display:flex; gap:7px; align-items:center; margin-bottom:7px}
+  .prow .ptop input[type=text]{flex:1; margin:0}
+  .prow .grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px}
+  .prow .grid label{display:block; font-size:11px; font-weight:800; color:var(--mut)}
+  .prow .grid input{margin:2px 0 0; padding:8px 9px; font-size:15px; text-align:center; font-weight:800}
+  .prow .pbot{display:flex; gap:10px; align-items:center; margin-top:8px; font-size:12.5px; font-weight:700}
+  .prow .pbot label{display:inline-flex; gap:5px; align-items:center; cursor:pointer}
+  .prow .del{margin-left:auto; font:inherit; font-weight:800; font-size:12px; color:var(--red); background:none; border:none; cursor:pointer}
+  .sumbar{border:2.5px dashed var(--ink); border-radius:12px; padding:10px 14px; font-weight:800; font-size:14px; margin:10px 0; background:#fff}
+  .sumbar.over{border-color:var(--red); color:var(--red); background:#fff3f2}
+  .qrow{border:2px solid var(--line); border-radius:12px; background:#fff; padding:11px 12px; margin-bottom:9px}
+  .qrow .oline{display:flex; gap:7px; align-items:center; margin-bottom:6px}
+  .qrow .oline input[type=radio]{width:20px; height:20px; margin:0; flex:0 0 auto}
+  .qrow .oline input[type=text]{flex:1; margin:0; padding:8px 10px; font-size:14px}
+  .qrow .qbot{display:flex; gap:10px; align-items:center; margin-top:4px; font-size:12.5px; font-weight:700}
+  .qrow .qbot label{display:inline-flex; gap:5px; align-items:center; cursor:pointer}
+  .statgrid{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:12px}
+  .statbox{border:2.5px solid var(--ink); border-radius:13px; background:#fff; padding:11px 13px}
+  .statbox .n{font-size:24px; font-weight:800; color:var(--purple); line-height:1.2}
+  .statbox .t{font-size:11.5px; font-weight:800; color:var(--mut)}
+  .trow{display:flex; gap:8px; font-size:12.5px; font-weight:700; padding:6px 2px; border-bottom:1px dashed var(--line)}
+  .trow .c1{flex:1} .trow .c2{flex:0 0 auto; color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="nav"><a href="./">🌦 益隆天氣</a><a href="admin.html">🛠 網站後台</a><a href="card-staff.html">📇 集點卡核銷</a><a href="lucky.html">🎁 抽獎頁</a></div>
+<h1>🎁 抽獎現金券核銷 · 工作人員</h1>
+<div class="sub">大會專用 —— 掃參加者獎券 QR（或輸入券號 LK-XXXXX／電話號碼）核銷現金券同禮品。</div>
+<div id="app"><div class="status">載入緊…</div></div>
+
+<script type="module">
+const SB_URL  = "https://pofaxxvjcdugqimummsr.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvZmF4eHZqY2R1Z3FpbXVtbXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzMzNTQsImV4cCI6MjA5NzMwOTM1NH0.EGgZmbFeNdQSasGjy9tsRnDgVFYYZhQ9xwEnn-xners";
+const ADMINS  = ["moria62333139@gmail.com","moria@bolmacau.com"];   // 呢啲帳號先見到「⚙️ 抽獎設定」
+
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let sb=null, staffEmail=null;
+const isAdmin = ()=> ADMINS.includes((staffEmail||"").toLowerCase());
+
+async function getSb(){
+  if(sb) return sb;
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  sb = createClient(SB_URL, SB_ANON);   // default persistSession：staff 登入記住
+  return sb;
+}
+const fmtDT = t => { if(!t) return ""; try{ return new Date(t).toLocaleString("zh-HK",{timeZone:"Asia/Macau",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}); }catch(e){ return t; } };
+function normIn(s){
+  s=(s||"").trim().toUpperCase().replace(/\s+/g,"");
+  const digits = s.replace(/\D/g,"");
+  if(/^6\d{7}$/.test(digits) && !/^LK/.test(s)) return {phone:digits};
+  s = s.replace(/^LK-?/,""); if(!s) return {};
+  return {code:"LK-"+s};
+}
+
+async function boot(){
+  const c = await getSb();
+  const { data:{ session } } = await c.auth.getSession();
+  if(!session) return renderLogin();
+  staffEmail = (session.user.email||"").toLowerCase();
+  renderLookup();
+}
+function renderLogin(){
+  app.innerHTML='<input id="em" type="email" placeholder="工作人員 email" autocomplete="username">'+
+    '<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">'+
+    '<button class="btn" id="login" style="width:100%">登入</button><div class="status" id="ls"></div>'+
+    '<div class="lock">🔒 用大會配發嘅工作人員帳號登入（同集點卡蓋章後台同一個帳號）。登入一次會記住。</div>';
+  $("#login").onclick = async ()=>{
+    $("#ls").textContent="登入緊…"; $("#ls").className="status";
+    const c = await getSb();
+    const { error } = await c.auth.signInWithPassword({ email:$("#em").value.trim(), password:$("#pw").value });
+    if(error){ $("#ls").textContent="登入失敗："+error.message; $("#ls").className="status err"; }
+    else boot();
+  };
+  $("#pw").addEventListener("keydown", e=>{ if(e.key==="Enter") $("#login").click(); });
+}
+
+/* ── 查券／查電話 ─────────────────────── */
+function renderLookup(msg, cls){
+  app.innerHTML='<div class="bar"><input class="codein" id="code" placeholder="LK-XXXXX 或電話號碼" autocapitalize="characters" autocomplete="off" style="margin-bottom:0">'+
+    '<button class="btn go" id="find">查</button><button class="btn" id="scan" style="background:var(--purple);border-color:var(--purple)">📷 掃 QR</button><button class="btn alt" id="lo">登出</button></div>'+
+    '<div class="status '+(cls||'')+'" id="st">'+(msg||'')+'</div>'+
+    '<div class="lock">💡 參加者喺 🎁 抽獎頁「我嘅獎券」開張券出嚟，你掃佢個 QR（或者叫佢報券號／電話）。核銷咗嘅券唔可以再用。</div>';
+  const go = async ()=>{
+    const parsed = normIn($("#code").value);
+    if(parsed.phone) return findPhone(parsed.phone);
+    if(parsed.code && parsed.code.length>=6) return findCode(parsed.code);
+    $("#st").textContent="請輸入券號（LK-XXXXX）或 8 位電話號碼"; $("#st").className="status err";
+  };
+  $("#find").onclick = go;
+  $("#scan").onclick = ()=>openScanner(go);
+  $("#code").addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+  $("#lo").onclick = logout;
+  if(isAdmin()){
+    const d = document.createElement("div");
+    d.innerHTML = '<div class="bar" style="margin-top:12px"><button class="btn warn" id="cfg" style="flex:1">⚙️ 抽獎設定（大會）</button><button class="btn" id="stats" style="flex:1;background:var(--teal);border-color:var(--teal)">📊 統計</button></div>';
+    app.appendChild(d);
+    $("#cfg").onclick = renderConfig;
+    $("#stats").onclick = renderStats;
+  }
+  const pre = new URLSearchParams(location.search).get("code");
+  if(pre){ $("#code").value = pre; history.replaceState(null,"",location.pathname); go(); }
+}
+
+async function findCode(code){
+  setSt("搵緊…","");
+  const c = await getSb();
+  const { data, error } = await c.from("lucky_draws").select("*").eq("code", code).maybeSingle();
+  if(error) return setSt("讀取失敗："+error.message,"err");
+  if(!data) return setSt("搵唔到券「"+code+"」，請核對。","err");
+  renderVoucher(data);
+}
+async function findPhone(ph){
+  setSt("搵緊…","");
+  const c = await getSb();
+  const { data, error } = await c.from("lucky_draws").select("*").eq("phone", ph).order("created_at",{ascending:false}).limit(30);
+  if(error) return setSt("讀取失敗："+error.message,"err");
+  if(!data || !data.length) return setSt("呢個電話（"+ph+"）未有抽獎紀錄。","err");
+  renderPhoneList(ph, data);
+}
+function renderPhoneList(ph, rows){
+  const list = rows.map(r=>{
+    if(r.status==="none") return '<div class="wrow" style="cursor:default"><span class="wl"><span class="wt">🙏 多謝參與</span><br><span class="wd">'+esc(r.draw_date)+'</span></span><span class="wc none">冇中</span></div>';
+    const stc = r.status==="redeemed"?"redeemed":"issued";
+    const stt = r.status==="redeemed"?"已使用":"未使用";
+    return '<button class="wrow" data-code="'+esc(r.code)+'"><span class="wl"><span class="wt">'+(r.prize_kind==="cash"?"🧧 ":"🎁 ")+esc(r.prize_label)+'</span><br><span class="wd">'+esc(r.draw_date)+' · '+esc(r.code)+'</span></span><span class="wc '+stc+'">'+stt+'</span></button>';
+  }).join('');
+  app.innerHTML = '<div class="sech">📱 '+esc(ph)+' 嘅抽獎紀錄（新→舊）</div>'+list+
+    '<div class="bar" style="margin-top:14px"><button class="btn alt" id="back">← 返查券</button></div>';
+  app.querySelectorAll(".wrow[data-code]").forEach(b=> b.onclick = ()=>findCode(b.dataset.code));
+  $("#back").onclick = ()=>renderLookup();
+}
+function renderVoucher(r){
+  const stc = r.status==="redeemed"?"redeemed":"issued";
+  const stt = r.status==="redeemed"?"已使用 ✔︎":"未使用";
+  app.innerHTML =
+    '<div class="vbox">'+
+      '<div class="vt '+(r.prize_kind==="cash"?"cash":"gift")+'">'+(r.prize_kind==="cash"?"🧧 ":"🎁 ")+esc(r.prize_label)+'</div>'+
+      '<div style="margin:6px 0 8px"><span class="stbadge '+stc+'">'+stt+'</span></div>'+
+      '<div class="vrow"><span class="k">券號</span><span class="v">'+esc(r.code)+'</span></div>'+
+      '<div class="vrow"><span class="k">電話</span><span class="v">'+esc(r.phone)+'</span></div>'+
+      '<div class="vrow"><span class="k">抽獎日期</span><span class="v">'+esc(r.draw_date)+'</span></div>'+
+      (r.status==="redeemed"
+        ? '<div class="vrow"><span class="k">核銷時間</span><span class="v">'+esc(fmtDT(r.redeemed_at))+'</span></div>'+
+          '<div class="vrow"><span class="k">核銷人</span><span class="v">'+esc(r.redeemed_by||"?")+'</span></div>'
+        : '')+
+    '</div>'+
+    '<div class="status" id="st"></div>'+
+    (r.status==="issued"
+      ? '<button class="btn go" id="redeem" style="width:100%">✅ 核銷（收券／派禮品）</button>'+
+        '<div class="lock">'+(r.prize_kind==="cash"
+          ? '💡 現金券規則：<b>一次消費只可用一張</b>，唔設找贖。核對電話尾數後撳核銷。'
+          : '💡 禮品喺 A26 大會服務中心派發。核對電話尾數後撳核銷，即場交禮品。')+'</div>'
+      : '<div class="lock">⚠️ 呢張券已經用咗（'+esc(fmtDT(r.redeemed_at))+'），唔可以再核銷。</div>')+
+    '<div class="bar" style="margin-top:14px"><button class="btn alt" id="back">← 查另一張</button></div>';
+  $("#back").onclick = ()=>renderLookup();
+  const rd = $("#redeem");
+  if(rd) rd.onclick = async ()=>{
+    if(!confirm("確認核銷「"+r.prize_label+"」（"+r.code+"）？\n核銷後唔可以還原。")) return;
+    rd.disabled = true;
+    const c = await getSb();
+    const { data, error } = await c.from("lucky_draws")
+      .update({status:"redeemed", redeemed_at:new Date().toISOString(), redeemed_by:staffEmail})
+      .eq("code", r.code).eq("status","issued").select();
+    if(error){ setSt("核銷失敗："+error.message,"err"); rd.disabled=false; return; }
+    if(!data || !data.length){ setSt("⚠️ 呢張券啱啱已經被核銷咗（可能另一位同事處理咗）。","err"); return findCode(r.code); }
+    renderVoucher(data[0]);
+    setSt("✓ 核銷成功","okc");
+  };
+}
+
+/* ── QR 掃描（同集點卡一樣）───────────── */
+function extractIn(text){
+  if(!text) return "";
+  try{ const u = new URL(text); const c = u.searchParams.get("code"); if(c) return c; }catch(e){}
+  return text;
+}
+async function openScanner(go){
+  const ov = document.createElement("div"); ov.className="scanov";
+  ov.innerHTML =
+    '<div class="scanhd">📷 對準參加者獎券上嘅 QR code</div>'+
+    '<div id="reader"></div>'+
+    '<div class="scanerr" id="scanerr"></div>'+
+    '<button class="btn alt" id="scanclose" style="margin-top:14px">取消</button>';
+  document.body.appendChild(ov);
+  let scanner=null, done=false;
+  const cleanup = async ()=>{ if(done) return; done=true; try{ if(scanner){ await scanner.stop(); scanner.clear(); } }catch(e){} ov.remove(); };
+  ov.querySelector("#scanclose").onclick = cleanup;
+  try{
+    const mod = await import("https://esm.sh/html5-qrcode@2.3.8");
+    const Html5Qrcode = mod.Html5Qrcode || (mod.default && mod.default.Html5Qrcode) || mod.default;
+    if(done) return;
+    scanner = new Html5Qrcode("reader", { verbose:false });
+    await scanner.start({ facingMode:"environment" }, { fps:10, qrbox:{ width:230, height:230 } },
+      async (decoded)=>{
+        const v = extractIn(decoded);
+        if(!v || v.length<5) return;
+        await cleanup();
+        const inp = $("#code"); if(inp) inp.value = v;
+        if(go) go();
+      },
+      ()=>{} );
+  }catch(e){
+    const er = ov.querySelector("#scanerr");
+    if(er) er.textContent = "開唔到相機："+((e&&e.message)||e)+"。可改用手動輸入券號／電話。";
+  }
+}
+
+/* ── ⚙️ 大會設定（機率／庫存／題目／總掣）── */
+let cfgPrizes=[], cfgQs=[], cfgSet=null;
+async function renderConfig(){
+  app.innerHTML='<div class="status">載入緊…</div>';
+  const c = await getSb();
+  const [p, qs, st] = await Promise.all([
+    c.from("lucky_prizes").select("*").order("sort"),
+    c.from("lucky_questions").select("*").order("sort"),
+    c.from("lucky_settings").select("*").eq("id",1).maybeSingle(),
+  ]);
+  if(p.error||qs.error||st.error){
+    const msg=(p.error||qs.error||st.error).message||"";
+    app.innerHTML = /does not exist|relation|schema cache/i.test(msg)
+      ? '<div class="lock">⚠️ 抽獎數據庫仲未開通 —— 要喺 Supabase SQL Editor 跑一次 <b>supabase-lucky-setup.sql</b>，跑完 refresh 呢頁。</div><div class="bar"><button class="btn alt" id="back">← 返回</button></div>'
+      : '<div class="status err">讀取失敗：'+esc(msg)+'</div><div class="bar"><button class="btn alt" id="back">← 返回</button></div>';
+    $("#back").onclick=()=>renderLookup(); return;
+  }
+  cfgPrizes=(p.data||[]).map(x=>Object.assign({},x));
+  cfgQs=(qs.data||[]).map(x=>Object.assign({},x));
+  cfgSet=st.data||{id:1,week_cap:100,paused:false};
+  drawConfig();
+}
+function probSum(){ return cfgPrizes.filter(p=>p.active).reduce((s,p)=>s+(+p.prob||0),0); }
+function drawConfig(){
+  const sum = probSum();
+  const prows = cfgPrizes.map((p,i)=>
+    '<div class="prow" data-i="'+i+'">'+
+      '<div class="ptop"><input type="text" data-f="label" value="'+esc(p.label)+'" placeholder="獎品名">'+
+        '<button class="del" data-del="'+i+'">🗑</button></div>'+
+      '<div class="grid">'+
+        '<div><label>機率 %</label><input type="number" step="0.1" min="0" max="100" data-f="prob" value="'+(+p.prob||0)+'" inputmode="decimal"></div>'+
+        '<div><label>庫存（空=不限）</label><input type="number" min="0" data-f="stock" value="'+(p.stock==null?"":p.stock)+'" inputmode="numeric" placeholder="不限"></div>'+
+        '<div><label>面值 MOP'+(p.kind==="gift"?"（禮品=0）":"")+'</label><input type="number" min="0" data-f="value" value="'+(+p.value||0)+'" inputmode="numeric" '+(p.kind==="gift"?'disabled style="background:#f4efe4"':'')+'></div>'+
+      '</div>'+
+      '<div class="pbot"><span>'+(p.kind==="cash"?"🧧 現金券":"🎁 禮品")+'</span>'+
+        '<label><input type="checkbox" data-f="active" '+(p.active?"checked":"")+'> 啟用</label></div>'+
+    '</div>').join('');
+  const qrows = cfgQs.map((qq,i)=>{
+    const opts=(Array.isArray(qq.opts)?qq.opts:[]).concat(["","","",""]).slice(0,4);
+    return '<div class="qrow" data-qi="'+i+'">'+
+      '<textarea data-qf="q" placeholder="題目">'+esc(qq.q||"")+'</textarea>'+
+      opts.map((o,j)=>'<div class="oline"><input type="radio" name="qans'+i+'" '+(qq.ans===j?"checked":"")+' data-qans="'+j+'" title="正確答案"><input type="text" data-qopt="'+j+'" value="'+esc(o)+'" placeholder="選項 '+String.fromCharCode(65+j)+(j<2?"（必填）":"（可留空）")+'"></div>').join('')+
+      '<div class="qbot"><label><input type="checkbox" data-qf="active" '+(qq.active?"checked":"")+'> 啟用</label>'+
+        '<span style="color:var(--mut)">⭕ 圈住嗰個 = 正確答案</span>'+
+        '<button class="del" data-qdel="'+i+'" style="margin-left:auto">🗑</button></div>'+
+    '</div>';}).join('');
+  app.innerHTML =
+    '<div class="sech">🎛 總掣</div>'+
+    '<div class="prow"><div class="grid" style="grid-template-columns:1fr 1fr">'+
+      '<div><label>每電話每週現金券上限 MOP</label><input type="number" min="0" id="cfgcap" value="'+(+cfgSet.week_cap||100)+'" inputmode="numeric"></div>'+
+      '<div><label>暫停抽獎</label><div style="padding-top:8px"><label style="font-size:14px;font-weight:800;display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="cfgpaused" '+(cfgSet.paused?"checked":"")+'> 暫停中</label></div></div>'+
+    '</div></div>'+
+    '<div class="sech">🏆 獎項（機率合共唔可以超過 100%，其餘 = 多謝參與）</div>'+
+    '<div id="plist">'+prows+'</div>'+
+    '<div class="bar"><button class="btn alt" id="addcash">＋ 現金券</button><button class="btn alt" id="addgift">＋ 禮品</button></div>'+
+    '<div class="sumbar" id="sumbar"></div>'+
+    '<div class="sech">📝 題目（每次隨機出一條；答錯可以再試，唔會用咗每日機會）</div>'+
+    '<div id="qlist">'+qrows+'</div>'+
+    '<div class="bar"><button class="btn alt" id="addq">＋ 新增題目</button></div>'+
+    '<div class="status" id="st"></div>'+
+    '<div class="bar" style="margin-top:8px"><button class="btn go" id="saveall" style="flex:1">💾 全部儲存</button><button class="btn alt" id="back">← 返回</button></div>';
+  const syncP = ()=>{ app.querySelectorAll("#plist .prow").forEach(row=>{
+      const i=+row.dataset.i, p=cfgPrizes[i];
+      row.querySelectorAll("[data-f]").forEach(el=>{
+        const f=el.dataset.f;
+        if(f==="active") p.active=el.checked;
+        else if(f==="stock") p.stock = el.value.trim()==="" ? null : Math.max(0, parseInt(el.value,10)||0);
+        else if(f==="prob") p.prob = Math.max(0, Math.min(100, parseFloat(el.value)||0));
+        else if(f==="value") p.value = Math.max(0, parseInt(el.value,10)||0);
+        else p[f]=el.value.trim();
+      });
+    }); };
+  const syncQ = ()=>{ app.querySelectorAll("#qlist .qrow").forEach(row=>{
+      const i=+row.dataset.qi, qq=cfgQs[i];
+      qq.q = row.querySelector('[data-qf="q"]').value.trim();
+      qq.active = row.querySelector('[data-qf="active"]').checked;
+      const opts=[]; row.querySelectorAll("[data-qopt]").forEach(el=>opts.push(el.value.trim()));
+      while(opts.length && !opts[opts.length-1]) opts.pop();   // 刪走尾部空選項
+      qq.opts = opts;
+      row.querySelectorAll("[data-qans]").forEach(el=>{ if(el.checked) qq.ans=+el.dataset.qans; });
+    }); };
+  const updSum = ()=>{ syncP(); const s=probSum();
+    const el=$("#sumbar"); el.textContent="🎲 合共中獎率："+(Math.round(s*10)/10)+"%　·　多謝參與："+(Math.round((100-s)*10)/10)+"%"+(s>100?"　⚠️ 超過 100%，save 唔到":"");
+    el.className="sumbar"+(s>100?" over":""); };
+  updSum();
+  app.addEventListener("input", e=>{ if(e.target.closest("#plist")||e.target.id==="cfgcap") updSum(); });
+  $("#addcash").onclick=()=>{ syncP(); syncQ(); cfgPrizes.push({id:"p"+Date.now().toString(36),label:"MOP 10 現金券",kind:"cash",value:10,prob:0,stock:null,active:true,sort:(Math.max(0,...cfgPrizes.map(p=>p.sort||0))+10)}); drawConfig(); };
+  $("#addgift").onclick=()=>{ syncP(); syncQ(); cfgPrizes.push({id:"p"+Date.now().toString(36),label:"禮品",kind:"gift",value:0,prob:0,stock:10,active:true,sort:(Math.max(0,...cfgPrizes.map(p=>p.sort||0))+10)}); drawConfig(); };
+  $("#addq").onclick=()=>{ syncP(); syncQ(); cfgQs.push({id:crypto.randomUUID(),q:"",opts:["",""],ans:0,active:true,sort:(Math.max(0,...cfgQs.map(x=>x.sort||0))+10),_new:true}); drawConfig(); };
+  app.querySelectorAll("[data-del]").forEach(b=> b.onclick=async ()=>{
+    const i=+b.dataset.del; syncP(); syncQ();
+    if(!confirm("刪除「"+(cfgPrizes[i].label||"?")+"」？已派出嘅券唔受影響。")) return;
+    const c=await getSb(); await c.from("lucky_prizes").delete().eq("id",cfgPrizes[i].id);
+    cfgPrizes.splice(i,1); drawConfig();
+  });
+  app.querySelectorAll("[data-qdel]").forEach(b=> b.onclick=async ()=>{
+    const i=+b.dataset.qdel; syncP(); syncQ();
+    if(!confirm("刪除呢條題目？")) return;
+    if(!cfgQs[i]._new){ const c=await getSb(); await c.from("lucky_questions").delete().eq("id",cfgQs[i].id); }
+    cfgQs.splice(i,1); drawConfig();
+  });
+  $("#saveall").onclick = async ()=>{
+    syncP(); syncQ();
+    const sum=probSum();
+    if(sum>100){ setSt("⚠️ 機率合共 "+sum+"%，超過 100%，執一執先","err"); return; }
+    for(const p of cfgPrizes){ if(!p.label){ setSt("有獎項未填名","err"); return; } }
+    for(const qq of cfgQs){
+      if(!qq.q){ setSt("有題目未填內容","err"); return; }
+      if((qq.opts||[]).filter(o=>o).length<2){ setSt("題目「"+qq.q.slice(0,12)+"…」要至少兩個選項","err"); return; }
+      if(qq.ans==null || !qq.opts[qq.ans]){ setSt("題目「"+qq.q.slice(0,12)+"…」個正確答案圈咗喺空選項度","err"); return; }
+    }
+    setSt("儲存緊…","");
+    const c=await getSb();
+    const now=new Date().toISOString();
+    const e1=(await c.from("lucky_settings").upsert({id:1, week_cap:Math.max(0,parseInt($("#cfgcap").value,10)||0), paused:$("#cfgpaused").checked, updated_at:now})).error;
+    const e2=(await c.from("lucky_prizes").upsert(cfgPrizes.map(p=>({id:p.id,label:p.label,kind:p.kind,value:p.kind==="gift"?0:(+p.value||0),prob:+p.prob||0,stock:p.stock,active:!!p.active,sort:p.sort||0,updated_at:now})))).error;
+    const e3=(await c.from("lucky_questions").upsert(cfgQs.map(qq=>({id:qq.id,q:qq.q,opts:qq.opts,ans:qq.ans,active:!!qq.active,sort:qq.sort||0,updated_at:now})))).error;
+    if(e1||e2||e3){ setSt("儲存失敗："+((e1||e2||e3).message||""),"err"); return; }
+    cfgQs.forEach(qq=>delete qq._new);
+    setSt("✓ 已儲存，即時生效","okc");
+  };
+  $("#back").onclick=()=>renderLookup();
+}
+
+/* ── 📊 統計 ─────────────────────────── */
+async function renderStats(){
+  app.innerHTML='<div class="status">載入緊…</div>';
+  const c = await getSb();
+  const [d, p] = await Promise.all([
+    c.from("lucky_draws").select("draw_date,prize_id,prize_label,prize_kind,prize_value,status,phone,code,created_at").order("created_at",{ascending:false}).limit(5000),
+    c.from("lucky_prizes").select("*").order("sort"),
+  ]);
+  if(d.error){ app.innerHTML='<div class="status err">讀取失敗：'+esc(d.error.message)+'</div><button class="btn alt" id="back">← 返回</button>'; $("#back").onclick=()=>renderLookup(); return; }
+  const rows=d.data||[], prizes=p.data||[];
+  const today = new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Macau"});   // YYYY-MM-DD
+  const tRows = rows.filter(r=>r.draw_date===today);
+  const wins = rows.filter(r=>r.status!=="none");
+  const cashIssued = wins.filter(r=>r.prize_kind==="cash").reduce((s,r)=>s+(+r.prize_value||0),0);
+  const cashUsed   = wins.filter(r=>r.prize_kind==="cash"&&r.status==="redeemed").reduce((s,r)=>s+(+r.prize_value||0),0);
+  const byPrize = {};
+  wins.forEach(r=>{ const k=r.prize_label; byPrize[k]=byPrize[k]||{n:0,used:0}; byPrize[k].n++; if(r.status==="redeemed") byPrize[k].used++; });
+  const recent = wins.slice(0,30).map(r=>'<div class="trow"><span class="c1">'+(r.prize_kind==="cash"?"🧧":"🎁")+' '+esc(r.prize_label)+' · '+esc(r.code||"")+'<br><small style="color:var(--mut)">'+esc(r.phone)+'</small></span><span class="c2">'+esc(r.draw_date)+(r.status==="redeemed"?" ✔︎":"")+'</span></div>').join('')||'<div class="lock">未有中獎紀錄</div>';
+  const stockRows = prizes.filter(x=>x.stock!=null).map(x=>'<div class="trow"><span class="c1">'+esc(x.label)+'</span><span class="c2">剩 '+x.stock+'</span></div>').join('');
+  app.innerHTML =
+    '<div class="sech">📊 即日（'+esc(today)+'，澳門時間）</div>'+
+    '<div class="statgrid">'+
+      '<div class="statbox"><div class="n">'+tRows.length+'</div><div class="t">今日抽獎人次</div></div>'+
+      '<div class="statbox"><div class="n">'+tRows.filter(r=>r.status!=="none").length+'</div><div class="t">今日中獎</div></div>'+
+      '<div class="statbox"><div class="n">'+rows.length+'</div><div class="t">累計抽獎人次</div></div>'+
+      '<div class="statbox"><div class="n">'+wins.length+'</div><div class="t">累計中獎</div></div>'+
+      '<div class="statbox"><div class="n">$'+cashIssued+'</div><div class="t">現金券已發出（MOP）</div></div>'+
+      '<div class="statbox"><div class="n">$'+cashUsed+'</div><div class="t">現金券已核銷（MOP）</div></div>'+
+    '</div>'+
+    '<div class="sech">各獎項（發出／已核銷）</div>'+
+    Object.keys(byPrize).map(k=>'<div class="trow"><span class="c1">'+esc(k)+'</span><span class="c2">'+byPrize[k].n+' 張 · 用咗 '+byPrize[k].used+'</span></div>').join('')+
+    (stockRows?'<div class="sech">剩餘庫存</div>'+stockRows:'')+
+    '<div class="sech">最近 30 個中獎</div>'+recent+
+    '<div class="bar" style="margin-top:14px"><button class="btn alt" id="back">← 返回</button></div>';
+  $("#back").onclick=()=>renderLookup();
+}
+
+function setSt(t,cls){ const s=$("#st"); if(s){ s.textContent=t; s.className="status "+(cls||""); } }
+async function logout(){ const c=await getSb(); await c.auth.signOut(); renderLogin(); }
+
+boot();
+</script>
+</body>
+</html>
