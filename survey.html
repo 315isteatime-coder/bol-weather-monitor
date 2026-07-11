@@ -205,10 +205,13 @@ if(!SB_URL || SB_URL.indexOf("__")===0){
     // code: IEC-XXXXX
     let code="IEC-"; for(let i=0;i<5;i++) code+="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)];
     try{
-      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-      const sb = createClient(SB_URL, SB_ANON, {auth:{persistSession:false, autoRefreshToken:false}});
-      const { error } = await sb.from(TABLE).insert({ code, answers });
-      if(error) throw error;
+      // 直接 REST POST 入 Supabase，唔再靠 esm.sh 動態 import（heavy module chain，喺手機／某啲網絡 load 唔到會令提交失敗）
+      const r = await fetch(SB_URL+"/rest/v1/"+TABLE, {
+        method:"POST",
+        headers:{ apikey:SB_ANON, "Authorization":"Bearer "+SB_ANON, "Content-Type":"application/json", "Prefer":"return=minimal" },
+        body: JSON.stringify({ code, answers })
+      });
+      if(!r.ok) throw new Error("HTTP "+r.status+" "+(await r.text()).slice(0,140));
       form.style.display="none";
       $("#done").innerHTML =
         '<div class="done"><div class="big">🎉</div><h2>多謝參與！</h2><p>Thank you for your feedback!</p>'+
