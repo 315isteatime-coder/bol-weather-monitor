@@ -105,11 +105,8 @@ function renderHome(d){
   d = d || commission();
 
   // 主环：满 100% 为止；超额部分画内圈那条深红
-  const C1 = 2*Math.PI*84, C2 = 2*Math.PI*97;
+  const C1 = 2*Math.PI*84;
   $("arcMain").setAttribute("stroke-dashoffset", String(C1 * (1 - Math.min(1, d.A))));
-  const over = Math.max(0, Math.min(.5, d.A - 1));           // 超额最多画到 150%
-  $("arcOver").setAttribute("stroke-dashoffset", String(C2 * (1 - over/.5)));
-  $("arcOver").style.opacity = over > 0 ? "1" : "0";
 
   $("hPct").textContent = (d.A*100).toFixed(0) + "%";
   const ov = $("hOver");

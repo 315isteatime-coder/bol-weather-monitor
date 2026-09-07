@@ -3,28 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f2e8">
+<meta name="theme-color" content="#fdf6f5">
 <meta name="robots" content="noindex,nofollow">
 <title>KIIKII 珠海店</title>
+<link rel="icon" href="logo.png">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
 
 <!-- ══ 今日 ══ -->
 <main class="app" id="p-home">
-  <div class="bar"><div><h1>今日</h1><div class="sub" id="homeSub"></div></div>
-    <button class="who" id="whoName" type="button" style="background:none;padding:6px 0">店员</button></div>
+  <div class="brand">
+    <img src="logo.png" alt="KiiKii" width="150" height="52">
+    <button class="who" id="whoName" type="button">店员</button>
+  </div>
+  <div class="bar"><div><h1><span class="hl">今日</span></h1><div class="sub" id="homeSub"></div></div></div>
 
   <div class="stack">
     <div class="hero">
       <div class="dial">
         <svg viewBox="0 0 200 200" role="img" aria-labelledby="dialT">
           <title id="dialT">本月达成率</title>
-          <circle cx="100" cy="100" r="84" fill="none" stroke="#f2ece0" stroke-width="17"></circle>
-          <circle id="arcMain" cx="100" cy="100" r="84" fill="none" stroke="#f60000" stroke-width="17"
-                  stroke-linecap="round" stroke-dasharray="527.79" stroke-dashoffset="527.79"></circle>
-          <circle id="arcOver" cx="100" cy="100" r="97" fill="none" stroke="#8e0000" stroke-width="4"
-                  stroke-linecap="round" stroke-dasharray="609.47" stroke-dashoffset="609.47"></circle>
+          <circle cx="100" cy="100" r="84" fill="none" stroke="#fff1f0" stroke-width="19"></circle>
+          <circle id="arcMain" cx="100" cy="100" r="84" fill="none" stroke="#f60000" stroke-width="19"
+                  stroke-linecap="butt" stroke-dasharray="527.79" stroke-dashoffset="527.79"></circle>
+          <circle cx="100" cy="100" r="93.5" fill="none" stroke="#16110f" stroke-width="2.5"></circle>
+          <circle cx="100" cy="100" r="74.5" fill="none" stroke="#16110f" stroke-width="2.5"></circle>
         </svg>
         <div class="mid">
           <div class="pct num" id="hPct">0%</div>
@@ -78,7 +82,8 @@
 
 <!-- ══ 佣金 ══ -->
 <main class="app" id="p-comm" hidden>
-  <div class="bar"><div><h1>佣金</h1></div></div>
+  <div class="brand"><img src="logo.png" alt="KiiKii" width="150" height="52"></div>
+  <div class="bar"><div><h1><span class="hl">佣金</span></h1></div></div>
 
   <div class="stack">
     <div class="card">
@@ -146,7 +151,8 @@
 
 <!-- ══ 排班 ══ -->
 <main class="app" id="p-shift" hidden>
-  <div class="bar"><div><h1>排班</h1><div class="sub" id="shSub"></div></div>
+  <div class="brand"><img src="logo.png" alt="KiiKii" width="150" height="52"></div>
+  <div class="bar"><div><h1><span class="hl">排班</span></h1><div class="sub" id="shSub"></div></div>
     <button class="btn" id="shEdit" style="width:auto;min-height:38px;font-size:13px;padding:8px 16px">编辑</button></div>
 
   <div class="stack">
