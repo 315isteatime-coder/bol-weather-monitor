@@ -125,15 +125,35 @@ input[readonly]{color:var(--ink-2);font-weight:600}
 .res .p .v{color:var(--red-ink)} .res .g .v{color:var(--warn)}
 .res .net .v{font-size:19px}
 
-.prog{background:var(--card);border-radius:24px;padding:16px 18px;box-shadow:var(--shadow-m)}
-.prog .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.prog .lbl{font-size:13.5px;font-weight:700}
-.prog .rest{font-size:12.5px;font-weight:700;color:var(--ink-2)}
-.prog .track{height:10px;border-radius:999px;background:var(--sunk);margin-top:11px;overflow:hidden}
-.prog .fill{height:100%;border-radius:999px;background:var(--red);min-width:10px}
-.prog.hit .fill{background:var(--good)}
-.prog .foot{font-size:11.5px;font-weight:600;color:var(--ink-3);margin-top:8px}
-.prog.hit .foot{color:var(--good)}
+/* 三条进度摆同一张卡，先唔会读落好散 */
+.ct{font-size:15px;font-weight:800;letter-spacing:-.01em;margin-bottom:14px}
+.pgcard{padding:18px}
+.pg{margin-bottom:17px}
+.pg:last-child{margin-bottom:0}
+.pgtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pg .pl{font-size:13px;font-weight:700}
+.pg .pr{font-size:12.5px;font-weight:800;color:var(--red-ink)}
+.pg.hit .pr{color:var(--good)}
+.pg .track{height:9px;border-radius:999px;background:var(--sunk);margin-top:9px;overflow:hidden}
+.pg .fill{height:100%;border-radius:999px;background:var(--red);min-width:9px;
+  transition:width .32s cubic-bezier(.16,1,.3,1)}
+.pg.hit .fill{background:var(--good)}
+.pg .ps{font-size:11px;font-weight:600;color:var(--ink-3);margin-top:7px}
+
+/* 多做几多，多袋几多 */
+.gainhd{display:grid;grid-template-columns:74px 1fr auto;gap:10px;font-size:10.5px;
+  font-weight:700;color:var(--ink-3);padding-bottom:8px;border-bottom:1.5px solid var(--line)}
+.gainhd span:last-child{text-align:right}
+.gain{display:grid;grid-template-columns:74px 1fr auto;gap:10px;align-items:center;
+  padding:12px 0;border-bottom:1.5px solid var(--line)}
+.gain:last-child{border-bottom:none;padding-bottom:2px}
+.gain .gx{font-size:15px;font-weight:800;letter-spacing:-.02em}
+.gain .gd{font-size:11px;font-weight:600;color:var(--ink-2);line-height:1.4}
+.gain .gt{font-size:19px;font-weight:800;color:var(--red-ink);letter-spacing:-.03em;text-align:right}
+.gain.up .gd{color:var(--good);font-weight:700}
+.gain.up .gt{color:var(--good)}
+.gainnote{font-size:11.5px;font-weight:600;color:var(--ink-2);line-height:1.55;
+  margin-top:13px;padding-top:12px;border-top:1.5px solid var(--line)}
 
 .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   font-size:13.5px;font-weight:600;color:var(--ink-2);padding:13px 16px;

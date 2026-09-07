@@ -44,8 +44,9 @@ function startOfWeek(d){ const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x
 function weekDays(s){ return Array.from({length:7}, (_,i) => { const d = new Date(s); d.setDate(d.getDate()+i); return d; }); }
 
 /* ── 佣金核心：三个数入，四个数出 ── */
-function commission(){
-  const nws  = n($("cRev").value);
+function commission(add){
+  add = add || 0;
+  const nws  = n($("cRev").value) + add;   // 我多卖，店铺总额同时升
   const T    = n($("cTgt").value) || 1;
   const A    = nws / T;
   const ramp = $("segRamp").getAttribute("aria-pressed") === "true";
@@ -55,7 +56,7 @@ function commission(){
 
   const hrs = n($("cHrs").value);
   const tgt = (T / Math.max(1, n($("cFt").value))) * hrs / STD_H;   // 个人目标按工时折算
-  const sale = n($("cSale").value);
+  const sale = n($("cSale").value) + add;
   const pv = rp * Math.min(sale,tgt) + (ramp ? rp : ACC) * Math.max(0, sale - tgt);
 
   const pool = rg * nws;
@@ -92,6 +93,13 @@ function renderComm(){
   renderHome(d);
 }
 
+/* 多做 X 蚊，实际多袋几多。整个 calc 重跑一次，跳档自动算入 */
+function extraGain(x){
+  const a = commission(0), b = commission(x);
+  return { priv: b.pv - a.pv, pub: b.pb - a.pb, total: (b.pv + b.pb) - (a.pv + a.pb),
+           tierUp: b.rp !== a.rp || b.rg !== a.rg };
+}
+
 /* ── 今日页 ── */
 function renderHome(d){
   d = d || commission();
@@ -114,8 +122,8 @@ function renderHome(d){
   const vd = $("hVerdict");
   vd.classList.toggle("hit", d.A >= 1);
   vd.textContent = d.A >= 1
-    ? "已达标　私佣 " + (d.rp*100).toFixed(1) + "%　公佣 " + (d.rg*100).toFixed(1) + "%"
-    : "距离达标还差 " + m(d.T - d.nws);
+    ? "私佣 " + (d.rp*100).toFixed(1) + "%　公佣 " + (d.rg*100).toFixed(1) + "%"
+    : "未达标　私佣 " + (d.rp*100).toFixed(1) + "%　公佣 " + (d.rg*100).toFixed(1) + "%";
 
   $("hPv").textContent  = m(d.pv);
   $("hPb").textContent  = m(d.pb);
@@ -128,12 +136,34 @@ function renderHome(d){
   const box = $("hLeaveProg");
   box.classList.toggle("hit", d.leave);
   $("hLvFill").style.width = (pc*100).toFixed(1) + "%";
-  $("hLvRest").textContent = d.leave ? "已拿到" : "还差 " + m(need - d.nws);
-  $("hLvFoot").textContent = d.leave
-    ? "全店每人加一天带薪假"
-    : "全店做到 " + m(need) + "（达成 120%）就每人加一天带薪假";
+  $("hLvRest").textContent = d.leave ? "拿到" : "差 " + m(need - d.nws);
+  box.querySelector(".pl").textContent = "假期奖励　全店 " + m(need);
 
+  // 仲差几多：个人 / 店铺 / 假期，三条摆埋一齐先唔会散
+  const sale = n($("cSale").value);
+  bar("pgMe", sale,  d.tgt, "我　" + m(sale)  + " ／ " + m(d.tgt));
+  bar("pgSt", d.nws, d.T,   "全店 " + m(d.nws) + " ／ " + m(d.T));
+
+  // 多做几多有几多
+  $("gainRows").innerHTML = [1000, 5000, 10000].map(x => {
+    const g = extraGain(x);
+    return `<div class="gain${g.tierUp ? " up" : ""}">
+      <div class="gx num">+${m(x).replace("¥","¥")}</div>
+      <div class="gd">私 ${m(g.priv)}　公 ${m(g.pub)}${g.tierUp ? "　跳档" : ""}</div>
+      <div class="gt num">${m(g.total)}</div></div>`;
+  }).join("");
   renderWeekBars();
+}
+
+/* 一条进度：现值、目标、还差多少 */
+function bar(id, val, goal, label){
+  const box = $(id);
+  const pc  = goal > 0 ? Math.max(0, Math.min(1, val/goal)) : 0;
+  const hit = val >= goal;
+  box.classList.toggle("hit", hit);
+  box.querySelector(".pl").textContent   = label;
+  box.querySelector(".pr").textContent   = hit ? "达标" : "差 " + m(goal - val);
+  box.querySelector(".fill").style.width = (pc*100).toFixed(1) + "%";
 }
 
 function renderWeekBars(){
@@ -151,9 +181,7 @@ function renderWeekBars(){
       <div class="d">${DOW[x.getDay()]}</div></div>`;
   }).join("");
   const tot = vals.reduce((s,v)=>s+v,0);
-  $("wkSub").textContent = tot > 0
-    ? "合计 " + m(tot) + "　最高一日 " + m(max)
-    : "去排班页按「编辑」，每日可以填当天挂单额";
+  $("wkTitle").textContent = tot > 0 ? "本周挂单　" + m(tot) : "本周挂单";
 }
 
 /* ── 排班页 ── */
@@ -192,9 +220,7 @@ function renderShift(){
     return c + SHIFTS.filter(s => (day[s]||[]).includes(me.name)).length;
   }, 0);
   $("shMine").textContent = mine + " 更";
-  $("shHint").innerHTML = editing
-    ? "点名字加入或移出该更，顺手填当日挂单额。改动即时存在<b>这部手机</b>。"
-    : "点右上角名字切换你是谁。排班只存这部手机，要全店共用同一份需要接后端。";
+
 }
 
 /* ── 事件 ── */

@@ -46,15 +46,30 @@
       <div class="tile net"><div class="k">预计实收</div><div class="v num" id="hNet">¥0</div></div>
     </div>
 
-    <div class="prog" id="hLeaveProg">
-      <div class="top"><span class="lbl">假期奖励</span><span class="rest num" id="hLvRest"></span></div>
-      <div class="track"><div class="fill" id="hLvFill" style="width:0%"></div></div>
-      <div class="foot" id="hLvFoot"></div>
+    <div class="card pgcard">
+      <div class="ct">仲差几多</div>
+      <div class="pg" id="pgMe">
+        <div class="pgtop"><span class="pl"></span><span class="pr num"></span></div>
+        <div class="track"><div class="fill"></div></div>
+      </div>
+      <div class="pg" id="pgSt">
+        <div class="pgtop"><span class="pl"></span><span class="pr num"></span></div>
+        <div class="track"><div class="fill"></div></div>
+      </div>
+      <div class="pg" id="hLeaveProg">
+        <div class="pgtop"><span class="pl">假期奖励</span><span class="pr num" id="hLvRest"></span></div>
+        <div class="track"><div class="fill" id="hLvFill" style="width:0%"></div></div>
+      </div>
     </div>
 
     <div class="card">
-      <div style="font-size:15px;font-weight:800;letter-spacing:-.01em">本周我的挂单</div>
-      <div class="sub" id="wkSub"></div>
+      <div class="ct">多做几多</div>
+      
+      <div id="gainRows"></div>
+    </div>
+
+    <div class="card">
+      <div class="ct" id="wkTitle" style="margin-bottom:0">本周挂单</div>
       <div class="week" id="wkBars"></div>
     </div>
 
@@ -63,7 +78,7 @@
 
 <!-- ══ 佣金 ══ -->
 <main class="app" id="p-comm" hidden>
-  <div class="bar"><div><h1>佣金</h1><div class="sub">填三个数就算到</div></div></div>
+  <div class="bar"><div><h1>佣金</h1></div></div>
 
   <div class="stack">
     <div class="card">
@@ -120,17 +135,12 @@
           <button type="button" id="segSt" aria-pressed="true">稳定期</button>
           <button type="button" id="segRamp" aria-pressed="false">开业头三个月</button>
         </div>
-        <p class="note">
-          <b>私佣</b>：个人目标以内按当档费率（封顶 3%），<b>超出部分 6%</b>。
-          个人目标 ＝ 月目标 ÷ 全职人数，兼职按工时折算。<br>
-          <b>公佣</b>：费率 × 全店营业额，店长先分 20%，其余按上班时间摊分。<br>
-          费率跟全店达成率：低于 70% 为 0，70% 起 1%，90% 起 2%，100% 起私佣 3% ／ 公佣 4%。<br>
-          开业头三个月费率封顶 2%，6% 不开放。
-        </p>
+        <p class="note">费率跟全店达成率：70% 起 1%，90% 起 2%，达标起私佣 3% ／ 公佣 4%。
+        超出个人目标嘅部分 6%。</p>
       </div>
     </details>
 
-    <p class="note" style="text-align:center">这里算的是<b>估算</b>。发薪以店长后台数字为准。</p>
+    <p class="note" style="text-align:center">估算。发薪以实际结算为准。</p>
   </div>
 </main>
 
@@ -146,7 +156,6 @@
     </div>
     <div class="card" id="shList"></div>
     <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
-    <p class="note" id="shHint"></p>
   </div>
 </main>
 
