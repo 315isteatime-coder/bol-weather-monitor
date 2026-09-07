@@ -22,7 +22,13 @@ const $ = id => document.getElementById(id);
 const n = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
 const m = v => "¥" + Math.round(v).toLocaleString("en-US");
 const rate = (t,a) => { for (const [h,r] of t) if (a < h) return r; return t[t.length-1][1]; };
-const iso = d => d.toISOString().slice(0,10);
+// ⚠️ 唔可以用 toISOString()，佢係 UTC。珠海 UTC+8，早上 8 点前会当成前一日，
+// 排班同当日挂单会入错格。一律用本地日期。
+const iso = d => {
+  const x = new Date(d);
+  x.setMinutes(x.getMinutes() - x.getTimezoneOffset());
+  return x.toISOString().slice(0,10);
+};
 const load = (k,f) => { try { return JSON.parse(localStorage.getItem("kk_"+k)) ?? f; } catch(e){ return f; } };
 const save = (k,v) => { try { localStorage.setItem("kk_"+k, JSON.stringify(v)); } catch(e){} };
 
@@ -89,15 +95,27 @@ function renderComm(){
 /* ── 今日页 ── */
 function renderHome(d){
   d = d || commission();
-  const pct = Math.max(0, Math.min(1.5, d.A));
-  const C = 2 * Math.PI * 50;
-  $("ringArc").setAttribute("stroke-dashoffset", String(C * (1 - Math.min(1,pct))));
-  $("hPct").textContent = (d.A*100).toFixed(0) + "%";
-  $("hCap").textContent = "本月达成率　目标 " + m(d.T);
 
-  const gap = $("hGap");
-  if (d.A >= 1){ gap.textContent = "已达标，费率 私 " + (d.rp*100).toFixed(1) + "% ／ 公 " + (d.rg*100).toFixed(1) + "%"; gap.classList.add("hit"); }
-  else { gap.textContent = "距离达标还差 " + m(d.T - d.nws); gap.classList.remove("hit"); }
+  // 主环：满 100% 为止；超额部分画内圈那条深红
+  const C1 = 2*Math.PI*84, C2 = 2*Math.PI*97;
+  $("arcMain").setAttribute("stroke-dashoffset", String(C1 * (1 - Math.min(1, d.A))));
+  const over = Math.max(0, Math.min(.5, d.A - 1));           // 超额最多画到 150%
+  $("arcOver").setAttribute("stroke-dashoffset", String(C2 * (1 - over/.5)));
+  $("arcOver").style.opacity = over > 0 ? "1" : "0";
+
+  $("hPct").textContent = (d.A*100).toFixed(0) + "%";
+  const ov = $("hOver");
+  ov.hidden = !(d.A > 1);
+  if (d.A > 1) ov.textContent = "超标 " + ((d.A-1)*100).toFixed(0) + "%";
+
+  $("hRev").textContent = m(d.nws);
+  $("hTgt").textContent = m(d.T);
+
+  const vd = $("hVerdict");
+  vd.classList.toggle("hit", d.A >= 1);
+  vd.textContent = d.A >= 1
+    ? "已达标　私佣 " + (d.rp*100).toFixed(1) + "%　公佣 " + (d.rg*100).toFixed(1) + "%"
+    : "距离达标还差 " + m(d.T - d.nws);
 
   $("hPv").textContent  = m(d.pv);
   $("hPb").textContent  = m(d.pb);
@@ -105,11 +123,15 @@ function renderHome(d){
   $("whoName").textContent = me.name;
   $("homeSub").textContent = new Date().toLocaleDateString("zh-CN",{month:"long",day:"numeric",weekday:"long"});
 
-  const lv = $("hLeave");
-  lv.querySelector("b").textContent = d.leave
+  // 假期奖励：线性条，畀首屏多一种视觉语言
+  const need = LEAVE_A * d.T, pc = Math.max(0, Math.min(1, d.nws / need));
+  const box = $("hLeaveProg");
+  box.classList.toggle("hit", d.leave);
+  $("hLvFill").style.width = (pc*100).toFixed(1) + "%";
+  $("hLvRest").textContent = d.leave ? "已拿到" : "还差 " + m(need - d.nws);
+  $("hLvFoot").textContent = d.leave
     ? "全店每人加一天带薪假"
-    : "还差 " + m(Math.max(0, LEAVE_A*d.T - d.nws));
-  lv.classList.toggle("good", d.leave);
+    : "全店做到 " + m(need) + "（达成 120%）就每人加一天带薪假";
 
   renderWeekBars();
 }
@@ -121,16 +143,17 @@ function renderWeekBars(){
   const today = iso(new Date());
   $("wkBars").innerHTML = days.map((x,i) => {
     const v = vals[i];
-    const h = v > 0 ? Math.max(10, Math.round(v/max*64)) : 3;
-    return `<div class="day${iso(x)===today?" today":""}">
-      <div class="d">${DOW[x.getDay()]}</div>
+    const isToday = iso(x) === today;
+    const h = v > 0 ? Math.max(12, Math.round(v/max*78)) : 3;
+    return `<div class="day${isToday?" today":""}">
+      <div class="n num">${v>0?(v/1000).toFixed(v>=10000?0:1)+"k":""}</div>
       <div class="bar-wrap"><div class="b${v>0?"":" zero"}" style="height:${h}px"></div></div>
-      <div class="n num">${v>0?Math.round(v/1000)+"k":""}</div></div>`;
+      <div class="d">${DOW[x.getDay()]}</div></div>`;
   }).join("");
   const tot = vals.reduce((s,v)=>s+v,0);
   $("wkSub").textContent = tot > 0
-    ? "本周合计 " + m(tot) + "，最高一日 " + m(max)
-    : "还没有记录。去排班页按「编辑」，每日可以填当天挂单额。";
+    ? "合计 " + m(tot) + "　最高一日 " + m(max)
+    : "去排班页按「编辑」，每日可以填当天挂单额";
 }
 
 /* ── 排班页 ── */

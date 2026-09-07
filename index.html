@@ -16,36 +16,48 @@
     <button class="who" id="whoName" type="button" style="background:none;padding:6px 0">店员</button></div>
 
   <div class="stack">
-    <div class="card">
-      <div class="ring">
-        <svg viewBox="0 0 120 120" role="img" aria-labelledby="ringT">
-          <title id="ringT">本月达成率</title>
-          <circle cx="60" cy="60" r="50" fill="none" stroke="#f2ece0" stroke-width="13"></circle>
-          <circle id="ringArc" cx="60" cy="60" r="50" fill="none" stroke="#f60000" stroke-width="13"
-                  stroke-linecap="round" transform="rotate(-90 60 60)"
-                  stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+    <div class="hero">
+      <div class="dial">
+        <svg viewBox="0 0 200 200" role="img" aria-labelledby="dialT">
+          <title id="dialT">本月达成率</title>
+          <circle cx="100" cy="100" r="84" fill="none" stroke="#f2ece0" stroke-width="17"></circle>
+          <circle id="arcMain" cx="100" cy="100" r="84" fill="none" stroke="#f60000" stroke-width="17"
+                  stroke-linecap="round" stroke-dasharray="527.79" stroke-dashoffset="527.79"></circle>
+          <circle id="arcOver" cx="100" cy="100" r="97" fill="none" stroke="#8e0000" stroke-width="4"
+                  stroke-linecap="round" stroke-dasharray="609.47" stroke-dashoffset="609.47"></circle>
         </svg>
-        <div>
+        <div class="mid">
           <div class="pct num" id="hPct">0%</div>
-          <div class="cap" id="hCap">本月达成率</div>
-          <div class="gap num" id="hGap"></div>
+          <div class="pl">本月达成率</div>
+          <div class="over num" id="hOver" hidden></div>
         </div>
       </div>
+      <div class="heroFig">
+        <div class="c"><div class="k">营业额</div><div class="v num" id="hRev">¥0</div></div>
+        <div class="sep"></div>
+        <div class="c"><div class="k">月目标</div><div class="v num" id="hTgt">¥0</div></div>
+      </div>
+      <div class="verdict" id="hVerdict"></div>
     </div>
 
     <div class="tiles">
       <div class="tile priv"><div class="k">我的私佣</div><div class="v num" id="hPv">¥0</div></div>
       <div class="tile pub"><div class="k">我的公佣</div><div class="v num" id="hPb">¥0</div></div>
-      <div class="tile"><div class="k">预计实收</div><div class="v num" id="hNet">¥0</div></div>
+      <div class="tile net"><div class="k">预计实收</div><div class="v num" id="hNet">¥0</div></div>
+    </div>
+
+    <div class="prog" id="hLeaveProg">
+      <div class="top"><span class="lbl">假期奖励</span><span class="rest num" id="hLvRest"></span></div>
+      <div class="track"><div class="fill" id="hLvFill" style="width:0%"></div></div>
+      <div class="foot" id="hLvFoot"></div>
     </div>
 
     <div class="card">
-      <div style="font-size:15px;font-weight:700">本周我的挂单</div>
-      <div class="sub" id="wkSub">按日记录，条高对应当日金额</div>
+      <div style="font-size:15px;font-weight:800;letter-spacing:-.01em">本周我的挂单</div>
+      <div class="sub" id="wkSub"></div>
       <div class="week" id="wkBars"></div>
     </div>
 
-    <div class="row" id="hLeave"><span>假期奖励（全店达成 120%）</span><b>-</b></div>
   </div>
 </main>
 
