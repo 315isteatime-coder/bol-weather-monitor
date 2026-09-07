@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f2e8">
+<meta name="robots" content="noindex,nofollow">
+<title>KIIKII 珠海店</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- ══ 今日 ══ -->
+<main class="app" id="p-home">
+  <div class="bar"><div><h1>今日</h1><div class="sub" id="homeSub"></div></div>
+    <button class="who" id="whoName" type="button" style="background:none;padding:6px 0">店员</button></div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="ring">
+        <svg viewBox="0 0 120 120" role="img" aria-labelledby="ringT">
+          <title id="ringT">本月达成率</title>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#f2ece0" stroke-width="13"></circle>
+          <circle id="ringArc" cx="60" cy="60" r="50" fill="none" stroke="#f60000" stroke-width="13"
+                  stroke-linecap="round" transform="rotate(-90 60 60)"
+                  stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+        </svg>
+        <div>
+          <div class="pct num" id="hPct">0%</div>
+          <div class="cap" id="hCap">本月达成率</div>
+          <div class="gap num" id="hGap"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile priv"><div class="k">我的私佣</div><div class="v num" id="hPv">¥0</div></div>
+      <div class="tile pub"><div class="k">我的公佣</div><div class="v num" id="hPb">¥0</div></div>
+      <div class="tile"><div class="k">预计实收</div><div class="v num" id="hNet">¥0</div></div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:15px;font-weight:700">本周我的挂单</div>
+      <div class="sub" id="wkSub">按日记录，条高对应当日金额</div>
+      <div class="week" id="wkBars"></div>
+    </div>
+
+    <div class="row" id="hLeave"><span>假期奖励（全店达成 120%）</span><b>-</b></div>
+  </div>
+</main>
+
+<!-- ══ 佣金 ══ -->
+<main class="app" id="p-comm" hidden>
+  <div class="bar"><div><h1>佣金</h1><div class="sub">填三个数就算到</div></div></div>
+
+  <div class="stack">
+    <div class="card">
+      <label class="f"><span class="lb">店铺月营业额</span>
+        <input class="big num" type="number" inputmode="numeric" id="cRev" value="175000" step="1000"></label>
+      <div class="g2" style="margin-top:12px">
+        <label class="f"><span class="lb">我的挂单额</span>
+          <input class="num" type="number" inputmode="numeric" id="cSale" value="35000" step="500"></label>
+        <label class="f"><span class="lb">我的工时</span>
+          <input class="num" type="number" inputmode="numeric" id="cHrs" value="174" step="2"></label>
+      </div>
+      <div class="g2" style="margin-top:10px">
+        <label class="f"><span class="lb">岗位</span><select id="cRole"></select></label>
+        <label class="f"><span class="lb" id="cBaseLb">底薪加津贴</span>
+          <input class="num" type="number" inputmode="numeric" id="cBase" value="4100" step="100"></label>
+      </div>
+      <div class="res">
+        <div class="p"><div class="k">私佣</div><div class="v num" id="cPv">¥0</div></div>
+        <div class="g"><div class="k">公佣</div><div class="v num" id="cPb">¥0</div></div>
+        <div><div class="k">大单奖</div><div class="v num" id="cBn">¥0</div></div>
+        <div class="net"><div class="k">实收</div><div class="v num" id="cNet">¥0</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lb">我的大单（单数）</div>
+      <div class="g3">
+        <label class="f"><span class="lb">满 800 加 10</span>
+          <input class="num" type="number" inputmode="numeric" id="cB1" value="4" step="1"></label>
+        <label class="f"><span class="lb">满 1400 加 30</span>
+          <input class="num" type="number" inputmode="numeric" id="cB2" value="1" step="1"></label>
+        <label class="f"><span class="lb">满 2400 加 50</span>
+          <input class="num" type="number" inputmode="numeric" id="cB3" value="0" step="1"></label>
+      </div>
+    </div>
+
+    <div class="row" id="cFixed"><span>固定薪</span><b class="num">¥0</b></div>
+    <div class="row"><span>我的个人目标</span><b class="num" id="cTg">¥0</b></div>
+    <div class="row" id="cRate"><span>本月费率</span><b>-</b></div>
+    <div class="row" id="cNext"><span>距离下一档</span><b>-</b></div>
+
+    <details>
+      <summary>进阶设定</summary>
+      <div class="dbody">
+        <div class="g3">
+          <label class="f"><span class="lb">月目标</span>
+            <input class="num" type="number" inputmode="numeric" id="cTgt" value="165000" step="5000"></label>
+          <label class="f"><span class="lb">全职人数</span>
+            <input class="num" type="number" inputmode="numeric" id="cFt" value="3" step="1"></label>
+          <label class="f"><span class="lb">全队总工时</span>
+            <input class="num" type="number" inputmode="numeric" id="cWt" value="520" step="10"></label>
+        </div>
+        <div class="seg" role="group" aria-label="经营阶段">
+          <button type="button" id="segSt" aria-pressed="true">稳定期</button>
+          <button type="button" id="segRamp" aria-pressed="false">开业头三个月</button>
+        </div>
+        <p class="note">
+          <b>私佣</b>：个人目标以内按当档费率（封顶 3%），<b>超出部分 6%</b>。
+          个人目标 ＝ 月目标 ÷ 全职人数，兼职按工时折算。<br>
+          <b>公佣</b>：费率 × 全店营业额，店长先分 20%，其余按上班时间摊分。<br>
+          费率跟全店达成率：低于 70% 为 0，70% 起 1%，90% 起 2%，100% 起私佣 3% ／ 公佣 4%。<br>
+          开业头三个月费率封顶 2%，6% 不开放。
+        </p>
+      </div>
+    </details>
+
+    <p class="note" style="text-align:center">这里算的是<b>估算</b>。发薪以店长后台数字为准。</p>
+  </div>
+</main>
+
+<!-- ══ 排班 ══ -->
+<main class="app" id="p-shift" hidden>
+  <div class="bar"><div><h1>排班</h1><div class="sub" id="shSub"></div></div>
+    <button class="btn" id="shEdit" style="width:auto;min-height:38px;font-size:13px;padding:8px 16px">编辑</button></div>
+
+  <div class="stack">
+    <div class="btn2">
+      <button class="btn" id="shPrev" type="button">上一周</button>
+      <button class="btn" id="shNext" type="button">下一周</button>
+    </div>
+    <div class="card" id="shList"></div>
+    <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
+    <p class="note" id="shHint"></p>
+  </div>
+</main>
+
+<nav class="tabs"><div class="in" role="tablist">
+  <button role="tab" data-tab="home"  aria-selected="true"><span class="mk"></span>今日</button>
+  <button role="tab" data-tab="comm"  aria-selected="false"><span class="mk"></span>佣金</button>
+  <button role="tab" data-tab="shift" aria-selected="false"><span class="mk"></span>排班</button>
+</div></nav>
+
+<script src="app.js"></script>
+</body>
+</html>
