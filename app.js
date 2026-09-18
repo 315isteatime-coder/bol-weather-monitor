@@ -14,7 +14,8 @@ const LEAVE_A = 1.20;   // 达成此数全店每人加一天带薪假
 const MGR_CUT = .20;    // 店长先分公佣比例
 const BON = [10,30,50];
 const ROLES = ["资深店员","店员","兼职"];
-const SHIFTS = ["早班","晚班"];
+const SHIFTS = ["早班","晚班"];                    // 值要同 DB 嘅 CHECK 一致，唔好改
+const SHIFT_TIME = {"早班":"09:45 - 16:00", "晚班":"15:45 - 22:15"};
 const DOW = ["日","一","二","三","四","五","六"];
 
 /* ── 小工具 ── */
@@ -252,7 +253,7 @@ function renderShift(){
         if (editing && isMgr())            body = staff.map(cell).join("");
         else if (on.length || !isMgr())    body = staff.filter(p => on.some(x=>x.staff_id===p.id) || p.id===auth.id).map(cell).join("");
         else                               body = `<span class="empty">未排</span>`;
-        return `<div class="slot"><div class="sl">${s}</div><div class="chips">${body}</div></div>`;
+        return `<div class="slot"><div class="sl">${s} <em>${SHIFT_TIME[s]}</em></div><div class="chips">${body}</div></div>`;
       }).join("")}</div></div>`;
   }).join("");
 

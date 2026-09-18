@@ -205,6 +205,8 @@ button{font-family:var(--sans);cursor:pointer;border:none}
 .slot{margin-bottom:9px}
 .slot:last-child{margin-bottom:0}
 .slot .sl{font-size:11px;font-weight:700;color:var(--ink-2);margin-bottom:5px}
+.slot .sl em{font-style:normal;font-weight:600;color:var(--ink-3);margin-left:4px;
+  font-variant-numeric:tabular-nums}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:999px;
   background:var(--card);color:var(--ink);border:2px solid var(--ink)}
