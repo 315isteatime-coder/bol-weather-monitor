@@ -1,4 +1,15 @@
-/* KIIKII 内部工具 v2.0
+/* 圆角三档，全站只此三个值：
+     容器 20px（card / hero / verdict / tile / row / alert / details / pre）
+     互动 12px（input / select / btn / seg / 名单输入 / tab 标记 / 话术对白）
+     pill 999px（chip / 进度条轨道）
+   例外（各有功能理由，唔算入系统）：麦克笔底线不规则角、日号圆点 50%、
+   周条只圆顶、进度条单边圆、hairline 2px、focus ring 8px。
+
+   红色两只用途分明：
+     --red #f60000      大字同图形专用（白字落去只有 4.27:1，唔够细字用）
+     --red-fill #d10000 任何要摆白字嘅红底（5.60:1，过 AA）
+
+   KIIKII 内部工具 v2.0
    设计语言：健康追踪 app 卡片式（Pinterest 参考：calorie tracker dashboard）
    ⚠️ 零外部请求：用户在珠海，Google Fonts 被墙、CDN 不稳、esm.sh 已证实会失败。
       字体走系统栈，图示不用库，全部自足。
@@ -54,9 +65,9 @@ body{
 .brand img{height:24px;width:auto;display:block}
 .bar{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0 4px}
 ..bar h1{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
-.who{font-size:14px;font-weight:800;color:var(--ink);font-family:var(--sans);
+.who{font-size:14px;min-height:44px;font-weight:800;color:var(--ink);font-family:var(--sans);
   background:var(--card);border:2px solid var(--ink);border-radius:999px;
-  padding:6px 14px;min-height:34px;box-shadow:2px 2px 0 var(--ink)}
+  padding:6px 14px;box-shadow:2px 2px 0 var(--ink)}
 .who::after{content:" ▾";opacity:.5}
 .who:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 .sale{margin-top:9px}
@@ -70,7 +81,7 @@ body{
 
 /* ── 达成率圈（今日页主角）── */
 /* 主圈：读数摆喺环中间，係呢个 genre 嘅招牌做法 */
-.hero{background:var(--card);border:var(--stroke) solid var(--ink);border-radius:26px;
+.hero{background:var(--card);border:var(--stroke) solid var(--ink);border-radius:20px;
   padding:26px 18px 20px;box-shadow:var(--shadow-l)}
 .dial{position:relative;margin:0 auto}
 .dial{width:200px;height:200px}
@@ -87,18 +98,18 @@ body{
 .heroFig .k{font-size:13px;font-weight:700;color:var(--ink-2)}
 .heroFig .v{font-size:20px;font-weight:800;margin-top:3px;letter-spacing:-.02em}
 .heroFig .sep{width:2px;height:30px;background:var(--ink);border-radius:2px}
-.verdict{margin-top:16px;border-radius:18px;padding:12px 15px;font-size:15px;
+.verdict{margin-top:16px;border-radius:20px;padding:12px 15px;font-size:15px;
   font-weight:800;text-align:center;background:var(--card);color:var(--ink);
   border:2px solid var(--ink)}
-.verdict.hit{background:var(--red);color:#fff}
+.verdict.hit{background:var(--red-fill);color:#fff}
 
 /* ── 数字砖 ── */
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.tile{border:var(--stroke) solid var(--ink);border-radius:18px;padding:15px 9px 14px;
+.tile{border:var(--stroke) solid var(--ink);border-radius:20px;padding:15px 9px 14px;
   text-align:center;box-shadow:var(--shadow-s)}
 .tile .k{font-size:12.5px;font-weight:700;letter-spacing:.02em;opacity:.72}
 .tile .v{font-size:21px;font-weight:800;margin-top:6px;line-height:1.1;letter-spacing:-.03em}
-.tile.priv{background:var(--red);color:#fff}
+.tile.priv{background:var(--red-fill);color:#fff}
 .tile.priv .k{opacity:.86}
 .tile.pub{background:var(--sunk);color:var(--ink)}
 .tile.net{background:var(--ink);color:#fff}
@@ -173,7 +184,7 @@ input[readonly]{color:var(--ink-2);font-weight:600}
 
 .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   font-size:15px;font-weight:700;color:var(--ink-2);padding:12px 15px;
-  background:var(--card);border:var(--stroke) solid var(--ink);border-radius:18px;
+  background:var(--card);border:var(--stroke) solid var(--ink);border-radius:20px;
   box-shadow:var(--shadow-s)}
 .row b{font-size:17px;font-weight:700;color:var(--ink)}
 .row.good{background:var(--red-fill)} .row.good span{color:#fff6f5;opacity:.85} .row.good b{color:#fff6f5}
@@ -181,19 +192,19 @@ input[readonly]{color:var(--ink-2);font-weight:600}
 
 /* ── 按钮 ── */
 button{font-family:var(--sans);cursor:pointer;border:none}
-.btn{width:100%;min-height:50px;font-size:16.5px;font-weight:800;border-radius:14px;
+.btn{width:100%;min-height:50px;font-size:16.5px;font-weight:800;border-radius:12px;
   background:var(--card);color:var(--ink);border:var(--stroke) solid var(--ink);
   box-shadow:3px 3px 0 var(--ink);padding:12px 18px}
 .btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
-.btn.pri{background:var(--red);color:#fff}
+.btn.pri{background:var(--red-fill);color:#fff}
 .btn.pri:active{background:var(--red-deep)}
 .btn2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 /* ── 分段控制 ── */
 .seg{display:flex;gap:0;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
-.seg button{flex:1;min-height:42px;font-size:15px;font-weight:800;background:var(--card);color:var(--ink-2)}
+.seg button{flex:1;min-height:44px;font-size:15px;font-weight:800;background:var(--card);color:var(--ink-2)}
 .seg button+button{border-left:2px solid var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--red);color:#fff}
+.seg button[aria-pressed="true"]{background:var(--red-fill);color:#fff}
 
 /* ── 排班 ── */
 .shift{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:start;
@@ -210,7 +221,7 @@ button{font-family:var(--sans);cursor:pointer;border:none}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:14px;font-weight:700;padding:7px 13px;border-radius:999px;
   background:var(--card);color:var(--ink);border:2px solid var(--ink)}
-.chip[aria-pressed="true"]{background:var(--red);color:#fff}
+.chip[aria-pressed="true"]{background:var(--red-fill);color:#fff}
 .chip.req{background:#fff;color:var(--red-ink);border-style:dashed}
 .chip.req::after{content:" 待批";font-size:12px;font-weight:600}
 .chip.mine{box-shadow:0 0 0 2px var(--ink)}
@@ -222,9 +233,9 @@ button{font-family:var(--sans);cursor:pointer;border:none}
 /* ── 提示 ── */
 .note{font-size:14px;line-height:1.75;color:var(--ink-2);font-weight:500;padding:2px 4px}
 .note b{color:var(--ink);font-weight:700}
-.alert{font-size:15px;line-height:1.55;font-weight:600;border-radius:24px;padding:13px 16px;
+.alert{font-size:15px;line-height:1.55;font-weight:600;border-radius:20px;padding:13px 16px;
   background:var(--red-wash);color:var(--red-ink)}
-details{background:var(--card);border-radius:24px;
+details{background:var(--card);border-radius:20px;
   box-shadow:0 1px 2px rgba(74,50,34,.05),0 8px 22px -14px rgba(74,50,34,.30)}
 summary{font-size:15px;font-weight:700;color:var(--ink-2);padding:17px 18px;
   list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:52px}
@@ -234,7 +245,7 @@ details[open] summary::after{content:"－"}
 details[open] summary{border-bottom:2px solid var(--ink)}
 .dbody{padding:16px;display:flex;flex-direction:column;gap:13px}
 pre{display:none;white-space:pre-wrap;font-size:14px;line-height:1.6;font-weight:500;
-  background:var(--card);border:var(--stroke) solid var(--ink);border-radius:16px;padding:15px;overflow-x:auto}
+  background:var(--card);border:var(--stroke) solid var(--ink);border-radius:20px;padding:15px;overflow-x:auto}
 pre.on{display:block}
 
 /* ── 底部 tab ── */
@@ -246,7 +257,7 @@ pre.on{display:block}
 .tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
 .tabs button{height:var(--tabh);background:none;font-size:15px;font-weight:700;color:var(--ink-3);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
-.tabs button .mk{width:19px;height:19px;border-radius:6px;background:var(--card);
+.tabs button .mk{width:19px;height:19px;border-radius:12px;background:var(--card);
   border:2px solid var(--ink-3);transition:background .16s,border-color .16s}
 .tabs button[aria-selected="true"] .mk{background:var(--red);border-color:var(--ink)}
 .tabs button[aria-selected="true"]{color:var(--ink)}
@@ -260,8 +271,8 @@ pre.on{display:block}
 .stRow{display:grid;grid-template-columns:1fr 62px 72px 34px;gap:7px;align-items:center;
   padding:9px 0;border-bottom:2px solid var(--line)}
 .stRow:last-of-type{border-bottom:none}
-.stRow input{min-height:42px;font-size:15.5px;padding:8px 9px;border-radius:10px}
-.stRow .del{min-height:42px;width:34px;padding:0;font-size:17px;border-radius:10px;
+.stRow input{min-height:42px;font-size:15.5px;padding:8px 9px;border-radius:12px}
+.stRow .del{min-height:42px;width:34px;padding:0;font-size:17px;border-radius:12px;
   background:#fff;color:var(--ink-3);border:2px solid var(--line)}
 .stHd{display:grid;grid-template-columns:1fr 62px 72px 34px;gap:7px;font-size:12px;
   font-weight:700;color:var(--ink-3);padding-bottom:6px}
@@ -273,3 +284,18 @@ pre.on{display:block}
 .tk .say{font-size:15.5px;line-height:1.65;font-weight:600;color:var(--ink);
   background:var(--red-wash);border-radius:12px;padding:10px 12px;margin-bottom:7px}
 .tk .no{font-size:13.5px;line-height:1.6;font-weight:600;color:var(--ink-2)}
+
+/* 320px 级窄机：三只数字砖迫住，收紧内距同字级 */
+@media (max-width:359px){
+  body{padding-left:12px;padding-right:12px}
+  .tiles{gap:7px}
+  .tile{padding:13px 7px 12px}
+  .tile .k{font-size:11px}
+  .tile .v{font-size:18px;letter-spacing:-.04em}
+  .heroFig .v{font-size:18px}
+  .res{grid-template-columns:1fr 1fr;row-gap:12px}
+  .res .v{font-size:16px}
+  .g3{grid-template-columns:1fr 1fr;gap:8px}
+  input,select{font-size:15px;padding:10px 9px}
+  .big{font-size:20px}
+}
