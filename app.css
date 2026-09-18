@@ -241,7 +241,7 @@ pre.on{display:block}
   -webkit-backdrop-filter:blur(14px);border-top:var(--stroke) solid var(--ink);
   padding-bottom:env(safe-area-inset-bottom)}
 @supports not (backdrop-filter:blur(1px)){.tabs{background:#fff}}
-.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
 .tabs button{height:var(--tabh);background:none;font-size:13px;font-weight:700;color:var(--ink-3);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
 .tabs button .mk{width:19px;height:19px;border-radius:6px;background:var(--card);

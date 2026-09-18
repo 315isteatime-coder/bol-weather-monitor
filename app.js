@@ -2,7 +2,7 @@
    佣金规则来源：KIIKII repo「珠海店-人员编制与薪酬提成方案」§5 v6 定稿（2026-09-07）
    ⚠️ 规则真源在那份文件，这里只是执行。改规则先改文件。
 
-   存储：localStorage，每部手机一份。排班要多人共用就得接后端，见 README。 */
+   存储：localStorage，每部手机一份。排班已接后端，全店共用，见 README。 */
 "use strict";
 
 /* ── 规则常数 ── */
@@ -19,8 +19,8 @@ const DOW = ["日","一","二","三","四","五","六"];
 
 /* ── 小工具 ── */
 /* ── 后端（Supabase，同 bestplan 共用 project，kk_ 前缀 + RPC 隔离）──
-   anon key 公开係正常设计：呢啲表冇 anon policy，全部读写行 SECURITY DEFINER RPC，
-   每个 RPC 都要 token。掂唔到其他 project 数据。 */
+   anon key 公开是正常设计：这些表没有 anon policy，所有读写都走 SECURITY DEFINER RPC，
+   每个 RPC 都要 token，碰不到其他 project 的数据。 */
 const SB  = "https://otyyndkystpjfdhujfbp.supabase.co";
 const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90eXluZGt5c3RwamZkaHVqZmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzE5MDUsImV4cCI6MjEwMDc0NzkwNX0.YeZMQB5gyCNqlkA5L-Rr1nI5lW1zSUb7EqE852EsEiE";
 
@@ -43,8 +43,8 @@ const $ = id => document.getElementById(id);
 const n = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
 const m = v => "¥" + Math.round(v).toLocaleString("en-US");
 const rate = (t,a) => { for (const [h,r] of t) if (a < h) return r; return t[t.length-1][1]; };
-// ⚠️ 唔可以用 toISOString()，佢係 UTC。珠海 UTC+8，早上 8 点前会当成前一日，
-// 排班同当日挂单会入错格。一律用本地日期。
+// ⚠️ 不能用 toISOString()，它返回 UTC。珠海 UTC+8，早上 8 点前会算成前一天，
+// 排班和当日挂单会记错日期。一律用本地日期。
 const iso = d => {
   const x = new Date(d);
   x.setMinutes(x.getMinutes() - x.getTimezoneOffset());
@@ -150,7 +150,7 @@ function renderHome(d){
   $("whoName").textContent = me.name;
   $("homeSub").textContent = new Date().toLocaleDateString("zh-CN",{month:"long",day:"numeric",weekday:"long"});
 
-  // 假期奖励：线性条，畀首屏多一种视觉语言
+  // 假期奖励：线性条，让首屏多一种视觉语言
   const need = LEAVE_A * d.T, pc = Math.max(0, Math.min(1, d.nws / need));
   const box = $("hLeaveProg");
   box.classList.toggle("hit", d.leave);
@@ -158,7 +158,7 @@ function renderHome(d){
   $("hLvRest").textContent = d.leave ? "拿到" : "差 " + m(need - d.nws);
   box.querySelector(".pl").textContent = "假期奖励　全店 " + m(need);
 
-  // 仲差几多：个人 / 店铺 / 假期，三条摆埋一齐先唔会散
+  // 还差多少：个人 / 店铺 / 假期，三条放在一起才不会散
   const sale = n($("cSale").value);
   bar("pgMe", sale,  d.tgt, "我　" + m(sale)  + " ／ " + m(d.tgt));
   bar("pgSt", d.nws, d.T,   "全店 " + m(d.nws) + " ／ " + m(d.T));
@@ -218,7 +218,7 @@ async function shiftLoad(){
     renderShift();
   }catch(e){
     if (String(e.message).includes("not_signed_in")) return signOut();
-    $("shHint").textContent = "读唔到排班：" + e.message;
+    $("shHint").textContent = "读取排班失败：" + e.message;
   }
 }
 
@@ -258,10 +258,10 @@ function renderShift(){
 
   const mine = roster.filter(x => x.staff_id === auth.id && x.state === "assigned").length;
   const req  = roster.filter(x => x.staff_id === auth.id && x.state === "requested").length;
-  $("shMine").textContent = mine + " 更" + (req ? "（另有 " + req + " 更待批）" : "");
+  $("shMine").textContent = mine + " 更" + (req ? "（另有 " + req + " 个待批）" : "");
   $("shHint").textContent = isMgr()
-    ? (editing ? "㩒名字加入或者踢走。㩒「待批」嘅名就即係批准。" : "㩒「排班」入编辑模式。")
-    : "㩒自己个名报班，再㩒一次撤回。店长批咗先算数。";
+    ? (editing ? "点名字加入或移出。点「待批」的名字即为批准。" : "点「排班」进入编辑模式。")
+    : "点自己的名字报班，再点一次撤回。店长批准后才生效。";
 }
 
 async function toggleShift(btn){
@@ -271,28 +271,28 @@ async function toggleShift(btn){
     if (isMgr() && editing){
       await rpc("kk_assign", {p_token:auth.token, p_date:d, p_slot:s, p_staff:p, p_on: st !== "assigned"});
     } else {
-      if (p !== auth.id) return;                       // 净係报得自己
-      if (st === "assigned") { $("shHint").textContent = "已经批咗嘅班要搵店长改。"; return; }
+      if (p !== auth.id) return;                       // 只能给自己报班
+      if (st === "assigned") { $("shHint").textContent = "已批准的班次需找店长修改。"; return; }
       await rpc(st === "requested" ? "kk_unsignup" : "kk_signup",
                 {p_token:auth.token, p_date:d, p_slot:s});
     }
     await shiftLoad();
   }catch(e){
-    $("shHint").textContent = "改唔到：" + e.message;
+    $("shHint").textContent = "修改失败：" + e.message;
   }finally{ btn.classList.remove("busy"); }
 }
 
 /* ── 登入 ── */
 async function fillNames(){
   try{
-    // 未登入攞唔到名单，用已知岗位做选项；登入後会换成真名单
+    // 未登录拿不到名单，先用已知岗位做选项；登录后换成真名单
     const names = ["店长","资深","内容","兼职 A","兼职 B"];
     $("lgName").innerHTML = names.map(n => `<option>${n}</option>`).join("");
   }catch(e){}
 }
 async function signIn(){
   const err = $("lgErr"); err.hidden = true;
-  const btn = $("lgGo"); btn.disabled = true; btn.textContent = "登入紧…";
+  const btn = $("lgGo"); btn.disabled = true; btn.textContent = "登录中…";
   try{
     const rows = await rpc("kk_login", {p_name:$("lgName").value, p_pin:$("lgPin").value});
     const a = Array.isArray(rows) ? rows[0] : rows;
@@ -303,8 +303,8 @@ async function signIn(){
     showShift();
   }catch(e){
     err.hidden = false;
-    err.textContent = String(e.message).includes("bad_login") ? "名或者 PIN 唔啱。" : "登入失败：" + e.message;
-  }finally{ btn.disabled = false; btn.textContent = "登入"; }
+    err.textContent = String(e.message).includes("bad_login") ? "姓名或 PIN 不正确。" : "登录失败：" + e.message;
+  }finally{ btn.disabled = false; btn.textContent = "登录"; }
 }
 function signOut(){
   auth = null; staff = []; roster = []; editing = false;
@@ -319,7 +319,7 @@ function showShift(){
 
 /* ── 事件 ── */
 function switchTab(t){
-  ["home","comm","shift"].forEach(x => $("p-"+x).hidden = x !== t);
+  ["home","comm","shift","book"].forEach(x => $("p-"+x).hidden = x !== t);
   document.querySelectorAll('.tabs button').forEach(b =>
     b.setAttribute("aria-selected", String(b.dataset.tab === t)));
   scrollTo(0,0);

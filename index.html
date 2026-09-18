@@ -51,7 +51,7 @@
     </div>
 
     <div class="card pgcard">
-      <div class="ct">仲差几多</div>
+      <div class="ct">还差多少</div>
       <div class="pg" id="pgMe">
         <div class="pgtop"><span class="pl"></span><span class="pr num"></span></div>
         <div class="track"><div class="fill"></div></div>
@@ -67,7 +67,7 @@
     </div>
 
     <div class="card">
-      <div class="ct">多做几多</div>
+      <div class="ct">多做多少</div>
       
       <div id="gainRows"></div>
     </div>
@@ -141,7 +141,7 @@
           <button type="button" id="segRamp" aria-pressed="false">开业头三个月</button>
         </div>
         <p class="note">费率跟全店达成率：70% 起 1%，90% 起 2%，达标起私佣 3% ／ 公佣 4%。
-        超出个人目标嘅部分 6%。</p>
+        超出个人目标的部分 6%。</p>
       </div>
     </details>
 
@@ -156,16 +156,16 @@
   <!-- 未登入 -->
   <div id="shGate">
     <div class="bar"><div><h1><span class="hl">排班</span></h1>
-      <div class="sub">登入先睇到自己几时返工</div></div></div>
+      <div class="sub">登录后查看自己的班次</div></div></div>
     <div class="stack">
       <div class="card">
-        <label class="f"><span class="lb">我系边个</span><select id="lgName"></select></label>
+        <label class="f"><span class="lb">我是谁</span><select id="lgName"></select></label>
         <label class="f" style="margin-top:12px"><span class="lb">PIN</span>
           <input type="password" inputmode="numeric" id="lgPin" maxlength="6" placeholder="四位数字"></label>
-        <button class="btn pri" id="lgGo" type="button" style="margin-top:14px">登入</button>
+        <button class="btn pri" id="lgGo" type="button" style="margin-top:14px">登录</button>
         <div class="alert" id="lgErr" hidden style="margin-top:12px"></div>
       </div>
-      <p class="note" style="text-align:center">PIN 向店长攞。登入一次记住 60 日。</p>
+      <p class="note" style="text-align:center">PIN 请到店里向店长索取。登录一次记住 60 天。</p>
     </div>
   </div>
 
@@ -183,8 +183,119 @@
       <div class="card" id="shList"></div>
       <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
       <p class="note" id="shHint"></p>
-      <button class="btn" id="lgOut" type="button">登出</button>
+      <button class="btn" id="lgOut" type="button">退出登录</button>
     </div>
+  </div>
+</main>
+
+<main class="app" id="p-book" hidden>
+  <div class="brand"><img src="logo.png" alt="KiiKii" width="150" height="52"></div>
+  <div class="bar"><div><h1><span class="hl">上班手册</span></h1>
+    <div class="sub">珠海十字门 C1017 店</div></div></div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="ct">营业时间</div>
+      <div class="row"><span>开店</span><b>10:00</b></div>
+      <div class="row" style="margin-top:8px"><span>关店</span><b>22:00</b></div>
+      <div class="row" style="margin-top:8px"><span>早班</span><b>09:45 到 16:00</b></div>
+      <div class="row" style="margin-top:8px"><span>晚班</span><b>15:45 到 22:15</b></div>
+      <p class="note" style="margin-top:10px">提前 15 分钟到店换装、交接。关店后清点、锁铺再走。</p>
+    </div>
+
+    <div class="alert" style="font-size:14px;line-height:1.7">
+      <b style="font-size:15px">一条红线：所有销售必须经商场 POS 入账</b><br>
+      当日交易，当日入单。这是租约条款，不是公司内部规定。
+    </div>
+
+    <details>
+      <summary>七件事，做一次即解除劳动合同</summary>
+      <div class="dbody">
+        <p class="note" style="line-height:1.9">
+          1. 用个人微信／支付宝收款码收客人的钱<br>
+          2. 用自己手机收款<br>
+          3. 收现金不开单、不入 POS<br>
+          4. 跟客人说「不开单便宜点」<br>
+          5. 帮熟客或朋友私下出货<br>
+          6. 先收钱、之后才补入 POS<br>
+          7. <b>月底把单留到下个月再入</b>（冲提成档位）
+        </p>
+        <p class="note" style="margin-top:10px">
+          第 7 条最容易发生。月底觉得「这个月反正够不到档，不如留几单下个月一起冲」，
+          这个念头会让整间店没得做：留单等于当月少报营业额，租约第 12 条少报超过 5‰ 赔
+          <b>3 倍</b>，瞒报赔 <b>10 倍</b>，累计 <b>3 次</b>商场可直接收回铺位。
+          而且商场自己掌握 POS 数据，瞒不住。
+        </p>
+      </div>
+    </details>
+
+    <details>
+      <summary>每一单怎么做</summary>
+      <div class="dbody">
+        <p class="note" style="line-height:1.9">
+          1. 客人决定买，带到收银台<br>
+          2. 商场 POS 开单，<b>每件扫码或输入</b>，不要合并成一个总额<br>
+          3. 客人付款（银行卡／微信／支付宝／现金都走 POS）<br>
+          4. 打单、装袋、交给客人<br>
+          5. 小票副联留底
+        </p>
+      </div>
+    </details>
+
+    <details>
+      <summary>特殊情况怎么办</summary>
+      <div class="dbody">
+        <div class="row"><span>POS 死机或断网</span><b>立刻告诉店长</b></div>
+        <p class="note">店长联络商场。人手记下每单的时间、货品、金额、付款方式，系统恢复立刻补入。
+          <b>不可以自己找别的渠道收钱。</b></p>
+        <div class="row" style="margin-top:10px"><span>客人要求不开单</span><b>礼貌拒绝</b></div>
+        <p class="note">「不好意思，我们所有交易都要经商场系统。」</p>
+        <div class="row" style="margin-top:10px"><span>退换货</span><b>一律走 POS 退货单</b></div>
+        <div class="row" style="margin-top:8px"><span>员工自购</span><b>照样开单，用员工码</b></div>
+        <div class="row" style="margin-top:8px"><span>寄卖代销品</span><b>一样要过 POS</b></div>
+        <div class="row" style="margin-top:8px"><span>会员折扣</span><b>协议签好前不可以做</b></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>排班怎么用</summary>
+      <div class="dbody">
+        <p class="note" style="line-height:1.9">
+          在「排班」页点自己的名字报班，虚线「待批」表示已报、等店长批准。<br>
+          再点一次可以撤回。<b>店长批准后才算数</b>，已批准的班次要找店长改。<br>
+          换班：先自己找到人对调，再一起告诉店长。<br>
+          请假：提前三天跟店长说；突发病假当天早上八点前一定要打电话，不要只发消息。
+        </p>
+      </div>
+    </details>
+
+    <details>
+      <summary>工资怎么算</summary>
+      <div class="dbody">
+        <p class="note" style="line-height:1.9">
+          <b>底薪 ＋ 私佣 ＋ 公佣 ＋ 大单奖</b>。<br>
+          私佣看你自己挂单额，个人目标以内按当档提成率（封顶 3%），
+          <b>超出个人目标的部分 6%</b>。<br>
+          公佣是全店一起分：提成率 × 全店营业额，店长先分 20%，其余按上班时间摊。<br>
+          大单奖按单算，满 800 加 10 元、满 1,400 加 30 元、满 2,400 加 50 元，取最高一档。<br>
+          全店未到 70%，当月只有底薪。退货的私佣和大单奖次月扣回。
+        </p>
+        <p class="note" style="margin-top:10px">在「佣金」页可以自己试算。那里是估算，发薪以店长实际结算为准。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>有事找谁</summary>
+      <div class="dbody">
+        <p class="note" style="line-height:1.9">
+          排班、请假、换班、客诉、POS 问题 → <b>店长</b><br>
+          工资有疑问 → 先找店长核对当月 POS 明细<br>
+          店长处理不了的 → 店长联络公司
+        </p>
+      </div>
+    </details>
+
+    <p class="note" style="text-align:center">入职时需签收纸本《收银 SOP》。本页内容与纸本一致，以纸本为准。</p>
   </div>
 </main>
 
@@ -192,6 +303,7 @@
   <button role="tab" data-tab="home"  aria-selected="true"><span class="mk"></span>今日</button>
   <button role="tab" data-tab="comm"  aria-selected="false"><span class="mk"></span>佣金</button>
   <button role="tab" data-tab="shift" aria-selected="false"><span class="mk"></span>排班</button>
+  <button role="tab" data-tab="book"  aria-selected="false"><span class="mk"></span>手册</button>
 </div></nav>
 
 <script src="app.js"></script>
