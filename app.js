@@ -258,7 +258,7 @@ function renderShift(){
 
   const mine = roster.filter(x => x.staff_id === auth.id && x.state === "assigned").length;
   const req  = roster.filter(x => x.staff_id === auth.id && x.state === "requested").length;
-  $("shMine").textContent = mine + " 更" + (req ? "（另有 " + req + " 个待批）" : "");
+  $("shMine").textContent = mine + " 个班次" + (req ? "（另有 " + req + " 个待批）" : "");
   $("shHint").textContent = isMgr()
     ? (editing ? "点名字加入或移出。点「待批」的名字即为批准。" : "点「排班」进入编辑模式。")
     : "点自己的名字报班，再点一次撤回。店长批准后才生效。";
