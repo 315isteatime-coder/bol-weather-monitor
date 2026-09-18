@@ -209,6 +209,10 @@ button{font-family:var(--sans);cursor:pointer;border:none}
 .chip{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:999px;
   background:var(--card);color:var(--ink);border:2px solid var(--ink)}
 .chip[aria-pressed="true"]{background:var(--red);color:#fff}
+.chip.req{background:#fff;color:var(--red-ink);border-style:dashed}
+.chip.req::after{content:" 待批";font-size:10px;font-weight:600}
+.chip.mine{box-shadow:0 0 0 2px var(--ink)}
+.chip:disabled{opacity:.45}
 .chip.off{color:var(--ink-3);border-color:var(--ink-3)}
 .chip:active{transform:scale(.97)}
 .empty{font-size:12.5px;color:var(--ink-3);font-weight:600;padding:3px 0}
@@ -247,3 +251,5 @@ pre.on{display:block}
 .tabs button[aria-selected="true"] .mk{background:var(--red)}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.busy{opacity:.5;pointer-events:none}

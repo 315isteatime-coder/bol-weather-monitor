@@ -18,6 +18,27 @@ const SHIFTS = ["早班","晚班"];
 const DOW = ["日","一","二","三","四","五","六"];
 
 /* ── 小工具 ── */
+/* ── 后端（Supabase，同 bestplan 共用 project，kk_ 前缀 + RPC 隔离）──
+   anon key 公开係正常设计：呢啲表冇 anon policy，全部读写行 SECURITY DEFINER RPC，
+   每个 RPC 都要 token。掂唔到其他 project 数据。 */
+const SB  = "https://otyyndkystpjfdhujfbp.supabase.co";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90eXluZGt5c3RwamZkaHVqZmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzE5MDUsImV4cCI6MjEwMDc0NzkwNX0.YeZMQB5gyCNqlkA5L-Rr1nI5lW1zSUb7EqE852EsEiE";
+
+async function rpc(fn, args){
+  const r = await fetch(SB + "/rest/v1/rpc/" + fn, {
+    method:"POST",
+    headers:{ apikey:KEY, Authorization:"Bearer "+KEY, "Content-Type":"application/json" },
+    body: JSON.stringify(args||{})
+  });
+  const txt = await r.text();
+  if (!r.ok){
+    let msg = txt;
+    try { msg = JSON.parse(txt).message || txt; } catch(e){}
+    throw new Error(msg);
+  }
+  return txt ? JSON.parse(txt) : null;
+}
+
 const $ = id => document.getElementById(id);
 const n = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
 const m = v => "¥" + Math.round(v).toLocaleString("en-US");
@@ -34,8 +55,9 @@ const save = (k,v) => { try { localStorage.setItem("kk_"+k, JSON.stringify(v)); 
 
 /* ── 状态 ── */
 let me    = load("me", {name:"店员", role:"店员"});
-let roster= load("roster", {});                    // { "2026-09-08": { 早班:[名], 晚班:[名] } }
-let team  = load("team", ["资深","内容","兼职 A","兼职 B"]);
+let auth  = load("auth", null);                    // {token,id,name,role}
+let roster= [];                                    // 由后端嚟：[{work_date,slot,staff_id,staff_name,state}]
+let staff = [];                                    // 全店名单
 let daily = load("daily", {});                     // { "2026-09-08": 挂单额 }
 let editing = false;
 let weekStart = startOfWeek(new Date());
@@ -182,42 +204,117 @@ function renderWeekBars(){
 }
 
 /* ── 排班页 ── */
+const isMgr = () => auth && auth.role === "manager";
+
+async function shiftLoad(){
+  const days = weekDays(weekStart);
+  const from = iso(days[0]), to = iso(days[6]);
+  try{
+    const [r, s] = await Promise.all([
+      rpc("kk_roster", {p_token:auth.token, p_from:from, p_to:to}),
+      staff.length ? Promise.resolve(staff) : rpc("kk_staff_list", {p_token:auth.token})
+    ]);
+    roster = r || []; staff = s || [];
+    renderShift();
+  }catch(e){
+    if (String(e.message).includes("not_signed_in")) return signOut();
+    $("shHint").textContent = "读唔到排班：" + e.message;
+  }
+}
+
 function renderShift(){
   const days = weekDays(weekStart);
   const today = iso(new Date());
   const fmt = d => (d.getMonth()+1) + "月" + d.getDate() + "日";
 
   $("shSub").textContent = fmt(days[0]) + " 至 " + fmt(days[6]);
-  $("shEdit").textContent = editing ? "完成" : "编辑";
+  $("shEdit").hidden = !isMgr();
+  $("shEdit").textContent = editing ? "完成" : "排班";
   $("shEdit").classList.toggle("pri", editing);
+
+  const at = (d, s) => roster.filter(x => x.work_date === d && x.slot === s);
 
   $("shList").innerHTML = days.map(d => {
     const k = iso(d);
-    const day = roster[k] || {};
     return `<div class="shift${k===today?" is-today":""}">
       <div class="dt">${DOW[d.getDay()]}<em>${d.getMonth()+1}/${d.getDate()}</em></div>
       <div>${SHIFTS.map(s => {
-        const on = day[s] || [];
-        return `<div class="slot"><div class="sl">${s}</div>
-          <div class="chips">${
-            editing
-              ? team.map(p => `<button class="chip${on.includes(p)?"":" off"}" type="button"
-                  aria-pressed="${on.includes(p)}" data-d="${k}" data-s="${s}" data-p="${p}">${p}</button>`).join("")
-              : (on.length
-                  ? on.map(p => `<span class="chip" aria-pressed="true">${p}</span>`).join("")
-                  : `<span class="empty">未排</span>`)
-          }</div></div>`;
-      }).join("")}${editing ? `<div class="sale"><span class="lb">我这日的挂单额</span>
-        <input class="num" type="number" inputmode="numeric" step="500" data-sale="${k}"
-               value="${n(daily[k]) || ""}" placeholder="0"></div>` : ""}</div></div>`;
+        const on = at(k, s);
+        const cell = p => {
+          const row = on.find(x => x.staff_id === p.id);
+          const st  = row ? row.state : null;
+          const me_ = auth.id === p.id;
+          return `<button class="chip${st?"":" off"}${st==="requested"?" req":""}${me_?" mine":""}"
+            type="button" aria-pressed="${st==="assigned"}"
+            data-d="${k}" data-s="${s}" data-p="${p.id}" data-st="${st||""}">${p.name}</button>`;
+        };
+        let body;
+        if (editing && isMgr())            body = staff.map(cell).join("");
+        else if (on.length || !isMgr())    body = staff.filter(p => on.some(x=>x.staff_id===p.id) || p.id===auth.id).map(cell).join("");
+        else                               body = `<span class="empty">未排</span>`;
+        return `<div class="slot"><div class="sl">${s}</div><div class="chips">${body}</div></div>`;
+      }).join("")}</div></div>`;
   }).join("");
 
-  const mine = days.reduce((c,d) => {
-    const day = roster[iso(d)] || {};
-    return c + SHIFTS.filter(s => (day[s]||[]).includes(me.name)).length;
-  }, 0);
-  $("shMine").textContent = mine + " 更";
+  const mine = roster.filter(x => x.staff_id === auth.id && x.state === "assigned").length;
+  const req  = roster.filter(x => x.staff_id === auth.id && x.state === "requested").length;
+  $("shMine").textContent = mine + " 更" + (req ? "（另有 " + req + " 更待批）" : "");
+  $("shHint").textContent = isMgr()
+    ? (editing ? "㩒名字加入或者踢走。㩒「待批」嘅名就即係批准。" : "㩒「排班」入编辑模式。")
+    : "㩒自己个名报班，再㩒一次撤回。店长批咗先算数。";
+}
 
+async function toggleShift(btn){
+  const {d, s, p, st} = btn.dataset;
+  btn.classList.add("busy");
+  try{
+    if (isMgr() && editing){
+      await rpc("kk_assign", {p_token:auth.token, p_date:d, p_slot:s, p_staff:p, p_on: st !== "assigned"});
+    } else {
+      if (p !== auth.id) return;                       // 净係报得自己
+      if (st === "assigned") { $("shHint").textContent = "已经批咗嘅班要搵店长改。"; return; }
+      await rpc(st === "requested" ? "kk_unsignup" : "kk_signup",
+                {p_token:auth.token, p_date:d, p_slot:s});
+    }
+    await shiftLoad();
+  }catch(e){
+    $("shHint").textContent = "改唔到：" + e.message;
+  }finally{ btn.classList.remove("busy"); }
+}
+
+/* ── 登入 ── */
+async function fillNames(){
+  try{
+    // 未登入攞唔到名单，用已知岗位做选项；登入後会换成真名单
+    const names = ["店长","资深","内容","兼职 A","兼职 B"];
+    $("lgName").innerHTML = names.map(n => `<option>${n}</option>`).join("");
+  }catch(e){}
+}
+async function signIn(){
+  const err = $("lgErr"); err.hidden = true;
+  const btn = $("lgGo"); btn.disabled = true; btn.textContent = "登入紧…";
+  try{
+    const rows = await rpc("kk_login", {p_name:$("lgName").value, p_pin:$("lgPin").value});
+    const a = Array.isArray(rows) ? rows[0] : rows;
+    if (!a || !a.token) throw new Error("bad_login");
+    auth = a; save("auth", auth);
+    me = {name:a.name, role:me.role}; save("me", me);
+    $("lgPin").value = "";
+    showShift();
+  }catch(e){
+    err.hidden = false;
+    err.textContent = String(e.message).includes("bad_login") ? "名或者 PIN 唔啱。" : "登入失败：" + e.message;
+  }finally{ btn.disabled = false; btn.textContent = "登入"; }
+}
+function signOut(){
+  auth = null; staff = []; roster = []; editing = false;
+  try{ localStorage.removeItem("kk_auth"); }catch(e){}
+  showShift();
+}
+function showShift(){
+  const on = !!(auth && auth.token);
+  $("shGate").hidden = on; $("shMain").hidden = !on;
+  if (on) shiftLoad(); else fillNames();
 }
 
 /* ── 事件 ── */
@@ -226,7 +323,7 @@ function switchTab(t){
   document.querySelectorAll('.tabs button').forEach(b =>
     b.setAttribute("aria-selected", String(b.dataset.tab === t)));
   scrollTo(0,0);
-  if (t === "shift") renderShift();
+  if (t === "shift") showShift();
   if (t === "home")  renderHome();
 }
 
@@ -254,15 +351,7 @@ document.addEventListener("click", e => {
   if (tab) return switchTab(tab.dataset.tab);
 
   const chip = e.target.closest(".chip[data-p]");
-  if (chip){
-    const {d,s,p} = chip.dataset;
-    roster[d] = roster[d] || {};
-    const list = roster[d][s] = roster[d][s] || [];
-    const i = list.indexOf(p);
-    if (i >= 0) list.splice(i,1); else list.push(p);
-    save("roster", roster);
-    return renderShift();
-  }
+  if (chip) return toggleShift(chip);
 });
 
 $("segSt").onclick   = () => { $("segSt").setAttribute("aria-pressed","true");
@@ -270,13 +359,10 @@ $("segSt").onclick   = () => { $("segSt").setAttribute("aria-pressed","true");
 $("segRamp").onclick = () => { $("segSt").setAttribute("aria-pressed","false");
                                $("segRamp").setAttribute("aria-pressed","true"); renderComm(); };
 $("shEdit").onclick  = () => { editing = !editing; renderShift(); };
-$("whoName").onclick = () => {
-  const i = team.indexOf(me.name);
-  me.name = team[(i + 1) % team.length];        // 轮着切，人少不用做下拉
-  save("me", me);
-  renderHome(); if (!$("p-shift").hidden) renderShift();
-};
-$("shPrev").onclick  = () => { weekStart.setDate(weekStart.getDate()-7); renderShift(); };
-$("shNext").onclick  = () => { weekStart.setDate(weekStart.getDate()+7); renderShift(); };
+$("lgGo").onclick    = signIn;
+$("lgOut").onclick   = signOut;
+$("lgPin").addEventListener("keydown", e => { if (e.key === "Enter") signIn(); });
+$("shPrev").onclick  = () => { weekStart.setDate(weekStart.getDate()-7); shiftLoad(); };
+$("shNext").onclick  = () => { weekStart.setDate(weekStart.getDate()+7); shiftLoad(); };
 
 renderComm();

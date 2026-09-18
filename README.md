@@ -25,9 +25,27 @@
 所以：系统字体、无图示库、无 CDN、无框架。三个文件就是全部。
 
 ## 已知限制
-- **数据只存在每部手机的 localStorage。** 排班不是全店共用的一份，店长排完员工手机不会自动看到。
-  要共用得接后端（旧的 Supabase 项目 `pofaxxvjcdugqimummsr` 还在，可以加一张 `roster` 表）。
-- 身分靠点右上角名字轮着切，没有登入。任何人开链接都看得到。
+- **排班已接后端**（Supabase），全店共用同一份，店长排完员工即刻见到。
+- **佣金页同今日页仍然只存 localStorage**，每部手机一份。
+- 佣金页算的是估算，发薪以店长实际结算为准。
+
+## 排班后端
+
+Supabase project `plan-b`（`otyyndkystpjfdhujfbp`），与 bestplan 共用同一个 database，
+全部对象用 `kk_` 前缀，将来可整批 migrate 走。
+
+| 对象 | 用途 |
+|---|---|
+| `kk_staff` | 名单、角色、PIN、月工时 |
+| `kk_sessions` | 登入 token，60 日过期 |
+| `kk_shifts` | 班次，`state` 为 `requested`（员工报班）或 `assigned`（店长批咗） |
+
+**安全**：三张表零 anon policy，直接读表返 401。所有读写行 SECURITY DEFINER RPC，
+每个都要 token；`kk_assign` 额外检查 `role='manager'`。已实测：
+员工直接 call `kk_assign` 返 `manager_only`，乱 token 返 `not_signed_in`。
+
+**改名单／改 PIN**：去 Supabase 改 `kk_staff`。预设 PIN 店长 1017，
+资深 2201／内容 2202／兼职 A 2203／兼职 B 2204 —— **上线后叫大家改，或者你逐个重设。**
 - 佣金页算的是估算，发薪以店长实际结算为准。
 
 ## 设计

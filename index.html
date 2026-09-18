@@ -152,16 +152,39 @@
 <!-- ══ 排班 ══ -->
 <main class="app" id="p-shift" hidden>
   <div class="brand"><img src="logo.png" alt="KiiKii" width="150" height="52"></div>
-  <div class="bar"><div><h1><span class="hl">排班</span></h1><div class="sub" id="shSub"></div></div>
-    <button class="btn" id="shEdit" style="width:auto;min-height:38px;font-size:13px;padding:8px 16px">编辑</button></div>
 
-  <div class="stack">
-    <div class="btn2">
-      <button class="btn" id="shPrev" type="button">上一周</button>
-      <button class="btn" id="shNext" type="button">下一周</button>
+  <!-- 未登入 -->
+  <div id="shGate">
+    <div class="bar"><div><h1><span class="hl">排班</span></h1>
+      <div class="sub">登入先睇到自己几时返工</div></div></div>
+    <div class="stack">
+      <div class="card">
+        <label class="f"><span class="lb">我系边个</span><select id="lgName"></select></label>
+        <label class="f" style="margin-top:12px"><span class="lb">PIN</span>
+          <input type="password" inputmode="numeric" id="lgPin" maxlength="6" placeholder="四位数字"></label>
+        <button class="btn pri" id="lgGo" type="button" style="margin-top:14px">登入</button>
+        <div class="alert" id="lgErr" hidden style="margin-top:12px"></div>
+      </div>
+      <p class="note" style="text-align:center">PIN 向店长攞。登入一次记住 60 日。</p>
     </div>
-    <div class="card" id="shList"></div>
-    <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
+  </div>
+
+  <!-- 已登入 -->
+  <div id="shMain" hidden>
+    <div class="bar"><div><h1><span class="hl">排班</span></h1><div class="sub" id="shSub"></div></div>
+      <button class="btn" id="shEdit" type="button" hidden
+        style="width:auto;min-height:38px;font-size:13px;padding:8px 16px">排班</button></div>
+
+    <div class="stack">
+      <div class="btn2">
+        <button class="btn" id="shPrev" type="button">上一周</button>
+        <button class="btn" id="shNext" type="button">下一周</button>
+      </div>
+      <div class="card" id="shList"></div>
+      <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
+      <p class="note" id="shHint"></p>
+      <button class="btn" id="lgOut" type="button">登出</button>
+    </div>
   </div>
 </main>
 
