@@ -260,6 +260,8 @@ function renderShift(){
   const mine = roster.filter(x => x.staff_id === auth.id && x.state === "assigned").length;
   const req  = roster.filter(x => x.staff_id === auth.id && x.state === "requested").length;
   $("shMine").textContent = mine + " 个班次" + (req ? "（另有 " + req + " 个待批）" : "");
+  $("shStaffBox").hidden = !isMgr();
+  if (isMgr()) renderStaffAdmin();
   $("shHint").textContent = isMgr()
     ? (editing ? "点名字加入或移出。点「待批」的名字即为批准。" : "点「排班」进入编辑模式。")
     : "点自己的名字报班，再点一次撤回。店长批准后才生效。";
@@ -283,13 +285,48 @@ async function toggleShift(btn){
   }finally{ btn.classList.remove("busy"); }
 }
 
+/* ── 员工名单（店长限定）── */
+function renderStaffAdmin(){
+  $("shStaffList").innerHTML =
+    `<div class="stHd"><span>姓名</span><span>月工时</span><span>新 PIN</span><span></span></div>` +
+    staff.map(p => `<div class="stRow" data-id="${p.id}">
+      <input type="text" data-k="name"  value="${p.name}">
+      <input type="number" inputmode="numeric" data-k="hours" value="${p.hours}" step="2">
+      <input type="text" inputmode="numeric" data-k="pin" placeholder="不改" maxlength="6">
+      ${p.id === auth.id ? "<span></span>"
+        : `<button class="del" type="button" data-rm="${p.id}" aria-label="停用">×</button>`}
+    </div>`).join("");
+}
+
+async function saveStaffRow(row){
+  const id = row.dataset.id;
+  const p  = staff.find(x => x.id === id);
+  const g  = k => row.querySelector(`[data-k="${k}"]`);
+  row.classList.add("busy");
+  try{
+    await rpc("kk_staff_save", {p_token:auth.token, p_id:id,
+      p_name:g("name").value, p_hours:n(g("hours").value),
+      p_pin:g("pin").value, p_role:p ? p.role : "staff"});
+    g("pin").value = "";
+    staff = await rpc("kk_staff_list", {p_token:auth.token});
+    await shiftLoad();
+  }catch(e){ $("shHint").textContent = "保存失败：" + e.message; }
+  finally{ row.classList.remove("busy"); }
+}
+
 /* ── 登入 ── */
 async function fillNames(){
+  const sel = $("lgName");
+  sel.innerHTML = `<option>读取中…</option>`;
   try{
-    // 未登录拿不到名单，先用已知岗位做选项；登录后换成真名单
-    const names = ["店长","资深","内容","兼职 A","兼职 B"];
-    $("lgName").innerHTML = names.map(n => `<option>${n}</option>`).join("");
-  }catch(e){}
+    const rows = await rpc("kk_names");          // 公开 RPC，只返在职姓名
+    sel.innerHTML = (rows||[]).map(r => `<option>${r.name}</option>`).join("")
+      || `<option>名单是空的，找店长</option>`;
+  }catch(e){
+    sel.innerHTML = `<option>读不到名单</option>`;
+    $("lgErr").hidden = false;
+    $("lgErr").textContent = "读取名单失败：" + e.message;
+  }
 }
 async function signIn(){
   const err = $("lgErr"); err.hidden = true;
@@ -351,6 +388,15 @@ document.addEventListener("click", e => {
   const tab = e.target.closest(".tabs button");
   if (tab) return switchTab(tab.dataset.tab);
 
+  const rm = e.target.closest("[data-rm]");
+  if (rm){
+    const p = staff.find(x => x.id === rm.dataset.rm);
+    if (!confirm("停用「" + (p ? p.name : "") + "」？之后不能登录，已排的班次保留。")) return;
+    return rpc("kk_staff_deactivate", {p_token:auth.token, p_id:rm.dataset.rm})
+      .then(async () => { staff = await rpc("kk_staff_list", {p_token:auth.token}); shiftLoad(); })
+      .catch(err => $("shHint").textContent = "停用失败：" + err.message);
+  }
+
   const chip = e.target.closest(".chip[data-p]");
   if (chip) return toggleShift(chip);
 });
@@ -362,6 +408,16 @@ $("segRamp").onclick = () => { $("segSt").setAttribute("aria-pressed","false");
 $("shEdit").onclick  = () => { editing = !editing; renderShift(); };
 $("lgGo").onclick    = signIn;
 $("lgOut").onclick   = signOut;
+$("stAdd").onclick   = async () => {
+  const nm = prompt("新员工姓名"); if (!nm) return;
+  const pin = prompt("给他一个 PIN（四位数字）"); if (!pin) return;
+  try{
+    await rpc("kk_staff_save", {p_token:auth.token, p_id:null, p_name:nm,
+                                p_hours:174, p_pin:pin, p_role:"staff"});
+    staff = await rpc("kk_staff_list", {p_token:auth.token});
+    shiftLoad();
+  }catch(e){ $("shHint").textContent = "加人失败：" + e.message; }
+};
 $("lgPin").addEventListener("keydown", e => { if (e.key === "Enter") signIn(); });
 $("shPrev").onclick  = () => { weekStart.setDate(weekStart.getDate()-7); shiftLoad(); };
 $("shNext").onclick  = () => { weekStart.setDate(weekStart.getDate()+7); shiftLoad(); };

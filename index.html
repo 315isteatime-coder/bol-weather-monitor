@@ -183,6 +183,15 @@
       <div class="card" id="shList"></div>
       <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
       <p class="note" id="shHint"></p>
+
+      <details id="shStaffBox" hidden>
+        <summary>员工名单</summary>
+        <div class="dbody">
+          <div id="shStaffList"></div>
+          <button class="btn" id="stAdd" type="button">加一个人</button>
+          <p class="note">改完即时生效。PIN 留空 ＝ 不改。改了名字，登录时要用新名字。</p>
+        </div>
+      </details>
       <button class="btn" id="lgOut" type="button">退出登录</button>
     </div>
   </div>
@@ -281,6 +290,59 @@
           全店未到 70%，当月只有底薪。退货的私佣和大单奖次月扣回。
         </p>
         <p class="note" style="margin-top:10px">在「佣金」页可以自己试算。那里是估算，发薪以店长实际结算为准。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>销售话术　客人进店到结账</summary>
+      <div class="dbody">
+        <div class="tk"><div class="tq">客人刚进门</div>
+          <p class="say">「欢迎光临，随便看看，有需要叫我。」</p>
+          <p class="no">别跟在后面三步之内。让客人自己走一圈，等他停在某件货前面再上。</p></div>
+
+        <div class="tk"><div class="tq">客人说「我随便看看」</div>
+          <p class="say">「好，你先看。这排是新到的，那边是折扣区。」</p>
+          <p class="no">别追问「你想找什么」。给他方位，退开。他停下来你再过去。</p></div>
+
+        <div class="tk"><div class="tq">客人拿起一件在看</div>
+          <p class="say">「这件是纯棉的，洗完不会缩。你穿平时是 M 吧？我拿件你试下。」</p>
+          <p class="no">别问「要不要试」，多数人会答不用。直接说「我拿件你试下」。</p></div>
+
+        <div class="tk"><div class="tq">客人试完出来</div>
+          <p class="say">「这个颜色挺衬你。你转一下我看看后面……肩线刚好。」</p>
+          <p class="no">别只说「好看」。说一个具体的点，客人才信。</p></div>
+
+        <div class="tk"><div class="tq">连带　⭐ 这一句最值钱</div>
+          <p class="say">「这条裤配这件刚好，一起试下看看整套效果。」</p>
+          <p class="say">「再挑一件凑够 800，今天有优惠。」</p>
+          <p class="no">客单价平均 450。多卖一件到 800，你有大单奖 10 元，
+            到 1,400 是 30 元，到 2,400 是 50 元。<b>每一单都问一句。</b></p></div>
+
+        <div class="tk"><div class="tq">客人嫌贵</div>
+          <p class="say">「这个价位是因为用的是 XX 料，你摸一下手感。同类的在别家要 XXX。」</p>
+          <p class="say">「你平时穿得多的话，算下来每次没多少。」</p>
+          <p class="no">别马上说「可以给你便宜点」。先讲价值，再讲价格。
+            <b>折扣不是你能决定的，要问店长。</b></p></div>
+
+        <div class="tk"><div class="tq">客人要求打折</div>
+          <p class="say">「这个价格已经是活动价了。不过我可以帮你看看有没有满减。」</p>
+          <p class="no">不可以私自答应任何折扣。会员折扣在协议签好之前一律不做。</p></div>
+
+        <div class="tk"><div class="tq">没有他要的码</div>
+          <p class="say">「这个码刚好卖完。我帮你问下别家店有没有，或者留个微信，到货第一时间通知你。」</p>
+          <p class="no">别只说「没有了」就结束。给下一步。</p></div>
+
+        <div class="tk"><div class="tq">客人说「我再考虑一下」</div>
+          <p class="say">「好。这件只剩两件了，你要的话我帮你留到今天关店。」</p>
+          <p class="no">留货是真的要留。说了不做，下次客人不信你。</p></div>
+
+        <div class="tk"><div class="tq">结账时</div>
+          <p class="say">「一共 XXX。要不要加个袜子／配件，凑够 XXX 有优惠？」</p>
+          <p class="no">开单前最后一次机会。开完单再问就晚了。</p></div>
+
+        <div class="tk"><div class="tq">送客</div>
+          <p class="say">「慢走。有问题随时回来找我，七天内可以换。」</p>
+          <p class="no">送到门口，别站在收银台喊。</p></div>
       </div>
     </details>
 
