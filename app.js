@@ -277,6 +277,8 @@ function renderShift(){
   const req  = roster.filter(x => x.staff_id === auth.id && x.state === "requested").length;
   $("shMine").textContent = mine + " 个班次" + (req ? "（另有 " + req + " 个待批）" : "");
   $("shStaffBox").hidden = !isMgr();
+  $("shTimeBox").hidden  = !isMgr();
+  if (isMgr()) fillTimeBox();
   if (isMgr()) renderStaffAdmin();
   $("shHint").textContent = isMgr()
     ? (editing ? "点名字加入或移出。点「待批」的名字即为批准。改时间只影响那一天。" : "点「排班」进入编辑模式。")
@@ -290,6 +292,32 @@ function paintBook(){
   if ($("bkClose")) $("bkClose").textContent = h.close || "";
   if ($("bkAm"))    $("bkAm").textContent    = (am.s||"") + " 到 " + (am.e||"");
   if ($("bkPm"))    $("bkPm").textContent    = (pm.s||"") + " 到 " + (pm.e||"");
+}
+
+// 预设时间表单
+function fillTimeBox(){
+  if (document.activeElement && document.activeElement.closest("#shTimeBox")) return;  // 唔好打断打紧字
+  const h = TIMES.hours || {}, am = (TIMES.slots||{})["早班"]||{}, pm = (TIMES.slots||{})["晚班"]||{};
+  $("stOpen").value = h.open || ""; $("stClose").value = h.close || "";
+  $("stAmS").value = am.s || "";    $("stAmE").value = am.e || "";
+  $("stPmS").value = pm.s || "";    $("stPmE").value = pm.e || "";
+}
+async function saveDefaults(){
+  const btn = $("stSaveTime"), msg = $("stTimeMsg");
+  const v = id => $(id).value;
+  if (![ "stOpen","stClose","stAmS","stAmE","stPmS","stPmE" ].every(v)){
+    msg.textContent = "六个时间都要填。"; return;
+  }
+  btn.disabled = true; btn.textContent = "保存中…";
+  try{
+    await rpc("kk_set_hours",        {p_token:auth.token, p_open:v("stOpen"), p_close:v("stClose")});
+    await rpc("kk_set_default_time", {p_token:auth.token, p_slot:"早班", p_start:v("stAmS"), p_end:v("stAmE")});
+    await rpc("kk_set_default_time", {p_token:auth.token, p_slot:"晚班", p_start:v("stPmS"), p_end:v("stPmE")});
+    await shiftLoad();
+    msg.textContent = "已保存，全店生效。";
+  }catch(e){
+    msg.textContent = "保存失败：" + e.message;
+  }finally{ btn.disabled = false; btn.textContent = "保存"; }
 }
 
 async function saveSlotTime(inp){
@@ -457,6 +485,7 @@ $("segRamp").onclick = () => { $("segSt").setAttribute("aria-pressed","false");
 $("shEdit").onclick  = () => { editing = !editing; renderShift(); };
 $("lgGo").onclick    = signIn;
 $("lgOut").onclick   = signOut;
+$("stSaveTime").onclick = saveDefaults;
 $("stAdd").onclick   = async () => {
   const nm = prompt("新员工姓名"); if (!nm) return;
   const pin = prompt("给他一个 PIN（四位数字）"); if (!pin) return;

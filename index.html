@@ -184,6 +184,32 @@
       <div class="row"><span>本周我的班次</span><b class="num" id="shMine">0</b></div>
       <p class="note" id="shHint"></p>
 
+      <details id="shTimeBox" hidden>
+        <summary>预设时间</summary>
+        <div class="dbody">
+          <div class="lb">营业时间</div>
+          <div class="tedit" style="margin-top:0">
+            <input type="time" id="stOpen" aria-label="开店">
+            <span>到</span>
+            <input type="time" id="stClose" aria-label="关店">
+          </div>
+          <div class="lb" style="margin-top:4px">早班</div>
+          <div class="tedit" style="margin-top:0">
+            <input type="time" id="stAmS" aria-label="早班开始">
+            <span>到</span>
+            <input type="time" id="stAmE" aria-label="早班结束">
+          </div>
+          <div class="lb" style="margin-top:4px">晚班</div>
+          <div class="tedit" style="margin-top:0">
+            <input type="time" id="stPmS" aria-label="晚班开始">
+            <span>到</span>
+            <input type="time" id="stPmE" aria-label="晚班结束">
+          </div>
+          <button class="btn pri" id="stSaveTime" type="button">保存</button>
+          <p class="note" id="stTimeMsg">改完全店生效，手册页也跟着变。已经单独改过时间的那几天不受影响。</p>
+        </div>
+      </details>
+
       <details id="shStaffBox" hidden>
         <summary>员工名单</summary>
         <div class="dbody">
