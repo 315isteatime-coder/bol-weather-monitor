@@ -359,6 +359,8 @@ async function toggleShift(btn){
 
 /* ── 员工名单（店长限定）── */
 function renderStaffAdmin(){
+  // 正在输入就唔好重建，否则会清走未存嘅嘢同抢走焦点
+  if (document.activeElement && document.activeElement.closest("#shStaffList")) return;
   $("shStaffList").innerHTML =
     `<div class="stHd"><span>姓名</span><span>月工时</span><span>新 PIN</span><span></span></div>` +
     staff.map(p => `<div class="stRow" data-id="${p.id}">
@@ -379,10 +381,12 @@ async function saveStaffRow(row){
     await rpc("kk_staff_save", {p_token:auth.token, p_id:id,
       p_name:g("name").value, p_hours:n(g("hours").value),
       p_pin:g("pin").value, p_role:p ? p.role : "staff"});
+    const changedPin = !!g("pin").value.trim();
     g("pin").value = "";
     staff = await rpc("kk_staff_list", {p_token:auth.token});
     await shiftLoad();
-  }catch(e){ $("shHint").textContent = "保存失败：" + e.message; }
+    $("stStaffMsg").textContent = changedPin ? "已保存，PIN 已更新。" : "已保存。";
+  }catch(e){ $("stStaffMsg").textContent = "保存失败：" + e.message; }
   finally{ row.classList.remove("busy"); }
 }
 
@@ -406,14 +410,19 @@ async function signIn(){
   try{
     const rows = await rpc("kk_login", {p_name:$("lgName").value, p_pin:$("lgPin").value});
     const a = Array.isArray(rows) ? rows[0] : rows;
-    if (!a || !a.token) throw new Error("bad_login");
+    // 后端唔再 raise（raise 会 rollback 失败计数），改用 err 栏报错
+    if (!a || a.err) throw new Error(a && a.err ? a.err : "bad_login");
+    if (!a.token) throw new Error("bad_login");
     auth = a; save("auth", auth);
     me = {name:a.name, role:me.role}; save("me", me);
     $("lgPin").value = "";
     showShift();
   }catch(e){
     err.hidden = false;
-    err.textContent = String(e.message).includes("bad_login") ? "姓名或 PIN 不正确。" : "登录失败：" + e.message;
+    const m = String(e.message);
+    err.textContent = m.includes("locked_out") ? "连续输错太多次，请 15 分钟后再试，或找店长重设 PIN。"
+                    : m.includes("bad_login")  ? "姓名或 PIN 不正确。"
+                    : "登录失败：" + e.message;
   }finally{ btn.disabled = false; btn.textContent = "登录"; }
 }
 function signOut(){
@@ -457,7 +466,9 @@ document.addEventListener("change", e => {
   }
 });
 document.addEventListener("change", e => {
-  if (e.target.dataset && e.target.dataset.time) saveSlotTime(e.target);
+  if (e.target.dataset && e.target.dataset.time) return saveSlotTime(e.target);
+  const row = e.target.closest && e.target.closest(".stRow");
+  if (row && e.target.dataset.k) return saveStaffRow(row);
 }, true);
 document.addEventListener("click", e => {
   const rk = e.target.closest("[data-reset]");

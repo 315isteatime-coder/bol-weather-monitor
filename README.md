@@ -41,6 +41,7 @@ Supabase project `plan-b`（`otyyndkystpjfdhujfbp`），与 bestplan 共用同�
 |---|---|
 | `kk_staff` | 名单、角色、PIN、月工时 |
 | `kk_sessions` | 登入 token，60 日过期 |
+| `kk_login_fails` | 登录失败计数，同一个名连错 5 次锁 15 分钟 |
 | `kk_shifts` | 班次，`state` 为 `requested`（员工报班）或 `assigned`（店长批准） |
 
 **店长可以在排班页改名单**：改姓名、月工时、重设 PIN、加人、停用。
