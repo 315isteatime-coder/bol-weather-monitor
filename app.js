@@ -15,7 +15,10 @@ const MGR_CUT = .20;    // 店长先分公佣比例
 const BON = [10,30,50];
 const ROLES = ["资深店员","店员","兼职"];
 const SHIFTS = ["早班","晚班"];                    // 值要同 DB 嘅 CHECK 一致，唔好改
-const SHIFT_TIME = {"早班":"09:45 - 16:00", "晚班":"15:45 - 22:15"};
+let TIMES = {slots:{"早班":{s:"09:45",e:"16:00"},"晚班":{s:"15:45",e:"22:15"}},
+             hours:{open:"10:00",close:"22:00"}, overrides:{}};
+// 某一日某个班次嘅时间：有改动就用改动，冇就用预设
+const slotTime = (date, slot) => TIMES.overrides[date+"|"+slot] || TIMES.slots[slot] || {s:"",e:""};
 const DOW = ["日","一","二","三","四","五","六"];
 
 /* ── 小工具 ── */
@@ -211,11 +214,13 @@ async function shiftLoad(){
   const days = weekDays(weekStart);
   const from = iso(days[0]), to = iso(days[6]);
   try{
-    const [r, s] = await Promise.all([
+    const [r, s, t] = await Promise.all([
       rpc("kk_roster", {p_token:auth.token, p_from:from, p_to:to}),
-      staff.length ? Promise.resolve(staff) : rpc("kk_staff_list", {p_token:auth.token})
+      staff.length ? Promise.resolve(staff) : rpc("kk_staff_list", {p_token:auth.token}),
+      rpc("kk_times",  {p_token:auth.token, p_from:from, p_to:to})
     ]);
     roster = r || []; staff = s || [];
+    if (t) { TIMES = t; paintBook(); }
     renderShift();
   }catch(e){
     if (String(e.message).includes("not_signed_in")) return signOut();
@@ -253,7 +258,18 @@ function renderShift(){
         if (editing && isMgr())            body = staff.map(cell).join("");
         else if (on.length || !isMgr())    body = staff.filter(p => on.some(x=>x.staff_id===p.id) || p.id===auth.id).map(cell).join("");
         else                               body = `<span class="empty">未排</span>`;
-        return `<div class="slot"><div class="sl">${s} <em>${SHIFT_TIME[s]}</em></div><div class="chips">${body}</div></div>`;
+        const tm = slotTime(k, s);
+        const custom = !!TIMES.overrides[k+"|"+s];
+        const head = (editing && isMgr())
+          ? `<div class="sl">${s}
+              <span class="tedit${custom?' has-reset':''}">
+                <input type="time" value="${tm.s}" data-time="s" data-d="${k}" data-s="${s}" aria-label="${s}开始">
+                <span>到</span>
+                <input type="time" value="${tm.e}" data-time="e" data-d="${k}" data-s="${s}" aria-label="${s}结束">
+                ${custom ? `<button class="treset" type="button" data-reset="${k}|${s}">还原</button>` : ""}
+              </span></div>`
+          : `<div class="sl">${s} <em${custom?' class="ch"':''}>${tm.s} - ${tm.e}</em></div>`;
+        return `<div class="slot">${head}<div class="chips">${body}</div></div>`;
       }).join("")}</div></div>`;
   }).join("");
 
@@ -263,8 +279,36 @@ function renderShift(){
   $("shStaffBox").hidden = !isMgr();
   if (isMgr()) renderStaffAdmin();
   $("shHint").textContent = isMgr()
-    ? (editing ? "点名字加入或移出。点「待批」的名字即为批准。" : "点「排班」进入编辑模式。")
+    ? (editing ? "点名字加入或移出。点「待批」的名字即为批准。改时间只影响那一天。" : "点「排班」进入编辑模式。")
     : "点自己的名字报班，再点一次撤回。店长批准后才生效。";
+}
+
+// 手册嗰版嘅时间跟返后端
+function paintBook(){
+  const h = TIMES.hours || {}, am = (TIMES.slots||{})["早班"]||{}, pm = (TIMES.slots||{})["晚班"]||{};
+  if ($("bkOpen"))  $("bkOpen").textContent  = h.open  || "";
+  if ($("bkClose")) $("bkClose").textContent = h.close || "";
+  if ($("bkAm"))    $("bkAm").textContent    = (am.s||"") + " 到 " + (am.e||"");
+  if ($("bkPm"))    $("bkPm").textContent    = (pm.s||"") + " 到 " + (pm.e||"");
+}
+
+async function saveSlotTime(inp){
+  const {d, s} = inp.dataset;
+  const row = inp.closest(".slot");
+  const a = row.querySelector('input[data-time="s"]').value;
+  const b = row.querySelector('input[data-time="e"]').value;
+  if (!a || !b) return;
+  try{
+    await rpc("kk_set_slot_time", {p_token:auth.token, p_date:d, p_slot:s, p_start:a, p_end:b});
+    await shiftLoad();
+  }catch(e){ $("shHint").textContent = "改时间失败：" + e.message; }
+}
+async function resetSlotTime(key){
+  const [d, s] = key.split("|");
+  try{
+    await rpc("kk_set_slot_time", {p_token:auth.token, p_date:d, p_slot:s, p_start:null, p_end:null});
+    await shiftLoad();
+  }catch(e){ $("shHint").textContent = "还原失败：" + e.message; }
 }
 
 async function toggleShift(btn){
@@ -384,7 +428,12 @@ document.addEventListener("change", e => {
     renderComm();
   }
 });
+document.addEventListener("change", e => {
+  if (e.target.dataset && e.target.dataset.time) saveSlotTime(e.target);
+}, true);
 document.addEventListener("click", e => {
+  const rk = e.target.closest("[data-reset]");
+  if (rk) return resetSlotTime(rk.dataset.reset);
   const tab = e.target.closest(".tabs button");
   if (tab) return switchTab(tab.dataset.tab);
 
